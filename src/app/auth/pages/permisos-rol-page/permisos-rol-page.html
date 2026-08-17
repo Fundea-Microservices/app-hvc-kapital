@@ -43,7 +43,7 @@
                 <!-- Dropdown -->
                 @if (showRolDropdown() && filteredRoles().length > 0) {
                 <ul class="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg">
-                    @for (rol of filteredRoles(); track rol.rolId) {
+                    @for (rol of filteredRoles(); track rol.id) {
                     <li>
                         <button type="button" (mousedown)="selectRol(rol)"
                             class="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 flex items-center justify-between">
@@ -125,7 +125,7 @@
                         </td>
                     </tr>
                     } @else {
-                    @for (permiso of matriz(); track permiso.permisoId; let i = $index) {
+                    @for (permiso of matriz(); track permiso.id; let i = $index) {
                     <tr class="hover:bg-gray-300 odd:bg-white even:bg-gray-100">
                         <td class="px-2 py-2 text-center border border-gray-300">
                             {{ (pagination().page - 1) * pagination().pageSize + i + 1 }}
@@ -136,10 +136,10 @@
                         <td class="px-2 py-2 border border-gray-300 text-gray-600">{{ permiso.descripcion || '-' }}</td>
                         <td class="px-2 py-2 border border-gray-300 text-center">
                             <div class="flex justify-center items-center">
-                                <label [for]="'perm-' + permiso.permisoId" class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" [id]="'perm-' + permiso.permisoId" [checked]="permiso.asignado"
+                                <label [for]="'perm-' + permiso.id" class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" [id]="'perm-' + permiso.id" [checked]="permiso.asignado"
                                         (change)="togglePermiso(permiso, cbx.checked)" #cbx
-                                        [disabled]="isSaving(permiso.permisoId!)" class="peer sr-only">
+                                        [disabled]="isSaving(permiso.id!)" class="peer sr-only">
                                     <div class="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50"></div>
                                 </label>
                             </div>

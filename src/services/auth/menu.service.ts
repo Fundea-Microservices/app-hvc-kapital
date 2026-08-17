@@ -47,7 +47,7 @@ export class MenuService extends HttpService {
     }
   }
 
-  async createMenu(menu: Omit<IMenu, 'menuId' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<MenuResponse | null> {
+  async createMenu(menu: Omit<IMenu, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<MenuResponse | null> {
     try {
       const { label, descripcion, color, icono, pathApp, pathWeb, principal, activo } = menu;
       const resp = await firstValueFrom(this.post<MenuResponse>(`${this.endpoints.menus}`, {
@@ -67,8 +67,8 @@ export class MenuService extends HttpService {
 
   async updateMenu(menu: IMenu): Promise<MenuResponse | null> {
     try {
-      const { menuId, label, descripcion, color, icono, pathApp, pathWeb, principal, activo } = menu;
-      const resp = await firstValueFrom(this.put<MenuResponse>(`${this.endpoints.menus}/${menuId}`, {
+      const { id, label, descripcion, color, icono, pathApp, pathWeb, principal, activo } = menu;
+      const resp = await firstValueFrom(this.put<MenuResponse>(`${this.endpoints.menus}/${id}`, {
         label, descripcion, color, icono, pathApp, pathWeb, principal, activo
       }));
       if (resp.body?.success) {

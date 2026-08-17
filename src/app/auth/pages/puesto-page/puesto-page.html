@@ -68,7 +68,7 @@
                         </td>
                     </tr>
                     } @else {
-                    @for (puesto of puestosList(); track puesto.puestoId; let i = $index) {
+                    @for (puesto of puestosList(); track puesto.id; let i = $index) {
                     <tr class="hover:bg-gray-300 odd:bg-white even:bg-gray-100">
                         <td class="px-2 py-2 text-center border border-gray-300 justify-center">
                             {{ (pagination().page - 1) * pagination().pageSize + i + 1 }}

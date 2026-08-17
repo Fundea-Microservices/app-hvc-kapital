@@ -22,6 +22,15 @@ export class UsuariosService extends HttpService {
     super(http);
   }
 
+  /**
+   * Los `<select>` opcionales devuelven '' (y 'undefined' si la opción se pintó
+   * sin id). El API valida UUID, así que esos valores deben viajar como undefined.
+   */
+  private limpiarId(valor?: string | null): string | undefined {
+    if (!valor || valor === 'undefined' || valor === 'null') return undefined;
+    return valor;
+  }
+
   async getUsuarios({ page = 1, limit = 10, busqueda = '', all = false , puestoNombre = ''} = {}): Promise<UsuarioListResponse | null> {
     try {
       let params: any = { page, limit, busqueda };
@@ -49,13 +58,15 @@ export class UsuariosService extends HttpService {
     }
   }
 
-  async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<UsuarioResponse | null> {
+  async createUsuario(usuario: Omit<IUsuario, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<UsuarioResponse | null> {
     try {
-      const { nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursal_id, activo, clave } = usuario;
+      const { nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursalId, activo, clave } = usuario;
+      const puesto = this.limpiarId(puestoId);
+      const sucursal = this.limpiarId(sucursalId);
       const resp = await firstValueFrom(this.post<UsuarioResponse>(`${this.endpoints.usuarios}`, {
         nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId,
-        ...(puestoId ? { puestoId } : {}),
-        ...(sucursal_id ? { sucursal_id } : {}),
+        ...(puesto ? { puestoId: puesto } : {}),
+        ...(sucursal ? { sucursalId: sucursal } : {}),
         activo, clave
       }));
       if (resp.body?.success) {
@@ -72,11 +83,11 @@ export class UsuariosService extends HttpService {
 
   async updateUsuario(usuario: IUsuario): Promise<UsuarioResponse | null> {
     try {
-      const { usuarioId, nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursal_id, activo } = usuario;
-      const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${usuarioId}`, {
+      const { id, nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursalId, activo } = usuario;
+      const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, {
         nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId,
-        puestoId: puestoId || undefined,
-        sucursal_id: sucursal_id || undefined,
+        puestoId: this.limpiarId(puestoId),
+        sucursalId: this.limpiarId(sucursalId),
         activo,
       }));
       if (resp.body?.success) {

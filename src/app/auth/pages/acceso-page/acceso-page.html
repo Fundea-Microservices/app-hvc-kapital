@@ -23,8 +23,8 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
       <select class="w-full input-control p-2 border rounded" (change)="onRolChange($any($event.target).value)">
         <option value="">Seleccione un rol...</option>
-        @for (r of (roles() || []); track r.rolId) {
-        <option [value]="r.rolId">{{ r.nombre }}</option>
+        @for (r of (roles() || []); track r.id) {
+        <option [value]="r.id">{{ r.nombre }}</option>
         }
       </select>
     </div>
@@ -42,8 +42,8 @@
       <div class="col-span-2">
         <b>Menús</b>
         <ul class="mt-2 text-[0.75em] space-y-1">
-          @for (menu of principalMenus; track menu.menuId) {
-          @if (!isAssigned(menu.menuId)){
+          @for (menu of principalMenus; track menu.id) {
+          @if (!isAssigned(menu.id)){
           <li class="flex items-center justify-between bg-white border border-gray-200 rounded px-3 py-2">
             <div class="flex items-center gap-2">
               <app-custom-icon [name]="menu.icono" [size]="18"></app-custom-icon>
@@ -68,8 +68,8 @@
         </div>
 
         <ul class="mt-2 text-[0.75em] space-y-1">
-          @for (menu of subMenusAvailable(); track menu.menuId) {
-          @if (!isAssigned(menu.menuId)){
+          @for (menu of subMenusAvailable(); track menu.id) {
+          @if (!isAssigned(menu.id)){
           <li class="flex items-center justify-between bg-white border border-gray-200 rounded px-3 py-1">
             <div class="flex items-center gap-2">
               <app-custom-icon [name]="menu.icono" [size]="16"></app-custom-icon>
@@ -99,7 +99,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100">
-              @for (item of accesos(); track item.accesoId; let i = $index) {
+              @for (item of accesos(); track item.id; let i = $index) {
               <tr class="odd:bg-white even:bg-gray-100">
                 <td class="px-3 py-2 text-center align-middle"><b>{{ item.ordenMenu }}</b></td>
                 <td class="px-3 py-2 align-middle">
@@ -138,12 +138,12 @@
                 </td>
               </tr>
 
-              @for (subacceso of item.subMenus; track subacceso.accesoId; let j = $index) {
+              @for (subacceso of item.subMenus; track subacceso.id; let j = $index) {
         <tr class="odd:bg-white even:bg-gray-100 hover:bg-gray-200"
           draggable="true"
           (dragstart)="onDragStartSub(subacceso)"
                   (dragover)="onDragOver($event)"
-                  (drop)="onDropSub(j, item.menu.menuId!)">
+                  (drop)="onDropSub(j, item.menu.id!)">
                 <td class="pl-4 py-2 text-center align-middle">
               {{ item.ordenMenu + '.' + subacceso.ordenMenu }}
                 </td>

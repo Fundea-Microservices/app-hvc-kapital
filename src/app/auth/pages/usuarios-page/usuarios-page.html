@@ -58,7 +58,7 @@
                         <td colspan="7" class="px-4 py-8 text-center text-gray-500">No se encontraron usuarios</td>
                     </tr>
                     } @else {
-                    @for (u of (usuariosList() || []); track u.usuarioId; let i = $index) {
+                    @for (u of (usuariosList() || []); track u.id; let i = $index) {
                     <tr class="hover:bg-gray-300 odd:bg-white even:bg-gray-100">
                         <td class="px-2 py-2 text-center border border-gray-300">{{ (pagination().page - 1) *
                             pagination().pageSize + i + 1 }}</td>
@@ -69,8 +69,8 @@
                         <td class="px-2 py-2 border border-gray-300">{{ getPuestoName(u.puestoId) }}</td>
                         <td class="px-2 py-2 text-center border border-gray-300">
                             <div class="flex justify-center items-center">
-                                <label [for]="'switch-' + u.usuarioId" class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" [id]="'switch-' + u.usuarioId" [checked]="u.activo"
+                                <label [for]="'switch-' + u.id" class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" [id]="'switch-' + u.id" [checked]="u.activo"
                                         (change)="toggleStatus(u, cbxActivo.checked)" #cbxActivo
                                         [disabled]="u.rol?.esAdmin" class="peer sr-only">
                                     <div class="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50"></div>

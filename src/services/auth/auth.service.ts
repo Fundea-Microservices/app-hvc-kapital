@@ -48,7 +48,7 @@ export class AuthService extends HttpService {
 
     // Usuario "vacío"
     return {
-      usuarioId: '',
+      id: '',
       nombreCompleto: 'Sin autenticar',
       userName: '',
       nombre1: '',
@@ -68,7 +68,7 @@ export class AuthService extends HttpService {
       // metodoId: null,
       created_at: new Date(),
       rol: {
-        rolId: '',
+        id: '',
         nombre: 'Sin autenticar',
         activo: false,
         invitado: false,
