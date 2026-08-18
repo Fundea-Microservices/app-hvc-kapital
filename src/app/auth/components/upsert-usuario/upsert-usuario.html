@@ -72,8 +72,8 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
       <select formControlName="rolId" class="input-control">
         <option value="">Seleccione un rol</option>
-        @for (rol of (roles() || []); track rol.rolId) {
-        <option [value]="rol.rolId">{{ rol.nombre }}</option>
+        @for (rol of (roles() || []); track rol.id) {
+        <option [value]="rol.id">{{ rol.nombre }}</option>
         }
       </select>
     </div>

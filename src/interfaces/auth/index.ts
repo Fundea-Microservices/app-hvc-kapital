@@ -91,6 +91,7 @@ export interface ISubmenu {
 
 
 export interface IRol {
+    id?: string;            // UUID
     rolId?: string;          // UUID
     nombre: string;         // Nombre del rol
     invitado: boolean;      // Indica si es rol invitado

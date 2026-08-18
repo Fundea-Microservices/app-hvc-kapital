@@ -49,23 +49,95 @@ export class UsuariosService extends HttpService {
     }
   }
 
-  async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<UsuarioResponse | null> {
+async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<UsuarioResponse | null> {
     try {
-      const { nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursal_id, activo, clave } = usuario;
-      const resp = await firstValueFrom(this.post<UsuarioResponse>(`${this.endpoints.usuarios}`, {
-        nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId,
-        ...(puestoId ? { puestoId } : {}),
-        ...(sucursal_id ? { sucursal_id } : {}),
-        activo, clave
-      }));
+      const {
+        nombre1,
+        nombre2,
+        nombre3,
+        apellido1,
+        apellido2,
+        apellido3,
+        nombreCompleto,
+        userName,
+        correo,
+        clave,
+        rolId,
+        puestoId,
+        sucursal_id,
+        sucursalId,
+        fotoUrl,
+        huella,
+        activo,
+        documento,
+        tipoDocumento,
+        estados,
+        lastPasswordUpdate
+      } = usuario as any;
+
+      // 1. Calcular nombreCompleto si no se provee
+      const calculatedFullName = nombreCompleto && nombreCompleto.trim() !== ''
+        ? nombreCompleto
+        : [nombre1, nombre2, nombre3, apellido1, apellido2, apellido3]
+            .filter(Boolean)
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+      // 2. Resolver IDs obligatorios y opcionales
+      const finalRolId = rolId ?? (usuario as any)?.rol?.id ?? (usuario as any)?.rol?.rolId;
+      const finalSucursalId = sucursalId ?? sucursal_id;
+      const finalPuestoId = puestoId && puestoId.trim() !== '' ? puestoId : undefined;
+
+      // 3. Payload base con los campos requeridos por el DTO
+      const rawPayload: Record<string, any> = {
+        nombreCompleto: calculatedFullName,
+        nombre1: nombre1 || '',
+        apellido1: apellido1 || '',
+        userName: userName || '',
+        correo: correo || '',
+        rolId: finalRolId,
+        activo: activo ?? true,
+        estados: estados || 'ACTIVO',
+      };
+
+      // 4. Agregar opcionales solo si tienen valor real
+      if (clave && clave.trim() !== '') rawPayload['clave'] = clave;
+      if (nombre2 && nombre2.trim() !== '') rawPayload['nombre2'] = nombre2;
+      if (nombre3 && nombre3.trim() !== '') rawPayload['nombre3'] = nombre3;
+      if (apellido2 && apellido2.trim() !== '') rawPayload['apellido2'] = apellido2;
+      if (apellido3 && apellido3.trim() !== '') rawPayload['apellido3'] = apellido3;
+      if (documento && documento.trim() !== '') rawPayload['documento'] = documento;
+      if (tipoDocumento && tipoDocumento.trim() !== '') rawPayload['tipoDocumento'] = tipoDocumento;
+
+      if (finalPuestoId) rawPayload['puestoId'] = finalPuestoId;
+      if (finalSucursalId && finalSucursalId.trim() !== '') rawPayload['sucursalId'] = finalSucursalId;
+      if (fotoUrl && fotoUrl.trim() !== '') rawPayload['fotoUrl'] = fotoUrl;
+      if (huella && huella.trim() !== '') rawPayload['huella'] = huella;
+
+      // NOTA: Si el backend ya tiene @Type(() => Date) en el DTO, puedes descomentar la siguiente línea:
+      // if (lastPasswordUpdate) rawPayload['lastPasswordUpdate'] = new Date(lastPasswordUpdate).toISOString();
+
+      console.log('📤 [createUsuario] Payload final enviado:', rawPayload);
+
+      const resp = await firstValueFrom(
+        this.post<UsuarioResponse>(`${this.endpoints.usuarios}`, rawPayload)
+      );
+
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
         return resp.body;
       }
       return null;
+
     } catch (error: any) {
-      console.log('🚀 ~ UsuariosService ~ createUsuario ~ error:', error);
-      this.toastr.error(error?.error?.message || 'Error al crear usuario', 'Error');
+      console.error('🚀 ~ UsuariosService ~ createUsuario ~ error:', error);
+
+      const apiMessage = Array.isArray(error?.error?.message)
+        ? error.error.message.join(' | ')
+        : error?.error?.message;
+
+      this.toastr.error(apiMessage || 'Error al crear usuario', 'Error de Validación');
       return null;
     }
   }
