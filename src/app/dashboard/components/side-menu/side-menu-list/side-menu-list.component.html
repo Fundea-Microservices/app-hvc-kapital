@@ -1,35 +1,37 @@
 <!-- Dashboard Item (Active) -->
-<a [routerLink]="'/dashboard'" routerLinkActive="bg-[#1b3553] text-white border-l-4 border-sky-400"
-    class="flex items-center gap-x-3 py-2.5 px-3 text-sm rounded-r-lg font-semibold text-slate-300 hover:bg-[#1b3553] hover:text-white focus:outline-none focus:bg-[#1b3553] transition-colors duration-200"
+<a [routerLink]="'/dashboard'" 
+    routerLinkActive="border-l-4"
+    [style.border-color]="'var(--hvc-accent-orange)'"
+    class="sidebar-item flex items-center gap-x-3 py-2.5 px-3 text-sm rounded-r-lg font-semibold focus:outline-none"
     [routerLinkActiveOptions]="{ exact: true }">
-    <app-custom-icon [name]="'house'" [color]="'#cbd5e1'"></app-custom-icon>
+    <app-custom-icon [name]="'house'" [color]="'var(--sidebar-text)'"></app-custom-icon>
     Inicio
 </a>
 
 
 <!-- Menu dinámico (grupo de acordeones) -->
 @if(accesosLoading()){
-    <div class="p-3 text-sm text-slate-400 flex items-center gap-2">
-        <svg class="animate-spin h-4 w-4 text-slate-400" viewBox="0 0 24 24">
+    <div class="p-3 text-sm flex items-center gap-2" style="color: var(--navbar-text-secondary);">
+        <svg class="animate-spin h-4 w-4" style="color: var(--navbar-text-secondary);" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
         </svg>
         Cargando menú...
     </div>
 } @else if (accesos().length === 0) {
-    <div class="p-3 text-sm text-slate-400">Sin accesos asignados</div>
+    <div class="p-3 text-sm" style="color: var(--navbar-text-secondary);">Sin accesos asignados</div>
 } @else {
 <div class="hs-accordion-group" id="side-menu-accordion-group">
     @for(acceso of accesos(); track acceso.accesoId){
         <!-- Item de acordeón por cada acceso -->
         <div class="hs-accordion" [id]="acceso.accesoId">
             <button type="button"
-                class="hs-accordion-toggle w-full flex items-center gap-x-3 py-2.5 px-3 text-sm font-semibold text-slate-300 hover:bg-[#1b3553] hover:text-white rounded-lg  focus:outline-none focus:bg-[#1b3553] transition-colors duration-200"
+                class="hs-accordion-toggle sidebar-accordion-toggle w-full flex items-center gap-x-3 py-2.5 px-3 text-sm font-semibold rounded-lg focus:outline-none"
                 [id]="acceso.accesoId + '-btn'"
                 aria-expanded="false"
                 [attr.aria-controls]="acceso.accesoId + '-content'"
                 [attr.data-hs-accordion]="'#' + (acceso.accesoId + '-content')">
-                <app-custom-icon [name]="acceso.menu.icono" [color]="'#cbd5e1'"></app-custom-icon>
+                <app-custom-icon [name]="acceso.menu.icono" [color]="'var(--sidebar-text)'"></app-custom-icon>
                 {{acceso.menu.label}}
                 <svg class="hs-accordion-active:rotate-180 shrink-0 size-4 ml-auto transition-transform duration-200"
                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -46,8 +48,9 @@
                 <div class="pl-6 space-y-1 mt-1">
                     @for(submenu of acceso.subMenus; track submenu.accesoId){
                         <a [routerLink]="prefix + submenu.menu.pathWeb"
-                            routerLinkActive="bg-[#1b3553] text-white border-l-4 border-sky-400"
-                            class="flex items-center gap-x-3 py-2 px-3 text-sm  font-medium text-slate-300 hover:bg-[#1b3553] hover:text-white focus:outline-none focus:bg-[#1b3553] transition-colors duration-200">
+                            routerLinkActive="border-l-4"
+                            [style.border-color]="'var(--hvc-accent-orange)'"
+                            class="sidebar-submenu-item flex items-center gap-x-3 py-2 px-3 text-sm font-medium focus:outline-none">
                             <app-custom-icon [name]="submenu.menu.icono" [size]="15" [color]="submenu.menu.color"></app-custom-icon>
                             {{submenu.menu.label}}
                         </a>

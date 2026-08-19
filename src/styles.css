@@ -32,6 +32,11 @@
   --hvc-gray: #8D9EBF;          /* Gris Neutro */
   --hvc-gray-light: #A4ABBD;    /* Gris Suave */
 
+  /* Colores de estado */
+  --hvc-success: #22C55E;       /* Verde Éxito */
+  --hvc-warning: #F59E0B;       /* Naranja/Amarillo Alerta */
+  --hvc-danger: #EF4444;        /* Rojo Peligro */
+
   /* Variables base de la aplicación mapeadas a la paleta HVC Kapital */
   --bg: #fafbfc;
   --border: #eef0f2;
@@ -50,7 +55,19 @@
   --table-row-hover-bg: #e5e7eb; 
   --table-border-color: #cbd5e1; 
   --table-cell-py: 0.5rem; 
-  --table-cell-px: 0.5rem; 
+  --table-cell-px: 0.5rem;
+
+  /* Sidebar y Navbar - Paleta HVC Kapital */
+  --sidebar-bg: var(--hvc-primary-dark);
+  --sidebar-border: var(--hvc-primary);
+  --sidebar-hover: var(--hvc-primary);
+  --sidebar-text: #cbd5e1;
+  --sidebar-text-active: #ffffff;
+  --navbar-bg: var(--hvc-primary-dark);
+  --navbar-border: var(--hvc-primary);
+  --navbar-hover: var(--hvc-primary);
+  --navbar-text: #f1f5f9;
+  --navbar-text-secondary: var(--hvc-gray-light); 
 }
 
 /* ==========================================================================

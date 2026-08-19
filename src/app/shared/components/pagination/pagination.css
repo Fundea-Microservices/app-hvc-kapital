@@ -1,0 +1,21 @@
+/* Pagination - Estilos usando paleta HVC Kapital */
+
+/* Botones de paginación */
+.pagination-btn {
+  background-color: var(--hvc-primary-light);
+  color: var(--hvc-primary-dark);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.pagination-btn:hover {
+  background-color: var(--hvc-primary);
+  color: #ffffff;
+}
+
+/* Botón de página activa */
+.pagination-btn--active {
+  background-color: var(--hvc-primary);
+  color: #ffffff;
+}
+.pagination-btn--active:hover {
+  background-color: var(--hvc-primary-dark);
+}

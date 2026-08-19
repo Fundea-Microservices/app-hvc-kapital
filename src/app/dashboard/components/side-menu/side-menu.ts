@@ -15,6 +15,7 @@ declare global {
   selector: 'app-side-menu',
   imports: [SideMenuListComponent],
   templateUrl: './side-menu.html',
+  styleUrl: './side-menu.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SideMenuComponent implements AfterViewInit {

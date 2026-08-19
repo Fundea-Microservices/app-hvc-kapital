@@ -1,0 +1,41 @@
+/* Navbar - Estilos hover usando paleta HVC Kapital */
+
+/* Botón del menú hamburguesa */
+.navbar-toggle {
+  background-color: var(--navbar-border);
+  color: var(--navbar-text);
+  border: 1px solid var(--navbar-border);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.navbar-toggle:hover {
+  background-color: var(--sidebar-hover);
+  color: white;
+}
+
+/* Botón del usuario dropdown */
+.navbar-user-btn {
+  color: var(--navbar-text);
+  transition: background-color 0.2s ease;
+}
+.navbar-user-btn:hover {
+  background-color: var(--navbar-border);
+}
+
+/* Items del dropdown del usuario */
+.navbar-dropdown-item {
+  color: var(--hvc-primary-dark);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.navbar-dropdown-item:hover {
+  background-color: var(--hover);
+  color: var(--hvc-accent-orange);
+}
+
+/* Item de cerrar sesión */
+.navbar-dropdown-item--danger {
+  color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.navbar-dropdown-item--danger:hover {
+  background-color: var(--hover);
+}

@@ -22,6 +22,7 @@ export interface CalendarDay {
   standalone: true,
   imports: [RouterLink],
   templateUrl: './home-page.html',
+  styleUrl: './home-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomePageComponent implements OnInit {

@@ -1,0 +1,11 @@
+/* Side Menu - Estilos hover usando paleta HVC Kapital */
+
+/* Close button (móvil) */
+.sidebar-close-btn {
+  background-color: rgba(var(--color-primary), 0.5);
+  color: var(--navbar-text);
+  transition: background-color 0.2s ease;
+}
+.sidebar-close-btn:hover {
+  background-color: var(--sidebar-hover);
+}

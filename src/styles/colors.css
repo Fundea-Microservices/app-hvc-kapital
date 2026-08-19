@@ -1,43 +1,44 @@
 /* 
  * Variables CSS personalizadas para el dashboard corporativo
+ * Paleta oficial: HVC Kapital
  * Estas variables complementan la configuración de Tailwind
  */
 
 :root {
-  /* Colores primarios corporativos */
-  --color-primary: 14 165 233; /* primary-500 en RGB */
-  --color-primary-hover: 2 132 199; /* primary-600 en RGB */
-  --color-primary-light: 186 230 253; /* primary-200 en RGB */
+  /* Colores primarios corporativos - Paleta HVC Kapital */
+  --color-primary: 30 51 94; /* --hvc-primary #1E335E en RGB */
+  --color-primary-hover: 7 23 55; /* --hvc-primary-dark #071737 en RGB */
+  --color-primary-light: 149 162 187; /* --hvc-primary-light #95A2BB en RGB */
   
   /* Colores secundarios */
-  --color-secondary: 100 116 139; /* secondary-500 en RGB */
-  --color-secondary-hover: 71 85 105; /* secondary-600 en RGB */
+  --color-secondary: 141 158 191; /* --hvc-gray #8D9EBF en RGB */
+  --color-secondary-hover: 164 171 189; /* --hvc-gray-light #A4ABBD en RGB */
   
   /* Colores de estado */
-  --color-success: 34 197 94; /* success-500 en RGB */
-  --color-warning: 245 158 11; /* warning-500 en RGB */
-  --color-danger: 239 68 68; /* danger-500 en RGB */
+  --color-success: 34 197 94; /* #22C55E en RGB */
+  --color-warning: 245 158 11; /* #F59E0B en RGB */
+  --color-danger: 239 68 68; /* #EF4444 en RGB */
   
   /* Colores corporativos específicos */
-  --color-corporate-dark: 30 58 138; /* corporate-dark-blue en RGB */
-  --color-corporate-light: 59 130 246; /* corporate-light-blue en RGB */
-  --color-corporate-accent: 245 158 11; /* corporate-accent-gold en RGB */
+  --color-corporate-dark: 7 23 55; /* --hvc-primary-dark #071737 en RGB */
+  --color-corporate-light: 30 51 94; /* --hvc-primary #1E335E en RGB */
+  --color-corporate-accent: 250 154 55; /* --hvc-accent-orange #FA9A37 en RGB */
   
-  /* Colores de fondo */
-  --bg-sidebar: 248 250 252; /* bg-slate-50 */
-  --bg-sidebar-dark: 15 23 42; /* bg-slate-900 */
-  --bg-sidebar-item-hover: 241 245 249; /* bg-slate-100 */
-  --bg-sidebar-item-active: 14 165 233; /* primary-500 */
+  /* Colores de fondo - Sidebar y Navbar */
+  --bg-sidebar: 7 23 55; /* --hvc-primary-dark #071737 */
+  --bg-sidebar-dark: 7 23 55; /* --hvc-primary-dark #071737 */
+  --bg-sidebar-item-hover: 30 51 94; /* --hvc-primary #1E335E */
+  --bg-sidebar-item-active: 250 154 55; /* --hvc-accent-orange #FA9A37 */
   
   /* Colores de texto */
-  --text-primary: 31 41 55; /* text-gray-800 */
-  --text-secondary: 107 114 128; /* text-gray-500 */
-  --text-light: 156 163 175; /* text-gray-400 */
+  --text-primary: 7 23 55; /* --hvc-primary-dark #071737 */
+  --text-secondary: 141 158 191; /* --hvc-gray #8D9EBF */
+  --text-light: 164 171 189; /* --hvc-gray-light #A4ABBD */
   --text-white: 255 255 255; /* text-white */
   
   /* Bordes */
-  --border-light: 229 231 235; /* border-gray-200 */
-  --border-medium: 209 213 219; /* border-gray-300 */
+  --border-light: 238 240 242; /* --border #eef0f2 */
+  --border-medium: 149 162 187; /* --hvc-primary-light #95A2BB */
   
   /* Sombras personalizadas */
   --shadow-sidebar: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -55,14 +56,14 @@
 
 /* Variables para modo oscuro */
 :root.dark {
-  --bg-sidebar: 15 23 42; /* bg-slate-900 */
-  --bg-sidebar-item-hover: 30 41 59; /* bg-slate-800 */
+  --bg-sidebar: 7 23 55; /* --hvc-primary-dark */
+  --bg-sidebar-item-hover: 30 51 94; /* --hvc-primary */
   --text-primary: 248 250 252; /* text-slate-50 */
   --text-secondary: 203 213 225; /* text-slate-300 */
   --border-light: 71 85 105; /* border-slate-600 */
 }
 
-/* Clases utilitarias personalizadas */
+/* Clases utilitarias personalizadas - Paleta HVC Kapital */
 .sidebar-gradient {
   background: linear-gradient(135deg, 
     rgb(var(--color-primary)) 0%, 

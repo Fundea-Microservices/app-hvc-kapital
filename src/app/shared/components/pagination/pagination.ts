@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, input, Output, output
   selector: 'app-pagination',
   imports: [],
   templateUrl: './pagination.html',
+  styleUrl: './pagination.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginationComponent {
