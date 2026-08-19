@@ -79,15 +79,16 @@
                         <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ permiso.accion }}</td>
                         <td class="px-2 py-2" style="border: 1px solid var(--table-border-color); color: var(--hvc-gray)">{{ permiso.descripcion || '-' }}</td>
                         <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
-                            <div class="flex justify-center items-center">
-                                <label [for]="'switch-' + permiso.permisoId" class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" [id]="'switch-' + permiso.permisoId" [checked]="permiso.activo"
-                                        (change)="togglePermisoStatus(permiso, cbxActivo.checked)" #cbxActivo
-                                        class="peer sr-only">
-                                    <span class="toggle-track absolute inset-0 bg-gray-200 rounded-full transition-colors"></span>
-                                    <span class="toggle-thumb absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"></span>
-                                </label>
-                            </div>
+                            <label [for]="'switch-' + permiso.permisoId" class="relative inline-block w-8 h-4 cursor-pointer">
+                                <input type="checkbox" [id]="'switch-' + permiso.permisoId" [checked]="permiso.activo"
+                                    (change)="togglePermisoStatus(permiso, $any($event.target).checked)" class="peer sr-only">
+                                <span
+                                    class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+                                    [style.backgroundColor]="permiso.activo ? 'var(--hvc-accent-gold)' : ''"></span>
+                                <span
+                                    class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
+                                    [style.transform]="permiso.activo ? 'translateX(1.25rem)' : ''"></span>
+                            </label>
                         </td>
                         <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
                             {{ permiso.created_at | tzDate: 'dd/MM/yyyy' }}

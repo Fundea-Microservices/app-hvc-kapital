@@ -2,13 +2,7 @@
    Estilos para permisos-rol-page — Paleta HVC Kapital
    ========================================================================== */
 
-/* Toggle switch — Amarillo Oro cuando activo */
-.peer:checked ~ .toggle-track {
-  background-color: var(--hvc-accent-gold);
-}
-.peer:checked ~ .toggle-thumb {
-  transform: translateX(1.25rem);
-}
+
 
 /* Botón "Buscar" (naranja acento) */
 .permisos-rol-btn-search {

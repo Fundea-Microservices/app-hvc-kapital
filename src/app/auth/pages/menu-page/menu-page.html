@@ -79,10 +79,11 @@
                                     class="relative inline-block w-8 h-4 cursor-pointer">
                                     <input type="checkbox" [id]="'switch-m-'+m.menuId" [checked]="m.activo"
                                         (change)="onToggleActivo(m, $any($event.target).checked)" class="peer sr-only">
-                                    <span
-                                        class="toggle-track absolute inset-0 bg-gray-200 rounded-full transition-colors"></span>
-                                    <span
-                                        class="toggle-thumb absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"></span>
+                                    <span                                        class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+                                        [style.backgroundColor]="m.activo ? 'var(--hvc-accent-gold)' : ''"></span>
+                                        <span
+                                            class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
+                                            [style.transform]="m.activo ? 'translateX(1.25rem)' : ''"></span>
                                 </label>
                             </td>
                             <td class="px-3 py-1.5 text-center space-x-2" style="border: 1px solid var(--table-border-color)">
@@ -156,10 +157,11 @@
                                     class="relative inline-block w-8 h-4 cursor-pointer">
                                     <input type="checkbox" [id]="'switch-sm-'+m.menuId" [checked]="m.activo"
                                         (change)="onToggleActivo(m, $any($event.target).checked)" class="peer sr-only">
-                                    <span
-                                        class="toggle-track absolute inset-0 bg-gray-200 rounded-full transition-colors"></span>
-                                    <span
-                                        class="toggle-thumb absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"></span>
+                                    <span                                        class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+                                        [style.backgroundColor]="m.activo ? 'var(--hvc-accent-gold)' : ''"></span>
+                                        <span
+                                            class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
+                                            [style.transform]="m.activo ? 'translateX(1.25rem)' : ''"></span>
                                 </label>
                             </td>
                             <td class="px-3 py-1.5 text-center space-x-2" style="border: 1px solid var(--table-border-color)">
