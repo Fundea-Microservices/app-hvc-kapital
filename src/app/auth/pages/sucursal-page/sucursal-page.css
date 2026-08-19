@@ -1,0 +1,45 @@
+/* Estilos para sucursal-page — Paleta HVC Kapital */
+
+.sucursal-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.sucursal-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+.sucursal-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+.sucursal-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+.sucursal-btn-delete {
+  background-color: var(--hvc-danger);
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+.sucursal-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+.sucursal-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.sucursal-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+.sucursal-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.sucursal-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.sucursal-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}

@@ -1,0 +1,43 @@
+/* Estilos para rol-page — Paleta HVC Kapital */
+
+.rol-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.rol-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+.rol-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.rol-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+.rol-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.rol-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+.rol-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.rol-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+.rol-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.rol-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.rol-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}
