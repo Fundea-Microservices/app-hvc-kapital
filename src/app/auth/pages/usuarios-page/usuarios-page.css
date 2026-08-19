@@ -1,0 +1,59 @@
+/* Estilos para usuarios-page — Paleta HVC Kapital */
+
+.usuarios-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.usuarios-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+.usuarios-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.usuarios-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+.usuarios-btn-reset {
+  background-color: var(--hvc-accent-gold);
+  transition: background-color 0.2s ease;
+}
+.usuarios-btn-reset:hover:not(:disabled) {
+  background-color: var(--hvc-accent-orange);
+}
+
+.usuarios-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.usuarios-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+.usuarios-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.usuarios-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+.usuarios-reset-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-accent-gold);
+}
+.usuarios-reset-input:focus {
+  border-color: var(--hvc-accent-gold);
+}
+
+.usuarios-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.usuarios-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.usuarios-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}
