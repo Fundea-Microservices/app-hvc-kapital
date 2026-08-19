@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Estilos para mi-perfil-page — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Botón "Cambiar contraseña" (naranja acento) */
+.perfil-btn-password {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.perfil-btn-password:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Cambiar foto" (naranja acento) */
+.perfil-btn-photo {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.perfil-btn-photo:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Inputs del modal contraseña */
+.perfil-input {
+  border: 1px solid var(--hvc-primary-light);
+}
+.perfil-input:focus {
+  outline: none;
+  border-color: var(--hvc-primary);
+  box-shadow: 0 0 0 2px rgba(30, 51, 94, 0.15);
+}

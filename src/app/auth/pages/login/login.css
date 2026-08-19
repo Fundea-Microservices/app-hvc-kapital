@@ -1,0 +1,27 @@
+/* ==========================================================================
+   Estilos para login-page — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Inputs de login */
+.login-input {
+  color: var(--navbar-text);
+  background-color: var(--hvc-primary-dark);
+  border: 1px solid var(--hvc-primary);
+}
+.login-input:focus {
+  border-color: var(--hvc-accent-orange);
+  box-shadow: 0 0 0 2px rgba(250, 154, 55, 0.25);
+}
+
+/* Botón Ingresar — gradiente HVC */
+.login-btn {
+  background: linear-gradient(135deg, var(--hvc-primary) 0%, var(--hvc-primary-dark) 100%);
+}
+.login-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--hvc-accent-orange) 0%, var(--hvc-primary) 100%);
+  box-shadow: 0 4px 14px rgba(250, 154, 55, 0.35);
+}
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

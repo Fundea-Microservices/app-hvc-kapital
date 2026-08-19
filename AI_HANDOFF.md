@@ -91,9 +91,9 @@
 
 ## Próximos Pasos Recomendados
 
-1. **Verificar visualmente** los cambios en el navegador para asegurar que la paleta se aplica correctamente
-2. **Buscar otros componentes** que puedan tener colores hardcodeados y actualizarlos
-3. **Considerar agregar** una sección de CSS para el dropdown del usuario con estilos consistentes
+1. ✅ **Verificar visualmente** los cambios en el navegador para asegurar que la paleta se aplica correctamente (acceso-page y configuraciones-page migrados)
+2. **Buscar otros componentes** que puedan tener colores hardcodeados y actualizarlos (quedan páginas auth: login-page, usuarios-page, mi-perfil-page, permiso-page, menu-page, puesto-page, rol-page, sucursal-page, permisos-rol-page)
+3. **Considerar agregar** una sección de CSS para el dropdown del usuario del navbar con estilos consistentes
 4. **Documentar** en este archivo cualquier cambio futuro para mantener el contexto
 
 ---
@@ -144,6 +144,48 @@ Se definieron variables específicas para sidebar y navbar en `src/styles.css`:
 --navbar-text: #f1f5f9;
 --navbar-text-secondary: var(--hvc-gray-light);
 ```
+
+---
+
+## Últimos Cambios (2026-08-19 - Sesión 3.5: Paleta HVC en páginas acceso y configuraciones)
+
+### Páginas Auth Migradas a Paleta HVC
+
+#### 30. `src/app/auth/pages/acceso-page/acceso-page.html`
+- **Cambio:** Reemplazados todos los colores hardcodeados (`text-blue-600`, `text-gray-700`, `text-gray-500`, `border-gray-300`, `bg-green-600`, `bg-red-600`, `text-green-600`, `bg-yellow-100`, `border-yellow-500`, `text-yellow-700`, `bg-gray-50`, `bg-gray-100`, `odd:bg-white even:bg-gray-100`, `hover:bg-gray-200`)
+- **Cambio:** Breadcrumbs usan `var(--hvc-primary)` para links, `var(--text)` para texto base, `var(--hvc-primary-light)` para items inactivos
+- **Cambio:** Alerta warning usa `var(--hvc-warning)` con opacidad para fondo
+- **Cambio:** Botones "Añadir" usan clase `.btn-acceso-add` con `var(--hvc-success)`
+- **Cambio:** Botones "Eliminar" usan clase `.btn-acceso-delete` con `var(--hvc-danger)`
+- **Cambio:** Tabla usa `var(--table-header-bg)`, `var(--table-header-color)`, `var(--table-border-color)`, `var(--table-row-bg)`, `var(--table-row-alt-bg)`
+- **Cambio:** Checkboxes usan `accent-color: var(--hvc-success)`
+- **Cambio:** Modal usa `var(--hvc-primary-dark)` para título y `var(--hvc-primary-light)` para bordes
+- **Propósito:** Página de accesos completamente alineada con paleta HVC Kapital
+
+#### 31. `src/app/auth/pages/acceso-page/acceso-page.css` (Nuevo)
+- **Cambio:** Creado archivo CSS con estilos hover para botones y filas de tabla
+- **Clases:** `.btn-acceso-add`, `.btn-acceso-delete`, `.acceso-table-row`, `.acceso-table-row-sub`
+- **Propósito:** Hover states via CSS para botones de acción y filas de tabla con drag & drop
+
+#### 32. `src/app/auth/pages/configuraciones-page/configuraciones-page.html`
+- **Cambio:** Reemplazados todos los colores hardcodeados (`text-blue-600`, `text-gray-700`, `text-gray-500`, `text-gray-800`, `border-gray-300`, `bg-blue-600 hover:bg-blue-700`, `bg-green-600 hover:bg-green-700`, `bg-red-600 hover:bg-red-700`, `peer-checked:bg-blue-600`, `bg-gray-100 hover:bg-gray-200`, `bg-red-50 border-red-200 text-red-800`)
+- **Cambio:** Breadcrumbs usan misma paleta que acceso-page
+- **Cambio:** Botón "Nueva configuración" usa clase `.btn-hvc-primary` global
+- **Cambio:** Tabla usa `gc-table` existente con `var(--table-border-color)` para celdas
+- **Cambio:** Toggle switch usa `peer-checked:bg-success-500` (safelist en `styles.css`)
+- **Cambio:** Botones de acción usan clases `.config-btn-edit` y `.config-btn-delete` con `var(--hvc-success)` y `var(--hvc-danger)`
+- **Cambio:** Modales usan `var(--hvc-primary-dark)` para títulos y `var(--hvc-primary-light)` para bordes
+- **Cambio:** Alerta de eliminación usa `var(--hvc-danger)` con opacidad
+- **Propósito:** Página de configuraciones completamente alineada con paleta HVC Kapital
+
+#### 33. `src/app/auth/pages/configuraciones-page/configuraciones-page.css` (Nuevo)
+- **Cambio:** Creado archivo CSS con estilos hover para botones y filas de tabla
+- **Clases:** `.config-btn-edit`, `.config-btn-delete`, `.config-table-row`
+- **Propósito:** Hover states via CSS para botones de acción y filas de tabla
+
+#### 34. `src/styles.css`
+- **Cambio:** Agregado `@source inline("peer-checked:bg-success-500")` al safelist de Tailwind
+- **Propósito:** Permitir uso dinámico de `peer-checked:bg-success-500` en toggle switches de configuraciones-page
 
 ---
 
@@ -201,6 +243,83 @@ Se definieron variables específicas para sidebar y navbar en `src/styles.css`:
 
 ---
 
+## Últimos Cambios (2026-08-19 - Sesión 3: Storybook Stories)
+
+### Stories de Páginas Auth Creadas
+
+Se crearon 11 stories para todas las páginas del módulo `auth/pages`, incluidas en `src/stories/`. Cada story sigue el patrón del `dashboard-page.component.stories.ts` existente, con:
+
+- Mock de servicios para evitar llamadas HTTP reales
+- Providers de Angular (Router, HttpClient, Animations, Toastr)
+- Datos mock pre-cargados para visualización en Storybook
+
+#### 19. `src/stories/login-page.component.stories.ts`
+- **Componente:** `LoginComponent`
+- **Mocks:** `AuthService`, `AccesoService`
+- **Propósito:** Visualizar la página de login sin backend
+
+#### 20. `src/stories/usuarios-page.component.stories.ts`
+- **Componente:** `UsuariosPageComponent`
+- **Mocks:** `AuthService`, `UsuariosService`, `RolService`, `PuestoService`, `SucursalService`, `StorageService`
+- **Datos:** 2 usuarios mock con roles y puestos
+- **Propósito:** Visualizar la gestión de usuarios
+
+#### 21. `src/stories/mi-perfil-page.component.stories.ts`
+- **Componente:** `MiPerfilPageComponent`
+- **Mocks:** `AuthService`, `UsuariosService`, `RolService`, `PuestoService`
+- **Datos:** Usuario mock con perfil completo
+- **Propósito:** Visualizar la página de perfil de usuario
+
+#### 22. `src/stories/permiso-page.component.stories.ts`
+- **Componente:** `PermisoPageComponent`
+- **Mocks:** `PermisoService`
+- **Datos:** 3 permisos mock (USR_CREAR, USR_EDITAR, ROL_CREAR)
+- **Propósito:** Visualizar la gestión de permisos
+
+#### 23. `src/stories/menu-page.component.stories.ts`
+- **Componente:** `MenuPageComponent`
+- **Mocks:** `MenuService`
+- **Datos:** 2 menús principales + 2 submenús mock
+- **Propósito:** Visualizar la gestión de menús con tabs
+
+#### 24. `src/stories/puesto-page.component.stories.ts`
+- **Componente:** `PuestoPageComponent`
+- **Mocks:** `PuestoService`
+- **Datos:** 3 puestos mock
+- **Propósito:** Visualizar la gestión de puestos
+
+#### 25. `src/stories/configuraciones-page.component.stories.ts`
+- **Componente:** `ConfiguracionesPageComponent`
+- **Mocks:** `ConfigService`
+- **Datos:** 3 configuraciones mock (APP_NAME, MAX_SESSION_MINUTES, ENABLE_NOTIFICATIONS)
+- **Propósito:** Visualizar la gestión de configuraciones
+
+#### 26. `src/stories/rol-page.component.stories.ts`
+- **Componente:** `RolPageComponent`
+- **Mocks:** `RolService`
+- **Datos:** 3 roles mock (Administrador, Operador, Invitado)
+- **Propósito:** Visualizar la gestión de roles
+
+#### 27. `src/stories/sucursal-page.component.stories.ts`
+- **Componente:** `SucursalPageComponent`
+- **Mocks:** `SucursalService`
+- **Datos:** 3 sucursales mock (Central, Santa Tecla, San Miguel)
+- **Propósito:** Visualizar la gestión de sucursales
+
+#### 28. `src/stories/permisos-rol-page.component.stories.ts`
+- **Componente:** `PermisosRolPageComponent`
+- **Mocks:** `RolService`, `PermisoRolService`
+- **Datos:** 2 roles + 3 permisos en matriz mock
+- **Propósito:** Visualizar la asignación de permisos por rol
+
+#### 29. `src/stories/acceso-page.component.stories.ts`
+- **Componente:** `AccesoPageComponent`
+- **Mocks:** `RolService`, `MenuService`, `AccesoService`
+- **Datos:** 2 roles + 4 menús + 1 acceso mock con submenús
+- **Propósito:** Visualizar la asignación de accesos por rol
+
+---
+
 ## Notas para el Desarrollador
 
 - Las variables CSS están definidas en `src/styles.css` bajo `:root`
@@ -209,4 +328,5 @@ Se definieron variables específicas para sidebar y navbar en `src/styles.css`:
 - Los colores de hover se manejan via clases CSS (`.navbar-toggle:hover`, `.sidebar-item:hover`, etc.)
 - El archivo `Paleta_Colores_HVC_Kapital.md` contiene la documentación completa de la paleta
 - **Importante:** Los componentes ahora tienen sus propios archivos CSS para estilos hover
+- **Storybook:** Las stories usan servicios mock para evitar llamadas HTTP reales. Cada story está en `src/stories/<nombre>-page.component.stories.ts`
 - **Build verificado:** El proyecto compila correctamente con `npm run build`

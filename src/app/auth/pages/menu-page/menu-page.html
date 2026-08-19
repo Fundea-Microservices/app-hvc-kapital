@@ -1,37 +1,36 @@
 <nav class="mb-4" aria-label="breadcrumb">
-    <ol class="flex flex-wrap text-sm text-gray-700">
+    <ol class="flex flex-wrap text-sm" style="color: var(--text)">
         <li class="flex items-center">
-            <a routerLink="/dashboard" class="text-blue-600 hover:underline">Inicio</a>
+            <a routerLink="/dashboard" class="hover:underline" style="color: var(--hvc-primary)">Inicio</a>
             <span class="mx-2">></span>
         </li>
         <li class="flex items-center">
-            <a routerLink="/dashboard/config" class="text-blue-600 hover:underline">Configuración</a>
+            <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
             <span class="mx-2">></span>
         </li>
-        <li class="flex items-center text-gray-500">Menús</li>
+        <li class="flex items-center" style="color: var(--hvc-primary-light)">Menús</li>
     </ol>
 </nav>
 
-<div class="bg-white shadow rounded-lg border border-gray-300">
-    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-300">
-        <h2 class="text-lg font-semibold text-gray-800">Menús</h2>
+<div class="bg-white shadow rounded-lg" style="border: 1px solid var(--hvc-primary-light)">
+    <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 1px solid var(--hvc-primary-light)">
+        <h2 class="text-lg font-semibold" style="color: var(--hvc-primary-dark)">Menús</h2>
         <div class="flex gap-2">
             <button (click)="openCreateMenuPrincipal()"
-                class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Nuevo menú</button>
+                class="btn-hvc-primary px-4 py-2 text-sm rounded">Nuevo menú</button>
             <button (click)="openCreateSubmenu()"
-                class="px-4 py-2 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700">Nuevo submenú</button>
+                class="menu-btn-submenu px-4 py-2 text-sm text-white rounded">Nuevo submenú</button>
         </div>
     </div>
 
     <div class="p-4">
         <!-- Tabs header -->
-        <div class="flex border-b border-gray-300 mb-4">
-            <button type="button" (click)="setActiveTab('menus')" class="px-4 py-2 text-sm"
-                [class.border-b-2]="activeTab() === 'menus'" [class.border-blue-600]="activeTab() === 'menus'">Menús
+        <div class="flex mb-4" style="border-bottom: 1px solid var(--hvc-primary-light)">
+            <button type="button" (click)="setActiveTab('menus')" class="menu-tab px-4 py-2 text-sm"
+                [class.active]="activeTab() === 'menus'">Menús
                 principales</button>
-            <button type="button" (click)="setActiveTab('submenus')" class="px-4 py-2 text-sm"
-                [class.border-b-2]="activeTab() === 'submenus'"
-                [class.border-blue-600]="activeTab() === 'submenus'">Submenús</button>
+            <button type="button" (click)="setActiveTab('submenus')" class="menu-tab px-4 py-2 text-sm"
+                [class.active]="activeTab() === 'submenus'">Submenús</button>
         </div>
 
     <!-- Tab: Menús principales (toggle visibility without structural control) -->
@@ -41,12 +40,12 @@
                     <label for="searchMenuPrin" class="sr-only">Buscar</label>
                     <input id="searchMenuPrin" type="text" placeholder="Buscar menús..." [value]="buscadorMenus()"
                         (input)="onSearchMenus($any($event.target).value)"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        class="menu-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
                 </div>
             </form>
             <div class="overflow-x-auto">
                 <table class="gc-table min-w-full text text-left">
-                    <thead class="bg-white text-black">
+                    <thead>
                         <tr>
                             <th class="gc-th gc-th--center">#</th>
                             <th class="gc-th gc-th--center">Ícono</th>
@@ -59,41 +58,41 @@
                     <tbody>
                         @if (isLoadingMenus()) {
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Cargando menús...</td>
+                            <td colspan="6" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">Cargando menús...</td>
                         </tr>
                         } @else if (getMenusPrincipalesPageSlice().length === 0) {
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No hay menús principales</td>
+                            <td colspan="6" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">No hay menús principales</td>
                         </tr>
                         } @else {
                         @for (m of getMenusPrincipalesPageSlice(); track m.menuId; let i = $index) {
-                        <tr class="hover:bg-gray-300 odd:bg-white even:bg-gray-100">
-                            <td class="px-2 py-2 text-center border border-gray-300">{{ (paginationMenus().page - 1) *
+                        <tr class="menu-table-row">
+                            <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">{{ (paginationMenus().page - 1) *
                                 paginationMenus().pageSize + i + 1 }}</td>
-                            <td class="px-2 py-2 items-center border border-gray-300"><app-custom-icon
+                            <td class="px-2 py-2 items-center" style="border: 1px solid var(--table-border-color)"><app-custom-icon
                                     [name]="m.icono || 'triangle-alert'" [color]="m.color || 'black'"></app-custom-icon>
                             </td>
-                            <td class="px-2 py-2 border border-gray-300">{{ m.label }}</td>
-                            <td class="px-2 py-2 border border-gray-300">{{ m.pathWeb || '-' }}</td>
-                            <td class="px-2 py-2 text-center border border-gray-300">
+                            <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ m.label }}</td>
+                            <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ m.pathWeb || '-' }}</td>
+                            <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
                                 <label [for]="'switch-m-'+m.menuId"
                                     class="relative inline-block w-8 h-4 cursor-pointer">
                                     <input type="checkbox" [id]="'switch-m-'+m.menuId" [checked]="m.activo"
                                         (change)="onToggleActivo(m, $any($event.target).checked)" class="peer sr-only">
                                     <span
-                                        class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-blue-600"></span>
+                                        class="toggle-track absolute inset-0 bg-gray-200 rounded-full transition-colors"></span>
                                     <span
-                                        class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></span>
+                                        class="toggle-thumb absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"></span>
                                 </label>
                             </td>
-                            <td class="px-3 py-1.5 text-center border space-x-2 border-gray-300">
+                            <td class="px-3 py-1.5 text-center space-x-2" style="border: 1px solid var(--table-border-color)">
                                 <button (click)="openUpsertModal(false, m)"
-                                    class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition">
+                                    class="menu-btn-edit px-2 py-1 text-white rounded text-xs transition">
                                     <app-custom-icon [name]="'square-pen'" [color]="'#eee'"
                                         [size]="18"></app-custom-icon>
                                 </button>
                                 <button (click)="openDeleteModal(m)"
-                                    class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition">
+                                    class="menu-btn-delete px-2 py-1 text-white rounded text-xs transition">
                                     <app-custom-icon [name]="'trash-2'" [color]="'#eee'" [size]="18"></app-custom-icon>
                                 </button>
                             </td>
@@ -118,12 +117,12 @@
                     <label for="searchSub" class="sr-only">Buscar</label>
                     <input id="searchSub" type="text" placeholder="Buscar submenus..." [value]="buscadorSubs()"
                         (input)="onSearchSubs($any($event.target).value)"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        class="menu-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
                 </div>
             </form>
             <div class="overflow-x-auto">
                 <table class="gc-table min-w-full text text-left">
-                    <thead class="bg-white text-black">
+                    <thead>
                         <tr>
                             <th class="gc-th gc-th--center">#</th>
                             <th class="gc-th gc-th--center">Ícono</th>
@@ -136,41 +135,41 @@
                     <tbody>
                         @if (isLoadingSubs()) {
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Cargando submenús...</td>
+                            <td colspan="6" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">Cargando submenús...</td>
                         </tr>
                         } @else if (getSubmenusPageSlice().length === 0) {
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No hay submenús</td>
+                            <td colspan="6" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">No hay submenús</td>
                         </tr>
                         } @else {
                         @for (m of getSubmenusPageSlice(); track m.menuId; let i = $index) {
-                        <tr class="hover:bg-gray-300 odd:bg-white even:bg-gray-100">
-                            <td class="px-2 py-2 text-center border border-gray-300">{{ (paginationSubs().page - 1) *
+                        <tr class="menu-table-row">
+                            <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">{{ (paginationSubs().page - 1) *
                                 paginationSubs().pageSize + i + 1 }}</td>
-                            <td class="px-2 py-2 text-center border border-gray-300"><app-custom-icon
+                            <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)"><app-custom-icon
                                     [name]="m.icono || 'help-circle'" [color]="m.color || 'black'"></app-custom-icon>
                             </td>
-                            <td class="px-2 py-2 border border-gray-300">{{ m.label }}</td>
-                            <td class="px-2 py-2 border border-gray-300">{{ m.pathWeb || '-' }}</td>
-                            <td class="px-2 py-2 text-center border border-gray-300">
+                            <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ m.label }}</td>
+                            <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ m.pathWeb || '-' }}</td>
+                            <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
                                 <label [for]="'switch-sm-'+m.menuId"
                                     class="relative inline-block w-8 h-4 cursor-pointer">
                                     <input type="checkbox" [id]="'switch-sm-'+m.menuId" [checked]="m.activo"
                                         (change)="onToggleActivo(m, $any($event.target).checked)" class="peer sr-only">
                                     <span
-                                        class="absolute inset-0 bg-gray-200 rounded-full transition-colors peer-checked:bg-blue-600"></span>
+                                        class="toggle-track absolute inset-0 bg-gray-200 rounded-full transition-colors"></span>
                                     <span
-                                        class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></span>
+                                        class="toggle-thumb absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"></span>
                                 </label>
                             </td>
-                            <td class="px-3 py-1.5 text-center border space-x-2 border-gray-300">
+                            <td class="px-3 py-1.5 text-center space-x-2" style="border: 1px solid var(--table-border-color)">
                                 <button (click)="openUpsertModal(false, m)"
-                                    class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition">
+                                    class="menu-btn-edit px-2 py-1 text-white rounded text-xs transition">
                                     <app-custom-icon [name]="'square-pen'" [color]="'#eee'"
                                         [size]="18"></app-custom-icon>
                                 </button>
                                 <button (click)="openDeleteModal(m)"
-                                    class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition">
+                                    class="menu-btn-delete px-2 py-1 text-white rounded text-xs transition">
                                     <app-custom-icon [name]="'trash-2'" [color]="'#eee'" [size]="18"></app-custom-icon>
                                 </button>
                             </td>
@@ -202,11 +201,11 @@
     <div
         class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 h-[calc(100%-56px)] sm:mx-auto">
         <div
-            class="max-h-full overflow-hidden flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl pointer-events-auto">
-            <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200">
-                <h3 id="hs-upsert-menu-label" class="font-bold text-gray-800">{{ modal().titulo }}</h3>
+            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto" style="border: 1px solid var(--hvc-primary-light)">
+            <div class="flex justify-between items-center py-3 px-4" style="border-bottom: 1px solid var(--hvc-primary-light)">
+                <h3 id="hs-upsert-menu-label" class="font-bold" style="color: var(--hvc-primary-dark)">{{ modal().titulo }}</h3>
                 <button type="button" (click)="closeModal()"
-                    class="size-8 inline-flex justify-center items-center rounded-full bg-gray-100 hover:bg-gray-200">✕</button>
+                    class="size-8 inline-flex justify-center items-center rounded-full" style="background-color: var(--hover)">✕</button>
             </div>
             <div class="p-4 overflow-y-auto">
                 <app-upsert-menu [menu]="menuEdit()" [nuevo]="nuevoMenu()" [key]="formKey()"
@@ -223,21 +222,21 @@
     <div
         class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 h-[calc(100%-56px)] sm:mx-auto">
         <div
-            class="max-h-full overflow-hidden flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl pointer-events-auto">
-            <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200">
-                <h3 id="hs-delete-menu-label" class="font-bold text-gray-800">Eliminar menú</h3>
+            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto" style="border: 1px solid var(--hvc-primary-light)">
+            <div class="flex justify-between items-center py-3 px-4" style="border-bottom: 1px solid var(--hvc-primary-light)">
+                <h3 id="hs-delete-menu-label" class="font-bold" style="color: var(--hvc-primary-dark)">Eliminar menú</h3>
                 <button type="button" (click)="closeModal()"
-                    class="size-8 inline-flex justify-center items-center rounded-full bg-gray-100 hover:bg-gray-200">✕</button>
+                    class="size-8 inline-flex justify-center items-center rounded-full" style="background-color: var(--hover)">✕</button>
             </div>
             <div class="p-4">
-                <div class="bg-red-50 border border-red-200 text-sm text-red-800 rounded-lg p-4" role="alert">¿Está
+                <div class="text-sm rounded-lg p-4" role="alert" style="background-color: var(--hvc-danger); opacity: 0.1; color: var(--hvc-primary-dark)">¿Está
                     seguro de eliminar "{{ menuEdit().label }}"?</div>
             </div>
-            <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-gray-200">
+            <div class="flex justify-end items-center gap-x-2 py-3 px-4" style="border-top: 1px solid var(--hvc-primary-light)">
                 <button type="button" (click)="closeModal()"
-                    class="py-2 px-3 text-sm rounded-lg bg-white border">Cerrar</button>
+                    class="py-2 px-3 text-sm rounded-lg bg-white" style="border: 1px solid var(--hvc-primary-light)">Cerrar</button>
                 <button type="button" (click)="deleteMenu(menuEdit())"
-                    class="py-2 px-3 text-sm rounded-lg text-white bg-red-600">Eliminar</button>
+                    class="py-2 px-3 text-sm rounded-lg text-white" style="background-color: var(--hvc-danger)">Eliminar</button>
             </div>
         </div>
     </div>

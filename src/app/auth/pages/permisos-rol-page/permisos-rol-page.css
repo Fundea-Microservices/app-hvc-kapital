@@ -1,0 +1,45 @@
+/* ==========================================================================
+   Estilos para permisos-rol-page — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Toggle switch — Amarillo Oro cuando activo */
+.peer:checked ~ .toggle-track {
+  background-color: var(--hvc-accent-gold);
+}
+.peer:checked ~ .toggle-thumb {
+  transform: translateX(1.25rem);
+}
+
+/* Botón "Buscar" (naranja acento) */
+.permisos-rol-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.permisos-rol-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Inputs de búsqueda y filtros */
+.permisos-rol-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.permisos-rol-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+/* Dropdown de autocomplete */
+.permisos-rol-dropdown-item:hover {
+  background-color: var(--hvc-accent-peach);
+}
+
+/* Fila de tabla */
+.permisos-rol-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.permisos-rol-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.permisos-rol-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}

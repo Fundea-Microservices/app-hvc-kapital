@@ -10,6 +10,7 @@ import { IRol, IPermisoMatriz } from '../../../../interfaces/auth';
   selector: 'app-permisos-rol-page',
   imports: [RouterLink, CustomIconComponent, PaginationComponent],
   templateUrl: './permisos-rol-page.html',
+  styleUrl: './permisos-rol-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PermisosRolPageComponent {

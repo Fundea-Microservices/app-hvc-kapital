@@ -14,6 +14,7 @@ import { IRol, IPuesto } from '../../../../interfaces/auth';
   standalone: true,
   imports: [CommonModule, RouterLink, UpsertUsuarioComponent, TimezoneDatePipe],
   templateUrl: './mi-perfil-page.html',
+  styleUrl: './mi-perfil-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class MiPerfilPageComponent {

@@ -1,0 +1,49 @@
+/* ==========================================================================
+   Estilos hover para acceso-page — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Botón "Añadir" (naranja acento HVC) */
+.btn-acceso-add {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.btn-acceso-add:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Eliminar" (rojo peligro) */
+.btn-acceso-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.btn-acceso-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+/* Fila de tabla principal */
+.acceso-table-row {
+  border-bottom: 1px solid var(--table-border-color);
+}
+.acceso-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.acceso-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.acceso-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+/* Fila de sub-acceso (draggable) */
+.acceso-table-row-sub {
+  border-bottom: 1px solid var(--table-border-color);
+}
+.acceso-table-row-sub:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.acceso-table-row-sub:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.acceso-table-row-sub:hover {
+  background-color: var(--table-row-hover-bg);
+}

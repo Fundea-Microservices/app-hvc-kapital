@@ -1,59 +1,52 @@
-<div class="min-h-screen w-full bg-[#0a1626] flex flex-col p-4">
+<div class="min-h-screen w-full flex flex-col p-4" style="background-color: var(--hvc-primary-dark)">
 
   <!-- Main Content -->
   <div class="main-container flex grow items-center justify-center p-4">
 
     <div class="box-login w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 rounded-3xl
-           bg-[#0f2138] border border-[#1b3553]
-           shadow-2xl relative overflow-hidden">
-
+           relative overflow-hidden" style="background-color: var(--hvc-primary-dark); border: 1px solid var(--hvc-primary)">
 
       <!-- Company Logo -->
-      <div class="flex flex-col items-center justify-center p-10 bg-[#0b1b30]">
+      <div class="flex flex-col items-center justify-center p-10" style="background-color: var(--hvc-primary-dark)">
 
         <div class="w-60 h-60 flex items-center justify-center rounded-full">
           <img src="images/hvc_logo.png" class="w-full h-full object-contain" alt="Logo HVC Kapital" />
         </div>
 
-        <h2 class="mt-6 text-sky-100 text-2xl font-semibold text-center leading-tight">
+        <h2 class="mt-6 text-2xl font-semibold text-center leading-tight" style="color: var(--navbar-text)">
           Panel Administrativo <br />
         </h2>
       </div>
 
 
       <!-- Login Form -->
-      <div class="p-10 flex flex-col justify-center text-slate-100">
+      <div class="p-10 flex flex-col justify-center" style="color: var(--sidebar-text)">
 
         <h1 class="text-4xl font-bold mb-2 text-white">Ingreso</h1>
-        <p class="text-2xl text-sky-300/80 mb-8">Accede a tu cuenta</p>
+        <p class="text-2xl mb-8" style="color: var(--hvc-gray-light)">Accede a tu cuenta</p>
 
 
           <!-- Usuario -->
-          <label class="text-slate-300 text-sm">Usuario</label>
+          <label class="text-sm" style="color: var(--sidebar-text)">Usuario</label>
           <input type="text" name="username"
-            class="w-full mt-1 mb-6 px-4 py-2 rounded-xl bg-[#0b1b30]
-                 border border-[#1b3553] text-slate-100 outline-none
-                 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40 transition-all"
+            class="login-input w-full mt-1 mb-6 px-4 py-2 rounded-xl outline-none transition-all"
             [value]="userName()" (input)="userName.set(txtUserName.value)" #txtUserName>
           <!-- Contraseña -->
-          <label class="text-slate-300 text-sm">Contraseña</label>
+          <label class="text-sm" style="color: var(--sidebar-text)">Contraseña</label>
           <input type="password" name="password"
-            class="w-full mt-1 mb-8 px-4 py-2 rounded-xl bg-[#0b1b30]
-                 border border-[#1b3553] text-slate-100 outline-none
-                 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40 transition-all"
+            class="login-input w-full mt-1 mb-8 px-4 py-2 rounded-xl outline-none transition-all"
             [value]="password()" (input)="password.set(txtPassword.value)"
             (keydown.enter)="login()"
             #txtPassword >
           @if(errorObj().isError) {
-          <div class="text-red-400 text-sm text-center">
+          <div class="text-sm text-center" style="color: var(--hvc-danger)">
             {{ errorObj().message }}
           </div>
           }
           <!-- Botón Ingresar -->
           <button type="button"
-            class="w-full py-3 rounded-xl bg-linear-to-r from-sky-500 to-blue-700
-                 hover:from-sky-400 hover:to-blue-600 transition-all
-                 text-white font-semibold shadow-lg hover:shadow-sky-500/40"
+            class="login-btn w-full py-3 rounded-xl transition-all
+                 text-white font-semibold shadow-lg"
             [disabled]="loading()" (click)="login()">
             @if (loading()) {
               <span class="inline-flex items-center gap-2">
@@ -75,9 +68,9 @@
 
   <!-- Footer -->
   <footer class="text-center mt-10 mb-4">
-    <span class="text-sm text-slate-400 sm:text-center">
+    <span class="text-sm sm:text-center" style="color: var(--hvc-gray)">
       © 2026
-      <a [routerLink]="['/']" class="hover:underline hover:text-sky-300">Admin</a>. All Rights Reserved.
+      <a [routerLink]="['/']" class="hover:underline" style="color: var(--hvc-gray-light)">Admin</a>. All Rights Reserved.
     </span>
   </footer>
 
