@@ -17,6 +17,7 @@ import { IPermiso } from '../../../../interfaces/auth';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './upsert-permiso.html',
+  styleUrls: ['./upsert-permiso.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertPermisoComponent {
