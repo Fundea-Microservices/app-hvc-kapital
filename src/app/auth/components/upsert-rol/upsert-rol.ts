@@ -24,6 +24,7 @@ export interface RolValidationRules {
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './upsert-rol.html',
+  styleUrls: ['./upsert-rol.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertRolComponent {

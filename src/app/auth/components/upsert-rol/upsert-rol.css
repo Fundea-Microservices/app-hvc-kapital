@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Estilos hover para upsert-rol — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Botón "Cancelar" (gris suave con borde HVC) */
+.btn-rol-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: var(--hvc-primary-light);
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.btn-rol-cancel:hover {
+  background-color: var(--hvc-gray);
+  color: #ffffff;
+}
+
+/* Toggle switch — Naranja HVC cuando activo */
+.peer:checked + div:first-of-type {
+  background-color: var(--hvc-accent-orange) !important;
+}

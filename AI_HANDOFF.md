@@ -7,7 +7,7 @@
 - **Estilos:** Tailwind CSS + CSS personalizado
 - **Paleta de Colores:** Paleta Oficial HVC Kapital (documentada en `Paleta_Colores_HVC_Kapital.md`)
 - **Branch Actual:** `feature/color-changes`
-- **Última Actualización:** 2026-08-19
+- **Última Actualización:** 2026-08-20
 
 ---
 
@@ -86,15 +86,31 @@
 | `text-sky-400` | Borde activo sidebar | `var(--hvc-accent-orange)` |
 | `text-slate-300` | Texto items sidebar | `var(--sidebar-text)` |
 | `text-slate-400` | Texto secundario sidebar | `var(--navbar-text-secondary)` |
+| `text-gray-700` | Labels / texto base | `var(--text)` |
+| `text-gray-800` | Texto items | `var(--hvc-primary-dark)` |
+| `text-gray-500` | Texto hint / placeholder | `var(--hvc-gray)` |
+| `text-gray-400` | Texto opcional | `var(--hvc-gray-light)` |
+| `text-red-600` / `text-red-500` | Errores de validación | `var(--hvc-danger)` |
+| `border-gray-300` | Bordes de inputs | `var(--hvc-primary-light)` |
+| `border-gray-200` | Bordes secundarios / divisores | `var(--hvc-primary-light)` |
+| `bg-gray-200` | Fondo botón cancelar / toggle inactivo | `var(--hvc-primary-light)` / `var(--hvc-gray-light)` |
+| `hover:bg-gray-300` | Hover botón cancelar | `var(--hvc-gray)` |
+| `bg-blue-600` | Fondo botón primario | `var(--hvc-primary)` (via `.btn-hvc-primary`) |
+| `hover:bg-blue-700` | Hover botón primario | `var(--hvc-primary-dark)` (via `.btn-hvc-primary`) |
+| `bg-gray-100` | Fondo badges / items | `var(--hvc-accent-peach)` |
+| `peer-checked:bg-blue-600` | Toggle switch activo | `var(--hvc-accent-orange)` (via CSS `.peer:checked`) |
+| `peer-focus:ring-blue-400` | Focus ring | `var(--hvc-primary)` (via `--tw-ring-color`) |
 
 ---
 
 ## Próximos Pasos Recomendados
 
 1. ✅ **Verificar visualmente** los cambios en el navegador para asegurar que la paleta se aplica correctamente (acceso-page y configuraciones-page migrados)
-2. **Buscar otros componentes** que puedan tener colores hardcodeados y actualizarlos (quedan páginas auth: login-page, usuarios-page, mi-perfil-page, permiso-page, menu-page, puesto-page, rol-page, sucursal-page, permisos-rol-page)
-3. **Considerar agregar** una sección de CSS para el dropdown del usuario del navbar con estilos consistentes
-4. **Documentar** en este archivo cualquier cambio futuro para mantener el contexto
+2. ✅ **Componentes upsert migrados** a paleta HVC (acceso, config, menu, permiso, puesto, rol, sucursal, usuario)
+3. ✅ **Stories de Storybook** creadas para todos los componentes upsert
+4. **Migrar páginas auth restantes** que aún tienen colores hardcodeados: login-page, usuarios-page, mi-perfil-page, permiso-page, menu-page, puesto-page, rol-page, sucursal-page, permisos-rol-page
+5. **Considerar agregar** una sección de CSS para el dropdown del usuario del navbar con estilos consistentes
+6. **Documentar** en este archivo cualquier cambio futuro para mantener el contexto
 
 ---
 
@@ -320,6 +336,116 @@ Se crearon 11 stories para todas las páginas del módulo `auth/pages`, incluida
 
 ---
 
+## Últimos Cambios (2026-08-20 - Sesión 4: Stories de componentes upsert + Migración de colores)
+
+### Stories de Componentes Upsert Creadas
+
+Se crearon 8 stories para todos los componentes del módulo `auth/components/upsert-*`, incluidas en `src/stories/`. Cada story sigue el patrón del `puesto-page.component.stories.ts` existente, con:
+
+- Mock de servicios para evitar llamadas HTTP reales
+- Providers de Angular (Router, HttpClient, Animations, Toastr)
+- Datos mock pre-cargados para visualización en Storybook
+- Inputs del componente provistos via `args`
+
+#### 35. `src/stories/upsert-rol.component.stories.ts`
+- **Componente:** `UpsertRolComponent`
+- **Variantes:** Crear nuevo, Editar existente, Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de roles
+
+#### 36. `src/stories/upsert-permiso.component.stories.ts`
+- **Componente:** `UpsertPermisoComponent`
+- **Variantes:** Crear nuevo, Editar existente, Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de permisos
+
+#### 37. `src/stories/upsert-menu.component.stories.ts`
+- **Componente:** `UpsertMenuComponent`
+- **Variantes:** Crear menú principal, Crear submenú, Editar existente, Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de menús
+
+#### 38. `src/stories/upsert-config.component.stories.ts`
+- **Componente:** `UpsertConfigComponent`
+- **Variantes:** Crear String, Crear Number, Crear Boolean, Crear Array, Crear Object, Editar existente, Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de configuraciones con todos los tipos de dato
+
+#### 39. `src/stories/upsert-sucursal.component.stories.ts`
+- **Componente:** `UpsertSucursalComponent`
+- **Variantes:** Crear nueva, Editar existente, Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de sucursales
+
+#### 40. `src/stories/upsert-acceso.component.stories.ts`
+- **Componente:** `UpsertAccesoComponent` (export default)
+- **Variantes:** Asignar menú principal, Asignar submenú, Cargando
+- **Propósito:** Visualizar el formulario de asignación de accesos por rol
+
+#### 41. `src/stories/upsert-puesto.component.stories.ts`
+- **Componente:** `UpsertPuestoComponent`
+- **Variantes:** Crear nuevo, Editar existente, Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de puestos
+
+#### 42. `src/stories/upsert-usuario.component.stories.ts`
+- **Componente:** `UpsertUsuarioComponent`
+- **Variantes:** Crear nuevo, Editar existente, Editar perfil (autoEdit), Cargando
+- **Propósito:** Visualizar el formulario de creación/edición de usuarios
+
+---
+
+### Migración de Colores en Componentes Upsert
+
+Todos los componentes `upsert-*` fueron migrados de colores hardcodeados de Tailwind a variables CSS de la paleta HVC Kapital. Cada componente recibió:
+
+1. **HTML:** Reemplazo de clases Tailwind por `style` bindings con variables CSS
+2. **CSS:** Nuevo archivo con hover states usando variables HVC
+3. **TS:** Importación del archivo CSS via `styleUrls`
+
+#### Patrón de Migración Aplicado
+
+| Elemento | Antes (Tailwind hardcodeado) | Después (HVC) |
+|:---|:---|:---|
+| Labels | `text-gray-700` | `style="color: var(--text)"` |
+| Bordes inputs | `border-gray-300` | `style="border-color: var(--hvc-primary-light)"` |
+| Focus ring | `focus:ring-blue-500` | `style="--tw-ring-color: var(--hvc-primary)"` |
+| Errores validación | `text-red-600` / `text-red-500` | `style="color: var(--hvc-danger)"` |
+| Texto opcional | `text-gray-400` | `style="color: var(--hvc-gray-light)"` |
+| Toggle track (inactivo) | `bg-gray-200` | `style="background-color: var(--hvc-gray-light)"` |
+| Toggle track (activo) | `peer-checked:bg-blue-600` | CSS `.peer:checked` → `var(--hvc-accent-orange)` |
+| Toggle focus ring | `peer-focus:ring-blue-400` | `style="--tw-ring-color: var(--hvc-primary)"` |
+| Texto toggle | `text-gray-700` | `style="color: var(--text)"` |
+| Botón Cancelar | `text-gray-700 bg-gray-200 hover:bg-gray-300` | Clase `.btn-<component>-cancel` (CSS hover) |
+| Botón Submit | `bg-blue-600 hover:bg-blue-700` | Clase `.btn-hvc-primary` (global) |
+| Divisor | `border-gray-200` | `style="border-color: var(--hvc-primary-light)"` |
+
+#### Archivos CSS Creados para Componentes Upsert
+
+| Archivo | Clases CSS |
+|:---|:---|
+| `upsert-acceso.css` | `.btn-acceso-cancel` |
+| `upsert-config.css` | `.btn-config-cancel`, `.btn-config-delete`, `.config-array-item`, `.config-table-row`, `.peer:checked` |
+| `upsert-menu.css` | `.btn-menu-cancel`, `.peer:checked` |
+| `upsert-permiso.css` | `.btn-permiso-cancel`, `.peer:checked` |
+| `upsert-puesto.component.css` | `.btn-puesto-cancel` |
+| `upsert-rol.css` | `.btn-rol-cancel`, `.peer:checked` |
+| `upsert-sucursal.css` | `.btn-sucursal-cancel` |
+| `upsert-usuario.css` | `.btn-usuario-cancel`, `.peer:checked` |
+
+#### Clase Global de Botón Cancelar (Patrón)
+
+Todos los botones Cancelar siguen el mismo patrón CSS:
+
+```css
+.btn-<component>-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: var(--hvc-primary-light);
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.btn-<component>-cancel:hover {
+  background-color: var(--hvc-gray);
+  color: #ffffff;
+}
+```
+
+---
+
 ## Notas para el Desarrollador
 
 - Las variables CSS están definidas en `src/styles.css` bajo `:root`
@@ -328,5 +454,5 @@ Se crearon 11 stories para todas las páginas del módulo `auth/pages`, incluida
 - Los colores de hover se manejan via clases CSS (`.navbar-toggle:hover`, `.sidebar-item:hover`, etc.)
 - El archivo `Paleta_Colores_HVC_Kapital.md` contiene la documentación completa de la paleta
 - **Importante:** Los componentes ahora tienen sus propios archivos CSS para estilos hover
-- **Storybook:** Las stories usan servicios mock para evitar llamadas HTTP reales. Cada story está en `src/stories/<nombre>-page.component.stories.ts`
+- **Storybook:** Las stories usan servicios mock para evitar llamadas HTTP reales. Cada story está en `src/stories/<nombre>-page.component.stories.ts` o `src/stories/upsert-<nombre>.component.stories.ts`
 - **Build verificado:** El proyecto compila correctamente con `npm run build`

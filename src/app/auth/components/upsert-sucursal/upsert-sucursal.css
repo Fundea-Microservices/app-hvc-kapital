@@ -1,0 +1,15 @@
+/* ==========================================================================
+   Estilos hover para upsert-sucursal — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Botón "Cancelar" (borde HVC) */
+.btn-sucursal-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: #ffffff;
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.btn-sucursal-cancel:hover {
+  background-color: var(--hvc-primary-light);
+  color: #ffffff;
+}

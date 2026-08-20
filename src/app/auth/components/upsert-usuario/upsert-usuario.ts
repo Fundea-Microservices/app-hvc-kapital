@@ -17,6 +17,7 @@ import { IUsuario, IPuesto, IRol, ISucursal } from '../../../../interfaces/auth'
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './upsert-usuario.html',
+  styleUrls: ['./upsert-usuario.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertUsuarioComponent {
