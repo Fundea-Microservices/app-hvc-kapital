@@ -14,6 +14,7 @@ export interface basicObject {
     standalone: true,
     imports: [ReactiveFormsModule],
     templateUrl: './upsert-config.html',
+    styleUrls: ['./upsert-config.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertConfigComponent implements OnDestroy {

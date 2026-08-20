@@ -1,0 +1,15 @@
+/* ==========================================================================
+   Estilos hover para upsert-acceso — Paleta HVC Kapital
+   ========================================================================== */
+
+/* Botón "Cancelar" (gris suave con borde HVC) */
+.btn-acceso-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: var(--hvc-primary-light);
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.btn-acceso-cancel:hover {
+  background-color: var(--hvc-gray);
+  color: #ffffff;
+}
