@@ -1,98 +1,43 @@
-/* 
- * Variables CSS personalizadas para el dashboard corporativo
+/*
+ * Sidebar, animaciones y utilidades extra
  * Paleta oficial: HVC Kapital
- * Estas variables complementan la configuración de Tailwind
+ * Los colores principales están definidos en @theme (styles.css)
  */
 
-:root {
-  /* Colores primarios corporativos - Paleta HVC Kapital */
-  --color-primary: 30 51 94; /* --hvc-primary #1E335E en RGB */
-  --color-primary-hover: 7 23 55; /* --hvc-primary-dark #071737 en RGB */
-  --color-primary-light: 149 162 187; /* --hvc-primary-light #95A2BB en RGB */
-  
-  /* Colores secundarios */
-  --color-secondary: 141 158 191; /* --hvc-gray #8D9EBF en RGB */
-  --color-secondary-hover: 164 171 189; /* --hvc-gray-light #A4ABBD en RGB */
-  
-  /* Colores de estado */
-  --color-success: 34 197 94; /* #22C55E en RGB */
-  --color-warning: 245 158 11; /* #F59E0B en RGB */
-  --color-danger: 239 68 68; /* #EF4444 en RGB */
-  
-  /* Colores corporativos específicos */
-  --color-corporate-dark: 7 23 55; /* --hvc-primary-dark #071737 en RGB */
-  --color-corporate-light: 30 51 94; /* --hvc-primary #1E335E en RGB */
-  --color-corporate-accent: 250 154 55; /* --hvc-accent-orange #FA9A37 en RGB */
-  
-  /* Colores de fondo - Sidebar y Navbar */
-  --bg-sidebar: 7 23 55; /* --hvc-primary-dark #071737 */
-  --bg-sidebar-dark: 7 23 55; /* --hvc-primary-dark #071737 */
-  --bg-sidebar-item-hover: 30 51 94; /* --hvc-primary #1E335E */
-  --bg-sidebar-item-active: 250 154 55; /* --hvc-accent-orange #FA9A37 */
-  
-  /* Colores de texto */
-  --text-primary: 7 23 55; /* --hvc-primary-dark #071737 */
-  --text-secondary: 141 158 191; /* --hvc-gray #8D9EBF */
-  --text-light: 164 171 189; /* --hvc-gray-light #A4ABBD */
-  --text-white: 255 255 255; /* text-white */
-  
-  /* Bordes */
-  --border-light: 238 240 242; /* --border #eef0f2 */
-  --border-medium: 149 162 187; /* --hvc-primary-light #95A2BB */
-  
-  /* Sombras personalizadas */
-  --shadow-sidebar: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-menu-item: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  
-  /* Transiciones */
-  --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: all 0.15s ease-in-out;
-  
-  /* Espaciado específico del sidebar */
-  --sidebar-width: 16rem; /* w-64 */
-  --sidebar-item-padding: 0.75rem 1rem; /* py-3 px-4 */
-  --sidebar-border-radius: 0.5rem; /* rounded-lg */
-}
-
-/* Variables para modo oscuro */
-:root.dark {
-  --bg-sidebar: 7 23 55; /* --hvc-primary-dark */
-  --bg-sidebar-item-hover: 30 51 94; /* --hvc-primary */
-  --text-primary: 248 250 252; /* text-slate-50 */
-  --text-secondary: 203 213 225; /* text-slate-300 */
-  --border-light: 71 85 105; /* border-slate-600 */
-}
-
-/* Clases utilitarias personalizadas - Paleta HVC Kapital */
+/* ==========================================================================
+   Sidebar — Clases utilitarias
+   ========================================================================== */
 .sidebar-gradient {
-  background: linear-gradient(135deg, 
-    rgb(var(--color-primary)) 0%, 
-    rgb(var(--color-corporate-dark)) 100%);
+  background: linear-gradient(135deg,
+    var(--hvc-primary) 0%,
+    var(--hvc-primary-dark) 100%);
 }
 
 .sidebar-item-active {
-  background: rgba(var(--color-primary), 0.1);
-  color: rgb(var(--color-primary));
-  border-left: 3px solid rgb(var(--color-primary));
+  background: color-mix(in srgb, var(--hvc-primary) 10%, transparent);
+  color: var(--hvc-primary);
+  border-left: 3px solid var(--hvc-primary);
 }
 
 .sidebar-item-hover {
-  background: rgba(var(--color-primary), 0.05);
+  background: color-mix(in srgb, var(--hvc-primary) 5%, transparent);
   transform: translateX(2px);
-  transition: var(--transition-standard);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Efectos de hover para iconos */
 .sidebar-icon {
-  transition: var(--transition-fast);
+  transition: all 0.15s ease-in-out;
 }
 
 .sidebar-item:hover .sidebar-icon {
-  color: rgb(var(--color-primary));
+  color: var(--hvc-primary);
   transform: scale(1.1);
 }
 
-/* Animación para el acordeón */
+/* ==========================================================================
+   Animación para el acordeón
+   ========================================================================== */
 .accordion-enter {
   animation: slideDown 0.3s ease-out;
 }
