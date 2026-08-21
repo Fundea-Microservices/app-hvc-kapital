@@ -78,6 +78,13 @@
 @source inline("bg-primary text-primary border-primary bg-primary-dark text-primary-dark bg-primary-light text-primary-light bg-success text-success bg-warning text-warning bg-danger text-danger bg-accent-orange bg-accent-gold bg-accent-peach bg-gray bg-gray-light text-gray text-gray-light bg-sidebar-bg bg-sidebar-hover bg-sidebar-active text-sidebar-bg text-sidebar-hover text-sidebar-active");
 
 /* ==========================================================================
+   Tipografía — Inter (Google Fonts)
+   ========================================================================== */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, sans-serif;
+}
+
+/* ==========================================================================
    Variables CSS globales — Paleta HVC Kapital
    Usadas por componentes CSS: botones, toastr, tablas, etc.
    ========================================================================== */
@@ -106,7 +113,7 @@
   --hover: var(--color-hover);
 
   /* Tabla variables */
-  --table-font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --table-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --table-font-size: 0.875rem;
   --table-text-color: var(--color-primary-dark);
   --table-header-bg: var(--color-table-header-bg);
@@ -178,7 +185,7 @@
    ========================================================================== */
 .toast {
   border-radius: 8px !important;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, sans-serif !important;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, sans-serif !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   border: none !important;
 }
