@@ -40,7 +40,7 @@
 
   /* Sidebar */
   --color-sidebar-bg: #8D9EBF;
-  --color-sidebar-border: #1E335E; 
+  --color-sidebar-border: #8D9EBF; 
   --color-sidebar-hover: #1E335E;
   --color-sidebar-active: #FA9A37;
   --color-sidebar-text: #cbd5e1;
@@ -48,7 +48,7 @@
 
   /* Navbar */
   --color-navbar-bg: #8D9EBF;
-  --color-navbar-border: #1E335E;
+  --color-navbar-border: #8D9EBF;
   --color-navbar-hover: #1E335E;
   --color-navbar-text: #f1f5f9;
   --color-navbar-text-secondary: #A4ABBD;
@@ -82,54 +82,53 @@
    Usadas por componentes CSS: botones, toastr, tablas, etc.
    ========================================================================== */
 :root {
-  /* Paleta Oficial HVC Kapital */
-  --hvc-primary: #1E335E;       /* Azul Principal */
-  --hvc-primary-light: #95A2BB; /* Azul Claro */
-  --hvc-primary-dark: #071737;  /* Azul Oscuro */
+  /* === Colores HVC → Ahora referencian @theme (fuente de verdad) === */
+  --hvc-primary: var(--color-primary);
+  --hvc-primary-light: var(--color-primary-light);
+  --hvc-primary-dark: var(--color-primary-dark);
 
-  --hvc-accent-orange: #FA9A37; /* Naranja Acento */
-  --hvc-accent-gold: #FCC232;   /* Amarillo Oro */
-  --hvc-accent-peach: #F9D3AD;  /* Durazno Suave */
+  --hvc-accent-orange: var(--color-accent-orange);
+  --hvc-accent-gold: var(--color-accent-gold);
+  --hvc-accent-peach: var(--color-accent-peach);
 
-  --hvc-gray: #8D9EBF;          /* Gris Neutro */
-  --hvc-gray-light: #A4ABBD;    /* Gris Suave */
+  --hvc-gray: var(--color-gray);
+  --hvc-gray-light: var(--color-gray-light);
 
-  /* Colores de estado */
-  --hvc-success: #22C55E;       /* Verde Éxito */
-  --hvc-warning: #F59E0B;       /* Naranja/Amarillo Alerta */
-  --hvc-danger: #EF4444;        /* Rojo Peligro */
+  --hvc-success: var(--color-success);
+  --hvc-warning: var(--color-warning);
+  --hvc-danger: var(--color-danger);
 
   /* Variables base de la aplicación */
   --bg: #fafbfc;
   --border: #eef0f2;
-  --text: var(--hvc-primary-dark);
-  --textsecun: var(--hvc-gray);
-  --hover: #eef0f2;
+  --text: var(--color-primary-dark);
+  --textsecun: var(--color-gray);
+  --hover: var(--color-hover);
 
   /* Tabla variables */
   --table-font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --table-font-size: 0.875rem;
-  --table-text-color: var(--hvc-primary-dark);
-  --table-header-bg: #ffffff;
-  --table-header-color: var(--hvc-primary);
-  --table-row-bg: #ffffff;
+  --table-text-color: var(--color-primary-dark);
+  --table-header-bg: var(--color-table-header-bg);
+  --table-header-color: var(--color-primary);
+  --table-row-bg: var(--color-table-row-bg);
   --table-row-alt-bg: #f3f4f6;
   --table-row-hover-bg: #e5e7eb;
-  --table-border-color: #cbd5e1;
+  --table-border-color: var(--color-table-border);
   --table-cell-py: 0.5rem;
   --table-cell-px: 0.5rem;
 
-  /* Sidebar y Navbar */
-  --sidebar-bg: var(--hvc-primary-dark);
-  --sidebar-border: var(--hvc-primary);
-  --sidebar-hover: var(--hvc-primary);
-  --sidebar-text: #cbd5e1;
-  --sidebar-text-active: #ffffff;
-  --navbar-bg: var(--hvc-primary-dark);
-  --navbar-border: var(--hvc-primary);
-  --navbar-hover: var(--hvc-primary);
-  --navbar-text: #f1f5f9;
-  --navbar-text-secondary: var(--hvc-gray-light);
+  /* Sidebar y Navbar → Referencian @theme */
+  --sidebar-bg: var(--color-sidebar-bg);
+  --sidebar-border: var(--color-sidebar-border);
+  --sidebar-hover: var(--color-sidebar-hover);
+  --sidebar-text: var(--color-sidebar-text);
+  --sidebar-text-active: var(--color-sidebar-text-active);
+  --navbar-bg: var(--color-navbar-bg);
+  --navbar-border: var(--color-navbar-border);
+  --navbar-hover: var(--color-navbar-hover);
+  --navbar-text: var(--color-navbar-text);
+  --navbar-text-secondary: var(--color-navbar-text-secondary);
 }
 
 /* ==========================================================================
@@ -157,19 +156,19 @@
    Variables CSS para Toastr — Paleta HVC Kapital
    ========================================================================== */
 :root {
-  --toastr-success-bg: var(--hvc-success);
+  --toastr-success-bg: var(--color-success);
   --toastr-success-text: #ffffff;
   --toastr-success-border: #16a34a;
 
-  --toastr-error-bg: var(--hvc-danger);
+  --toastr-error-bg: var(--color-danger);
   --toastr-error-text: #ffffff;
   --toastr-error-border: #dc2626;
 
-  --toastr-warning-bg: var(--hvc-warning);
+  --toastr-warning-bg: var(--color-warning);
   --toastr-warning-text: #ffffff;
   --toastr-warning-border: #d97706;
 
-  --toastr-info-bg: var(--hvc-primary);
+  --toastr-info-bg: var(--color-primary);
   --toastr-info-text: #ffffff;
   --toastr-info-border: #1a2d50;
 }

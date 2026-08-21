@@ -2,7 +2,7 @@
     <!-- Etiqueta -->
     <div>
         <label class="block text-sm font-medium mb-1 text-primary-dark">Etiqueta</label>
-        <input type="text" formControlName="label" class="input-control border-primary-light" />
+        <input type="text" formControlName="label" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
         @if (form().get('label')?.touched && form().get('label')?.invalid) {
         <div class="text-sm mt-1 space-y-1 text-danger">
             @if (form().get('label')?.errors?.['required']) { <div>Etiqueta es requerida</div> }
@@ -16,7 +16,7 @@
         <div class="col-span-2">
             <label class="block text-sm font-medium mb-1 text-primary-dark">Ícono (Lucide)</label>
             <input type="text" formControlName="icono" placeholder="p. ej. menu, settings, user"
-                class="input-control border-primary-light" />
+                class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
             <p class="text-xs mt-1 text-gray">Escribe el nombre del icono Lucide. Se previsualiza a la derecha.</p>
         </div>
 
@@ -35,18 +35,18 @@
     <!-- Descripción -->
     <div>
         <label class="block text-sm font-medium mb-1 text-primary-dark">Descripción</label>
-        <textarea formControlName="descripcion" rows="2" class="input-control border-primary-light"></textarea>
+        <textarea formControlName="descripcion" rows="2" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary"></textarea>
     </div>
 
     <!-- Paths -->
     <div class="grid grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium mb-1 text-primary-dark">Ruta App</label>
-            <input type="text" formControlName="pathApp" class="input-control border-primary-light" />
+            <input type="text" formControlName="pathApp" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
         </div>
         <div>
             <label class="block text-sm font-medium mb-1 text-primary-dark">Ruta Web</label>
-            <input type="text" formControlName="pathWeb" class="input-control border-primary-light" />
+            <input type="text" formControlName="pathWeb" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
         </div>
     </div>
 
