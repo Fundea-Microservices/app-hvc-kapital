@@ -38,20 +38,24 @@
   --color-danger-50: #fef2f2;
   --color-danger-500: #ef4444;
 
-  /* Sidebar — Azul claro de la paleta HVC */
-  --color-sidebar-bg: #FA9A37;
-  --color-sidebar-border: #FA9A37;
-  --color-sidebar-hover: #FCC232;
-  --color-sidebar-active: #071737;
-  --color-sidebar-text: #071737;
-  --color-sidebar-text-active: #1E335E;
+  /* ==========================================================================
+     🎨 SIDEBAR — Modifica los valores hex para ajustar el color
+     ========================================================================== */
+  --color-sidebar-bg: #FA9A37;        /* ← Fondo del sidebar */
+  --color-sidebar-border: #FA9A37;    /* ← Borde derecho */
+  --color-sidebar-hover: #FCC232;     /* ← Hover de items */
+  --color-sidebar-active: #071737;    /* ← Item activo */
+  --color-sidebar-text: #071737;      /* ← Texto e iconos */
+  --color-sidebar-text-active: #1E335E; /* ← Texto item activo */
 
-  /* Navbar — Azul oscuro (primary-dark) */
-  --color-navbar-bg: #071737;
-  --color-navbar-border: #1E335E;
-  --color-navbar-hover: #1E335E;
-  --color-navbar-text: #f1f5f9;
-  --color-navbar-text-secondary: #cbd5e1;
+  /* ==========================================================================
+     🎨 NAVBAR — Modifica los valores hex para ajustar el color
+     ========================================================================== */
+  --color-navbar-bg: #95A2BB;         /* ← Fondo del navbar */
+  --color-navbar-border: #95A2BB;     /* ← Borde inferior */
+  --color-navbar-hover: #1E335E;      /* ← Hover de botones */
+  --color-navbar-text: #f1f5f9;       /* ← Texto principal */
+  --color-navbar-text-secondary: #cbd5e1; /* ← Texto secundario (rol) */
 
   /* UI Genéricos */
   --color-hover: #eef0f2;
@@ -125,12 +129,34 @@ body {
   --table-cell-py: 0.5rem;
   --table-cell-px: 0.5rem;
 
-  /* Sidebar y Navbar → Referencian @theme */
+  /* ==========================================================================
+     🎛️  DASHBOARD CONTROLS
+
+     Modifica los valores hex en @theme para cambiar el color base.
+     Ajusta --sidebar-intensity y --navbar-intensity para graduar la fuerza.
+     ========================================================================== */
+
+  /*
+   * INTENSIDAD — Controla qué tan fuerte se ve el color.
+   *   0%   → blanco puro (invisible)
+   *   25%  → muy suave / lavado
+   *   50%  → intermedio
+   *   75%  → moderado
+   *   100% → color pleno (el hex de @theme)
+   */
+  --sidebar-intensity: 35%;
+  --navbar-intensity: 35%;
+  --sidebar-border-intensity: 35%;
+  --navbar-border-intensity: 35%;
+
+  /* Sidebar */
   --sidebar-bg: var(--color-sidebar-bg);
   --sidebar-border: var(--color-sidebar-border);
   --sidebar-hover: var(--color-sidebar-hover);
   --sidebar-text: var(--color-sidebar-text);
   --sidebar-text-active: var(--color-sidebar-text-active);
+
+  /* Navbar */
   --navbar-bg: var(--color-navbar-bg);
   --navbar-border: var(--color-navbar-border);
   --navbar-hover: var(--color-navbar-hover);
@@ -158,6 +184,61 @@ body {
 .btn-hvc-accent:hover {
   background-color: var(--hvc-accent-gold);
 }
+
+/* ==========================================================================
+   🎛️  DASHBOARD INTENSITY — Clases que responden a --sidebar-intensity / --navbar-intensity
+
+   Cambia el porcentaje en :root para graduar la fuerza del color.
+   0% = blanco | 50% = suave | 100% = color pleno
+   ========================================================================== */
+.sidebar-bg-variable {
+  background-color: color-mix(in srgb, var(--color-sidebar-bg) var(--sidebar-intensity, 100%), white);
+}
+.navbar-bg-variable {
+  background-color: color-mix(in srgb, var(--color-navbar-bg) var(--navbar-intensity, 100%), white);
+}
+.sidebar-border-variable {
+  border-color: color-mix(in srgb, var(--color-sidebar-border) var(--sidebar-border-intensity, 100%), white);
+}
+.navbar-border-variable {
+  border-color: color-mix(in srgb, var(--color-navbar-border) var(--navbar-border-intensity, 100%), white);
+}
+
+/*
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │  GUÍA DE ESCALA — Rangos válidos para cada color de la paleta HVC      │
+ * │  (de más claro a más oscuro)                                           │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │                                                                       │
+ * │  #95A2BB (Azul Claro / primary-light)                                 │
+ * │  ─────────────────────────────────────                                 │
+ * │  Más claro:  #c8ced8 → #b8c2d0 → #a8b4c4 → #95A2BB                   │
+ * │  Más oscuro: #8493a8 → #738298 → #627188 → #516078                    │
+ * │                                                                       │
+ * │  #1E335E (Azul Primario)                                               │
+ * │  ─────────────────────────────────                                     │
+ * │  Más claro:  #4a6088 → #3a5078 → #2e4468 → #1E335E                    │
+ * │  Más oscuro: #182a4d → #13213c → #0e1a2e → #071737                    │
+ * │                                                                       │
+ * │  #071737 (Azul Oscuro / primary-dark)                                  │
+ * │  ──────────────────────────────────────                                │
+ * │  Más claro:  #1a2d50 → #152644 → #10203a → #071737                    │
+ * │  Más oscuro: #05122b → #040e22 → #030a18 → #02060f                    │
+ * │                                                                       │
+ * │  #8D9EBF (Gris Azulado / gray)                                         │
+ * │  ──────────────────────────────────                                    │
+ * │  Más claro:  #b0bdd0 → #a4b2c8 → #98a7c0 → #8D9EBF                    │
+ * │  Más oscuro: #7d8eac → #6d7e99 → #5d6e86 → #4d5e73                    │
+ * │                                                                       │
+ * │  #A4ABBD (Gris Suave / gray-light)                                     │
+ * │  ───────────────────────────────────                                   │
+ * │  Más claro:  #c4c9d4 → #b8bfcc → #b0b8c4 → #A4ABBD                    │
+ * │  Más oscuro: #949bab → #848b9b → #747b8b → #646b7b                    │
+ * │                                                                       │
+ * │  💡 Tip: Los colores más claros funcionan para fondos con texto oscuro. │
+ * │     Los más oscuros funcionan para fondos con texto blanco.            │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ */
 
 /* ==========================================================================
    Variables CSS para Toastr — Paleta HVC Kapital
