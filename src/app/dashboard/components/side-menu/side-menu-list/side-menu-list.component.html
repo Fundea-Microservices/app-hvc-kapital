@@ -1,7 +1,6 @@
 <!-- Dashboard Item (Active) -->
 <a [routerLink]="'/dashboard'" 
-    routerLinkActive="border-l-4"
-    [style.border-color]="'var(--hvc-accent-orange)'"
+    routerLinkActive="border-l-4 border-accent-orange"
     class="sidebar-item flex items-center gap-x-3 py-2.5 px-3 text-sm rounded-r-lg font-semibold focus:outline-none"
     [routerLinkActiveOptions]="{ exact: true }">
     <app-custom-icon [name]="'house'" [color]="'var(--sidebar-text)'"></app-custom-icon>
@@ -11,15 +10,15 @@
 
 <!-- Menu dinámico (grupo de acordeones) -->
 @if(accesosLoading()){
-    <div class="p-3 text-sm flex items-center gap-2" style="color: var(--navbar-text-secondary);">
-        <svg class="animate-spin h-4 w-4" style="color: var(--navbar-text-secondary);" viewBox="0 0 24 24">
+    <div class="p-3 text-sm flex items-center gap-2 text-navbar-text-secondary">
+        <svg class="animate-spin h-4 w-4 text-navbar-text-secondary" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
         </svg>
         Cargando menú...
     </div>
 } @else if (accesos().length === 0) {
-    <div class="p-3 text-sm" style="color: var(--navbar-text-secondary);">Sin accesos asignados</div>
+    <div class="p-3 text-sm text-navbar-text-secondary">Sin accesos asignados</div>
 } @else {
 <div class="hs-accordion-group" id="side-menu-accordion-group">
     @for(acceso of accesos(); track acceso.accesoId){
@@ -48,8 +47,7 @@
                 <div class="pl-6 space-y-1 mt-1">
                     @for(submenu of acceso.subMenus; track submenu.accesoId){
                         <a [routerLink]="prefix + submenu.menu.pathWeb"
-                            routerLinkActive="border-l-4"
-                            [style.border-color]="'var(--hvc-accent-orange)'"
+                            routerLinkActive="border-l-4 border-accent-orange"
                             class="sidebar-submenu-item flex items-center gap-x-3 py-2 px-3 text-sm font-medium focus:outline-none">
                             <app-custom-icon [name]="submenu.menu.icono" [size]="15" [color]="submenu.menu.color"></app-custom-icon>
                             {{submenu.menu.label}}

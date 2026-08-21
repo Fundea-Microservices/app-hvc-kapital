@@ -39,9 +39,19 @@
   --color-danger-500: #ef4444;
 
   /* Sidebar */
-  --color-sidebar-bg: #071737;
+  --color-sidebar-bg: #8D9EBF;
+  --color-sidebar-border: #1E335E; 
   --color-sidebar-hover: #1E335E;
   --color-sidebar-active: #FA9A37;
+  --color-sidebar-text: #cbd5e1;
+  --color-sidebar-text-active: #ffffff;
+
+  /* Navbar */
+  --color-navbar-bg: #8D9EBF;
+  --color-navbar-border: #1E335E;
+  --color-navbar-hover: #1E335E;
+  --color-navbar-text: #f1f5f9;
+  --color-navbar-text-secondary: #A4ABBD;
 }
 
 /* Safelist: clases dinámicas de estados de pedido definidas en TypeScript */

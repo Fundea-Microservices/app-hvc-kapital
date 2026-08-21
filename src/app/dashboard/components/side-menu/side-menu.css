@@ -2,7 +2,7 @@
 
 /* Close button (móvil) */
 .sidebar-close-btn {
-  background-color: rgba(var(--color-primary), 0.5);
+  background-color: color-mix(in srgb, var(--color-primary) 50%, transparent);
   color: var(--navbar-text);
   transition: background-color 0.2s ease;
 }
