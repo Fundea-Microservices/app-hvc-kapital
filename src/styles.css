@@ -38,20 +38,20 @@
   --color-danger-50: #fef2f2;
   --color-danger-500: #ef4444;
 
-  /* Sidebar */
-  --color-sidebar-bg: #8D9EBF;
-  --color-sidebar-border: #8D9EBF; 
-  --color-sidebar-hover: #f1f5f9;
-  --color-sidebar-active: #FA9A37;
-  --color-sidebar-text: #1E335E;
-  --color-sidebar-text-active: #071737;
+  /* Sidebar — Azul claro de la paleta HVC */
+  --color-sidebar-bg: #FA9A37;
+  --color-sidebar-border: #FA9A37;
+  --color-sidebar-hover: #FCC232;
+  --color-sidebar-active: #071737;
+  --color-sidebar-text: #071737;
+  --color-sidebar-text-active: #1E335E;
 
-  /* Navbar */
-  --color-navbar-bg: #8D9EBF;
-  --color-navbar-border: #8D9EBF;
-  --color-navbar-hover: #f1f5f9;
-  --color-navbar-text: #1E335E;
-  --color-navbar-text-secondary: #071737;
+  /* Navbar — Azul oscuro (primary-dark) */
+  --color-navbar-bg: #071737;
+  --color-navbar-border: #1E335E;
+  --color-navbar-hover: #1E335E;
+  --color-navbar-text: #f1f5f9;
+  --color-navbar-text-secondary: #cbd5e1;
 
   /* UI Genéricos */
   --color-hover: #eef0f2;

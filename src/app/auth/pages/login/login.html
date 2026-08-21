@@ -26,20 +26,20 @@
 
         <!-- CAMBIO: Título principal a text-primary-dark -->
         <h1 class="text-4xl font-bold mb-2 text-primary-dark">Ingreso</h1>
-        <p class="text-2xl mb-8 text-primary">Accede a tu cuenta</p>
+        <p class="text-2xl mb-8 text-gray-light">Accede a tu cuenta</p>
 
           <!-- Usuario -->
-          <!-- CAMBIO: Label a text-primary (Azul Primario) -->
-          <label class="text-sm font-medium text-primary">Usuario</label>
+          <!-- CAMBIO: Label a text-primary-light (Azul Grisáceo) -->
+          <label class="text-sm font-medium text-primary-light">Usuario</label>
           <!-- CAMBIO: Inputs con bordes y texto oscuro -->
           <input type="text" name="username"
-            class="login-input w-full mt-1 mb-6 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-white focus:border-primary focus:ring-1 focus:ring-primary"
+            class="login-input w-full mt-1 mb-6 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-transparent focus:border-primary focus:ring-1 focus:ring-primary"
             [value]="userName()" (input)="userName.set(txtUserName.value)" #txtUserName>
             
           <!-- Contraseña -->
-          <label class="text-sm font-medium text-primary">Contraseña</label>
+          <label class="text-sm font-medium text-primary-light">Contraseña</label>
           <input type="password" name="password"
-            class="login-input w-full mt-1 mb-8 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-white focus:border-primary focus:ring-1 focus:ring-primary"
+            class="login-input w-full mt-1 mb-8 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-transparent focus:border-primary focus:ring-1 focus:ring-primary"
             [value]="password()" (input)="password.set(txtPassword.value)"
             (keydown.enter)="login()"
             #txtPassword >
