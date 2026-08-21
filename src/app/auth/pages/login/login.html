@@ -3,53 +3,60 @@
   <!-- Main Content -->
   <div class="main-container flex grow items-center justify-center p-4">
 
+    <!-- CAMBIO: Fondo de la tarjeta a bg-white y sombra acentuada -->
     <div class="box-login w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 rounded-3xl
-           relative overflow-hidden bg-primary-dark border border-primary">
+           relative overflow-hidden bg-white shadow-2xl">
 
       <!-- Company Logo -->
-      <div class="flex flex-col items-center justify-center p-10 bg-primary-dark">
+      <!-- CAMBIO: Se eliminó bg-primary-dark de este contenedor -->
+      <div class="flex flex-col items-center justify-center p-10">
 
         <div class="w-auto h-auto flex items-center justify-center rounded-full">
           <img src="images/hvc_logo.png" class="w-full h-full object-contain" alt="Logo HVC Kapital" />
         </div>
 
-        <h2 class="mt-6 text-2xl font-semibold text-center leading-tight text-navbar-text">
+        <!-- CAMBIO: Texto a text-primary-dark para contrastar con el blanco -->
+        <h2 class="mt-6 text-2xl font-semibold text-center leading-tight text-primary-dark">
           Panel Administrativo <br />
         </h2>
       </div>
 
-
       <!-- Login Form -->
-      <div class="p-10 flex flex-col justify-center text-sidebar-text">
+      <div class="p-10 flex flex-col justify-center">
 
-        <h1 class="text-4xl font-bold mb-2 text-white">Ingreso</h1>
-        <p class="text-2xl mb-8 text-gray-light">Accede a tu cuenta</p>
-
+        <!-- CAMBIO: Título principal a text-primary-dark -->
+        <h1 class="text-4xl font-bold mb-2 text-primary-dark">Ingreso</h1>
+        <p class="text-2xl mb-8 text-primary">Accede a tu cuenta</p>
 
           <!-- Usuario -->
-          <label class="text-sm text-sidebar-text">Usuario</label>
+          <!-- CAMBIO: Label a text-primary (Azul Primario) -->
+          <label class="text-sm font-medium text-primary">Usuario</label>
+          <!-- CAMBIO: Inputs con bordes y texto oscuro -->
           <input type="text" name="username"
-            class="login-input w-full mt-1 mb-6 px-4 py-2 rounded-xl outline-none transition-all"
+            class="login-input w-full mt-1 mb-6 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-white focus:border-primary focus:ring-1 focus:ring-primary"
             [value]="userName()" (input)="userName.set(txtUserName.value)" #txtUserName>
+            
           <!-- Contraseña -->
-          <label class="text-sm text-sidebar-text">Contraseña</label>
+          <label class="text-sm font-medium text-primary">Contraseña</label>
           <input type="password" name="password"
-            class="login-input w-full mt-1 mb-8 px-4 py-2 rounded-xl outline-none transition-all"
+            class="login-input w-full mt-1 mb-8 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-white focus:border-primary focus:ring-1 focus:ring-primary"
             [value]="password()" (input)="password.set(txtPassword.value)"
             (keydown.enter)="login()"
             #txtPassword >
+            
           @if(errorObj().isError) {
-          <div class="text-sm text-center text-danger">
+          <div class="text-sm text-center text-danger mb-4">
             {{ errorObj().message }}
           </div>
           }
+          
           <!-- Botón Ingresar -->
+          <!-- CAMBIO: Se aplica la clase btn-hvc-primary de tu CSS -->
           <button type="button"
-            class="login-btn w-full py-3 rounded-xl transition-all
-                 text-white font-semibold shadow-lg"
+            class="login-btn w-full py-3 rounded-xl transition-all font-semibold shadow-lg btn-hvc-primary"
             [disabled]="loading()" (click)="login()">
             @if (loading()) {
-              <span class="inline-flex items-center gap-2">
+              <span class="inline-flex items-center justify-center gap-2">
                 <svg class="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -67,10 +74,11 @@
   </div>
 
   <!-- Footer -->
+  <!-- Mantenemos los colores claros aquí porque sigue sobre el fondo oscuro exterior -->
   <footer class="text-center mt-10 mb-4">
-    <span class="text-sm sm:text-center text-gray">
+    <span class="text-sm sm:text-center text-gray-light">
       © 2026
-      <a [routerLink]="['/']" class="hover:underline text-gray-light">Admin</a>. All Rights Reserved.
+      <a [routerLink]="['/']" class="hover:underline text-white">Admin</a>. All Rights Reserved.
     </span>
   </footer>
 

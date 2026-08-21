@@ -41,17 +41,17 @@
   /* Sidebar */
   --color-sidebar-bg: #8D9EBF;
   --color-sidebar-border: #8D9EBF; 
-  --color-sidebar-hover: #1E335E;
+  --color-sidebar-hover: #f1f5f9;
   --color-sidebar-active: #FA9A37;
-  --color-sidebar-text: #cbd5e1;
-  --color-sidebar-text-active: #ffffff;
+  --color-sidebar-text: #1E335E;
+  --color-sidebar-text-active: #071737;
 
   /* Navbar */
   --color-navbar-bg: #8D9EBF;
   --color-navbar-border: #8D9EBF;
-  --color-navbar-hover: #1E335E;
-  --color-navbar-text: #f1f5f9;
-  --color-navbar-text-secondary: #A4ABBD;
+  --color-navbar-hover: #f1f5f9;
+  --color-navbar-text: #1E335E;
+  --color-navbar-text-secondary: #071737;
 
   /* UI Genéricos */
   --color-hover: #eef0f2;
