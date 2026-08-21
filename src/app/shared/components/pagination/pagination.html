@@ -1,5 +1,5 @@
 @if(showText()){
-    <div class="text-xs" style="color: var(--hvc-primary-dark);">
+    <div class="text-xs text-primary-dark">
         Mostrando {{ (paginationObj().page - 1) * paginationObj().pageSize + 1 }} a
         {{ Math.min(paginationObj().page * paginationObj().pageSize, paginationObj().totalItems) }}
         de {{ paginationObj().totalItems }} resultados
@@ -9,8 +9,7 @@
     <form class="max-w-sm mx-auto text-[0.8em]">
         <label for="underline_select" class="sr-only">Underline select</label>
         <select id="underline_select" (change)="changePageSize(+txtPageSize.value)" #txtPageSize
-            class="block py-0.5 px-2 w-full text-sm bg-transparent border rounded-sm appearance-none focus:outline-none focus:ring-0 peer"
-            style="color: var(--hvc-gray); border-color: var(--hvc-primary-light);">
+            class="block py-0.5 px-2 w-full text-sm bg-transparent border rounded-sm appearance-none focus:outline-none focus:ring-0 peer text-gray border-primary-light">
             <option value="5" [selected]="paginationObj().pageSize === 5">5 registros página</option>
             <option value="10" [selected]="paginationObj().pageSize === 10">10 registros página</option>
             <option value="20" [selected]="paginationObj().pageSize === 20">20 registros página</option>
@@ -20,8 +19,7 @@
 </nav>
 <nav class="flex items-center justify-center space-x-1 mt-1">
     <button (click)="previousPage()" [disabled]="paginationObj().page === 1"
-        class="pagination-btn px-3 py-1 rounded disabled:opacity-50"
-        style="background-color: var(--hvc-primary-light); color: var(--hvc-primary-dark);">
+        class="pagination-btn bg-primary-light text-primary-dark px-3 py-1 rounded disabled:opacity-50">
         ←
     </button>
 
@@ -35,8 +33,7 @@
     }
 
     <button (click)="nextPage()" [disabled]="paginationObj().page === totalPages"
-        class="pagination-btn px-3 py-1 rounded disabled:opacity-50"
-        style="background-color: var(--hvc-primary-light); color: var(--hvc-primary-dark);">
+        class="pagination-btn bg-primary-light text-primary-dark px-3 py-1 rounded disabled:opacity-50">
         →
     </button>
 </nav>

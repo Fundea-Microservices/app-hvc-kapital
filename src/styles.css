@@ -52,6 +52,15 @@
   --color-navbar-hover: #1E335E;
   --color-navbar-text: #f1f5f9;
   --color-navbar-text-secondary: #A4ABBD;
+
+  /* UI Genéricos */
+  --color-hover: #eef0f2;
+
+  /* Tabla */
+  --color-table-border: #cbd5e1;
+  --color-table-header-bg: #ffffff;
+  --color-table-header: #1E335E;
+  --color-table-row-bg: #ffffff;
 }
 
 /* Safelist: clases dinámicas de estados de pedido definidas en TypeScript */

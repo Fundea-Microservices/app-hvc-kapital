@@ -1,23 +1,23 @@
 <nav class="mb-4" aria-label="breadcrumb">
-    <ol class="flex flex-wrap text-sm" style="color: var(--text)">
+    <ol class="flex flex-wrap text-sm text-primary-dark">
         <li class="flex items-center">
-            <a routerLink="/dashboard" class="hover:underline" style="color: var(--hvc-primary)">Inicio</a>
+            <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
             <span class="mx-2">></span>
         </li>
         <li class="flex items-center">
             <a routerLink="/dashboard/tesoreria" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
             <span class="mx-2">></span>
         </li>
-        <li class="flex items-center" style="color: var(--hvc-primary-light)">
+        <li class="flex items-center text-primary-light">
             Roles
         </li>
     </ol>
 </nav>
 
 
-<div class="bg-white shadow rounded-lg" style="border: 1px solid var(--hvc-primary-light)">
-    <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 1px solid var(--hvc-primary-light)">
-        <h2 class="text-lg font-semibold" style="color: var(--hvc-primary-dark)">Roles</h2>
+<div class="bg-white shadow rounded-lg border border-primary-light">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
+        <h2 class="text-lg font-semibold text-primary-dark">Roles</h2>
         <button (click)="openUpsertModal(true)"
             class="btn-hvc-primary px-4 py-2 text-sm rounded transition">
             Nuevo rol
@@ -58,13 +58,13 @@
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">
+                        <td colspan="7" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             Cargando roles ...
                         </td>
                     </tr>
                     } @else if (rolesList().length === 0) {
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">
+                        <td colspan="7" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             <app-custom-icon name="user-round-cog" class="inline mr-2"></app-custom-icon>
                             No se encontraron roles
                         </td>
@@ -72,11 +72,11 @@
                     } @else {
                     @for (rol of rolesList(); track rol.rolId; let i = $index) {
                     <tr class="rol-table-row">
-                        <td class="px-2 py-2 text-center justify-center" style="border: 1px solid var(--table-border-color)">
+                        <td class="px-2 py-2 text-center justify-center border border-table-border">
                             {{ (pagination().page - 1) * pagination().pageSize + i + 1 }}
                         </td>
-                        <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ rol.nombre }}</td>
-                        <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
+                        <td class="px-2 py-2 border border-table-border">{{ rol.nombre }}</td>
+                        <td class="px-2 py-2 text-center border border-table-border">
                             <label [for]="'switch-' + rol.rolId" class="relative inline-block w-8 h-4 cursor-pointer">
                                 <input type="checkbox" [id]="'switch-' + rol.rolId" [checked]="rol.activo"
                                     (change)="toggleRolStatus(rol, $any($event.target).checked)" class="peer sr-only"
@@ -90,10 +90,10 @@
                             </label>
                         </td>
 
-                        <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
+                        <td class="px-2 py-2 text-center border border-table-border">
                             {{ rol.created_at | tzDate: 'dd/MM/yyyy' }}
                         </td>
-                        <td class="px-3 py-1.5 text-center space-x-2" style="border: 1px solid var(--table-border-color)">
+                        <td class="px-3 py-1.5 text-center space-x-2 border border-table-border">
                             <button (click)="openUpsertModal(false, rol)"
                                 class="rol-btn-edit px-2 py-1 text-white rounded text-xs transition">
                                 <app-custom-icon [name]="'square-pen'" [color]="'#eee'" [size]="18"></app-custom-icon>
@@ -126,14 +126,14 @@
     <div
         class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 h-[calc(100%-56px)] sm:mx-auto">
         <div
-            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto" style="border: 1px solid var(--hvc-primary-light)">
-            <div class="flex justify-between items-center py-3 px-4" style="border-bottom: 1px solid var(--hvc-primary-light)">
-                <h3 id="hs-upsert-modal-label" class="font-bold" style="color: var(--hvc-primary-dark)">
+            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+            <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+                <h3 id="hs-upsert-modal-label" class="font-bold text-primary-dark">
                     {{ modal().titulo }}
                 </h3>
                 <button type="button" (click)="closeModal()"
                     class="size-8 inline-flex justify-center items-center rounded-full"
-                    style="background-color: var(--hover)"
+                    class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
                     aria-label="Close">
                     <span class="sr-only">Close</span>
                     <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -160,14 +160,14 @@
     <div
         class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 h-[calc(100%-56px)] sm:mx-auto">
         <div
-            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto">
-            <div class="flex justify-between items-center py-3 px-4" style="border-bottom: 1px solid var(--hvc-primary-light)">
-                <h3 id="hs-delete-modal-label" class="font-bold" style="color: var(--hvc-primary-dark)">
+            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+            <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+                <h3 id="hs-delete-modal-label" class="font-bold text-primary-dark">
                     Eliminar rol
                 </h3>
                 <button type="button" (click)="closeModal()"
                     class="size-8 inline-flex justify-center items-center rounded-full"
-                    style="background-color: var(--hover)"
+                    class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
                     aria-label="Close">
                     <span class="sr-only">Close</span>
                     <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -181,8 +181,7 @@
             <div class="p-4 overflow-y-auto">
                 <div class="space-y-4">
                     <div class="flex">
-                        <div class="flex-1 text-sm rounded-lg p-4" role="alert" tabindex="-1"
-                            style="background-color: var(--hvc-danger); opacity: 0.1; color: var(--hvc-primary-dark)">
+                        <div class="flex-1 text-sm rounded-lg p-4 bg-danger/10 text-primary-dark" role="alert" tabindex="-1">
                             <div class="flex">
                                 <div class="shrink-0">
                                     <svg class="shrink-0 size-4 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -203,15 +202,13 @@
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end items-center gap-x-2 py-3 px-4" style="border-top: 1px solid var(--hvc-primary-light)">
+            <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-primary-light">
                 <button type="button" (click)="closeModal()"
-                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white"
-                    style="border: 1px solid var(--hvc-primary-light)">
+                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white border border-primary-light">
                     Cerrar
                 </button>
                 <button type="button" (click)="deleteRol(rolEdit())"
-                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg text-white"
-                    style="background-color: var(--hvc-danger)">
+                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg text-white bg-danger">
                     Eliminar
                 </button>
             </div>

@@ -1,11 +1,11 @@
 <form [formGroup]="form()" (ngSubmit)="onSubmit()" class="space-y-4">
-  <p class="text-sm" style="color: var(--text)">
+  <p class="text-sm text-primary-dark">
     Asignar {{ menu().principal ? 'menú' : 'submenú' }}
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full" style="background-color: var(--hvc-accent-peach); border: 1px solid var(--hvc-primary-light); color: var(--hvc-primary-dark)">
+    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-peach border border-primary-light text-primary-dark">
       {{ menu().label }}
     </span>
     al rol
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full" style="background-color: var(--hvc-accent-peach); border: 1px solid var(--hvc-primary-light); color: var(--hvc-primary-dark)">
+    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-peach border border-primary-light text-primary-dark">
       {{ rol().nombre }}
     </span>
   </p>
@@ -14,8 +14,8 @@
     <!-- Si es submenú, elegir el menú principal -->
     @if (!menu().principal) {
       <div>
-        <label class="block text-sm font-medium mb-1" style="color: var(--text)">Menú principal</label>
-        <select class="w-full input-control p-2 border rounded" style="border-color: var(--hvc-primary-light)" formControlName="mainMenuId">
+        <label class="block text-sm font-medium mb-1 text-primary-dark">Menú principal</label>
+        <select class="w-full input-control p-2 border rounded border-primary-light" formControlName="mainMenuId">
           <option [ngValue]="null">Seleccione opción</option>
           @for (a of (accesos() || []); track a.accesoId) {
             @if (a.menu.principal) {
@@ -24,36 +24,35 @@
           }
         </select>
         @if (form().get('mainMenuId')?.touched && form().get('mainMenuId')?.errors?.['required']) {
-          <div class="text-xs mt-1" style="color: var(--hvc-danger)">Menú principal es requerido</div>
+          <div class="text-xs mt-1 text-danger">Menú principal es requerido</div>
         }
       </div>
     }
 
     <!-- Orden -->
-    <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Orden (colocar antes de)</label>
-      <select class="w-full input-control p-2 border rounded" style="border-color: var(--hvc-primary-light)" formControlName="ordenMenu">
+    <div><label class="block text-sm font-medium mb-1 text-primary-dark">Orden (colocar antes de)</label>
+        <select class="w-full input-control p-2 border rounded border-primary-light" formControlName="ordenMenu">
         @for (op of opcionesOrden; track op.value) {
           <option [value]="op.value">{{ op.label }}</option>
         }
       </select>
       @if (form().get('ordenMenu')?.touched && form().get('ordenMenu')?.invalid) {
-        <div class="text-xs mt-1" style="color: var(--hvc-danger)">Orden del menú es requerido</div>
+        <div class="text-xs mt-1 text-danger">Orden del menú es requerido</div>
       }
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <label class="inline-flex items-center gap-2" style="color: var(--text)">
-      <input type="checkbox" formControlName="activo" class="rounded" style="accent-color: var(--hvc-accent-orange)">
+    <label class="inline-flex items-center gap-2 text-primary-dark">
+      <input type="checkbox" formControlName="activo" class="rounded accent-accent-orange">
       Activo
     </label>
-    <label class="inline-flex items-center gap-2" style="color: var(--text)">
-      <input type="checkbox" formControlName="showApp" class="rounded" style="accent-color: var(--hvc-accent-orange)">
+    <label class="inline-flex items-center gap-2 text-primary-dark">
+      <input type="checkbox" formControlName="showApp" class="rounded accent-accent-orange">
       Mostrar en app móvil
     </label>
-    <label class="inline-flex items-center gap-2" style="color: var(--text)">
-      <input type="checkbox" formControlName="showWeb" class="rounded" style="accent-color: var(--hvc-accent-orange)">
+    <label class="inline-flex items-center gap-2 text-primary-dark">
+      <input type="checkbox" formControlName="showWeb" class="rounded accent-accent-orange">
       Mostrar en app web
     </label>
   </div>
@@ -70,8 +69,7 @@
     <button
       type="submit"
       [disabled]="isLoading() || form().invalid"
-      class="btn-hvc-primary px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      style="--tw-ring-color: var(--hvc-primary)"
+      class="btn-hvc-primary px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
       {{ menu().principal ? 'Asignar menú' : 'Asignar submenú' }}
     </button>

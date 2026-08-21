@@ -2,38 +2,38 @@
   <!-- Nombres -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Primer nombre</label>
-      <input type="text" formControlName="nombre1" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Primer nombre</label>
+      <input type="text" formControlName="nombre1" class="input-control border-primary-light" />
       @if (form().get('nombre1')?.touched && form().get('nombre1')?.invalid) {
-      <div class="text-xs mt-1" style="color: var(--hvc-danger)">Requerido (min 2)</div>
+      <div class="text-xs mt-1 text-danger">Requerido (min 2)</div>
       }
     </div>
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Segundo nombre</label>
-      <input type="text" formControlName="nombre2" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Segundo nombre</label>
+      <input type="text" formControlName="nombre2" class="input-control border-primary-light" />
     </div>
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Tercer nombre</label>
-      <input type="text" formControlName="nombre3" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Tercer nombre</label>
+      <input type="text" formControlName="nombre3" class="input-control border-primary-light" />
     </div>
   </div>
 
   <!-- Apellidos -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Primer apellido</label>
-      <input type="text" formControlName="apellido1" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Primer apellido</label>
+      <input type="text" formControlName="apellido1" class="input-control border-primary-light" />
       @if (form().get('apellido1')?.touched && form().get('apellido1')?.invalid) {
-      <div class="text-xs mt-1" style="color: var(--hvc-danger)">Requerido (min 2)</div>
+      <div class="text-xs mt-1 text-danger">Requerido (min 2)</div>
       }
     </div>
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Segundo apellido</label>
-      <input type="text" formControlName="apellido2" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Segundo apellido</label>
+      <input type="text" formControlName="apellido2" class="input-control border-primary-light" />
     </div>
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Tercer apellido</label>
-      <input type="text" formControlName="apellido3" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Tercer apellido</label>
+      <input type="text" formControlName="apellido3" class="input-control border-primary-light" />
     </div>
   </div>
 
@@ -41,15 +41,15 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     @if(!autoEdit()){
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Usuario</label>
-      <input type="text" formControlName="userName" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Usuario</label>
+      <input type="text" formControlName="userName" class="input-control border-primary-light" />
     </div>
     }
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Correo</label>
-      <input type="email" formControlName="correo" class="input-control" style="border-color: var(--hvc-primary-light)" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Correo</label>
+      <input type="email" formControlName="correo" class="input-control border-primary-light" />
       @if (form().get('correo')?.touched && form().get('correo')?.invalid) {
-      <div class="text-xs mt-1" style="color: var(--hvc-danger)">Correo inválido</div>
+      <div class="text-xs mt-1 text-danger">Correo inválido</div>
       }
     </div>
   </div>
@@ -57,10 +57,10 @@
   <!-- Password (solo al crear) -->
   @if (nuevo()) {
   <div>
-    <label class="block text-sm font-medium mb-1" style="color: var(--text)">Contraseña</label>
-    <input type="password" formControlName="clave" class="input-control" style="border-color: var(--hvc-primary-light)" />
+    <label class="block text-sm font-medium mb-1 text-primary-dark">Contraseña</label>
+    <input type="password" formControlName="clave" class="input-control border-primary-light" />
     @if (form().get('clave')?.touched && form().get('clave')?.invalid) {
-    <div class="text-xs mt-1" style="color: var(--hvc-danger)">Mínimo 6 caracteres</div>
+    <div class="text-xs mt-1 text-danger">Mínimo 6 caracteres</div>
     }
   </div>
   }
@@ -69,8 +69,8 @@
   <!-- Rol y Puesto -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Rol</label>
-      <select formControlName="rolId" class="input-control" style="border-color: var(--hvc-primary-light)">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Rol</label>
+      <select formControlName="rolId" class="input-control border-primary-light">
         <option value="">Seleccione un rol</option>
         @for (rol of (roles() || []); track rol.id) {
         <option [value]="rol.id">{{ rol.nombre }}</option>
@@ -78,8 +78,8 @@
       </select>
     </div>
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Puesto <span class="font-normal" style="color: var(--hvc-gray-light)">(opcional)</span></label>
-      <select formControlName="puestoId" class="input-control" style="border-color: var(--hvc-primary-light)">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Puesto <span class="font-normal text-gray-light">(opcional)</span></label>
+      <select formControlName="puestoId" class="input-control border-primary-light">
         <option value="">Sin puesto</option>
         @for (p of (puestos() || []); track p.puestoId) {
         <option [value]="p.puestoId">{{ p.nombre }}</option>
@@ -90,8 +90,8 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-1 gap-3">
     <div>
-      <label class="block text-sm font-medium mb-1" style="color: var(--text)">Sucursal <span class="font-normal" style="color: var(--hvc-gray-light)">(opcional)</span></label>
-      <select formControlName="sucursal_id" class="input-control" style="border-color: var(--hvc-primary-light)">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Sucursal <span class="font-normal text-gray-light">(opcional)</span></label>
+      <select formControlName="sucursal_id" class="input-control border-primary-light">
         <option value="">Sin sucursal</option>
         @for (s of (sucursales() || []); track s.id) {
         <option [value]="s.id">{{ s.nombre }}</option>
@@ -107,13 +107,12 @@
     <label class="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" formControlName="activo" class="sr-only peer" />
       <div
-        class="w-11 h-6 peer-focus:outline-none peer-focus:ring-2 rounded-full transition-colors"
-        style="background-color: var(--hvc-gray-light); --tw-ring-color: var(--hvc-primary)">
+        class="w-11 h-6 peer-focus:outline-none peer-focus:ring-2 rounded-full transition-colors bg-gray-light ring-primary">
       </div>
       <div
         class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
       </div>
-      <span class="ml-3 text-sm font-medium" style="color: var(--text)">Activo</span>
+      <span class="ml-3 text-sm font-medium text-primary-dark">Activo</span>
     </label>
   </div>
 

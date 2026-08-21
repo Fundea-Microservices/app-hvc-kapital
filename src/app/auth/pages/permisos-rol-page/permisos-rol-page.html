@@ -1,24 +1,24 @@
 <nav class="mb-4" aria-label="breadcrumb">
-    <ol class="flex flex-wrap text-sm" style="color: var(--text)">
+    <ol class="flex flex-wrap text-sm text-primary-dark">
         <li class="flex items-center">
-            <a routerLink="/dashboard" class="hover:underline" style="color: var(--hvc-primary)">Inicio</a>
+            <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
             <span class="mx-2">></span>
         </li>
-        <li class="flex items-center" style="color: var(--hvc-primary-light)">
+        <li class="flex items-center text-primary-light">
             Permisos por rol
         </li>
     </ol>
 </nav>
 
-<div class="bg-white shadow rounded-lg" style="border: 1px solid var(--hvc-primary-light)">
-    <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 1px solid var(--hvc-primary-light)">
-        <h2 class="text-lg font-semibold" style="color: var(--hvc-primary-dark)">Permisos por rol</h2>
+<div class="bg-white shadow rounded-lg border border-primary-light">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
+        <h2 class="text-lg font-semibold text-primary-dark">Permisos por rol</h2>
     </div>
 
     <div class="p-4 space-y-4">
         <!-- Autocomplete de rol -->
         <div class="max-w-md">
-            <label class="block text-sm font-medium mb-1" style="color: var(--text)">Rol</label>
+            <label class="block text-sm font-medium mb-1 text-primary-dark">Rol</label>
             <div class="relative">
                 <input type="text" placeholder="Escribe o selecciona un rol..."
                     [value]="rolQuery()"
@@ -31,7 +31,7 @@
                 @if (selectedRol()) {
                 <button type="button" (click)="clearRol()"
                     class="absolute inset-y-0 right-0 flex items-center pr-3"
-                    style="color: var(--hvc-primary-light)"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-primary-light"
                     aria-label="Limpiar selección">
                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -43,14 +43,14 @@
 
                 <!-- Dropdown -->
                 @if (showRolDropdown() && filteredRoles().length > 0) {
-                <ul class="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto bg-white rounded-md shadow-lg" style="border: 1px solid var(--hvc-primary-light)">
+                <ul class="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto bg-white rounded-md shadow-lg border border-primary-light">
                     @for (rol of filteredRoles(); track rol.rolId) {
                     <li>
                         <button type="button" (mousedown)="selectRol(rol)"
                             class="permisos-rol-dropdown-item w-full text-left px-3 py-2 text-sm flex items-center justify-between">
                             <span>{{ rol.nombre }}</span>
                             @if (rol.esAdmin) {
-                            <span class="text-xs font-semibold" style="color: var(--hvc-primary)">Admin</span>
+                            <span class="text-xs font-semibold text-primary">Admin</span>
                             }
                         </button>
                     </li>
@@ -58,7 +58,7 @@
                 </ul>
                 }
                 @if (showRolDropdown() && filteredRoles().length === 0) {
-                <div class="absolute z-20 mt-1 w-full bg-white rounded-md shadow-lg px-3 py-2 text-sm" style="border: 1px solid var(--hvc-primary-light); color: var(--hvc-primary-light)">
+                <div class="absolute z-20 mt-1 w-full bg-white rounded-md shadow-lg px-3 py-2 text-sm border border-primary-light text-primary-light">
                     No se encontraron roles
                 </div>
                 }
@@ -66,7 +66,7 @@
         </div>
 
         @if (!selectedRol()) {
-        <div class="py-10 text-center" style="color: var(--hvc-primary-light)">
+        <div class="py-10 text-center text-primary-light">
             <app-custom-icon name="user-round-cog" class="inline mr-2"></app-custom-icon>
             Selecciona un rol para ver y asignar sus permisos
         </div>
@@ -75,19 +75,19 @@
         <!-- Filtros de permisos -->
         <form class="flex flex-wrap items-end gap-3" (submit)="$event.preventDefault(); onSearch()">
             <div>
-                <label class="block text-xs font-medium mb-1" style="color: var(--hvc-gray)">Código</label>
+                <label class="block text-xs font-medium mb-1 text-gray">Código</label>
                 <input type="text" placeholder="USR_CREAR" [value]="fCodigo()"
                     (input)="fCodigo.set($any($event.target).value)"
                     class="permisos-rol-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
             </div>
             <div>
-                <label class="block text-xs font-medium mb-1" style="color: var(--hvc-gray)">Módulo</label>
+                <label class="block text-xs font-medium mb-1 text-gray">Módulo</label>
                 <input type="text" placeholder="usuarios" [value]="fModulo()"
                     (input)="fModulo.set($any($event.target).value)"
                     class="permisos-rol-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
             </div>
             <div>
-                <label class="block text-xs font-medium mb-1" style="color: var(--hvc-gray)">Acción</label>
+                <label class="block text-xs font-medium mb-1 text-gray">Acción</label>
                 <input type="text" placeholder="crear" [value]="fAccion()"
                     (input)="fAccion.set($any($event.target).value)"
                     class="permisos-rol-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
@@ -116,11 +116,11 @@
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">Cargando permisos ...</td>
+                        <td colspan="6" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">Cargando permisos ...</td>
                     </tr>
                     } @else if (matriz().length === 0) {
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center" style="color: var(--hvc-primary-light)">
+                        <td colspan="6" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             <app-custom-icon name="shield-check" class="inline mr-2"></app-custom-icon>
                             No se encontraron permisos
                         </td>
@@ -128,14 +128,14 @@
                     } @else {
                     @for (permiso of matriz(); track permiso.permisoId; let i = $index) {
                     <tr class="permisos-rol-table-row">
-                        <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
+                        <td class="px-2 py-2 text-center border border-table-border">
                             {{ (pagination().page - 1) * pagination().pageSize + i + 1 }}
                         </td>
-                        <td class="px-2 py-2 font-mono font-semibold" style="border: 1px solid var(--table-border-color)">{{ permiso.codigo }}</td>
-                        <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ permiso.modulo }}</td>
-                        <td class="px-2 py-2" style="border: 1px solid var(--table-border-color)">{{ permiso.accion }}</td>
-                        <td class="px-2 py-2" style="border: 1px solid var(--table-border-color); color: var(--hvc-gray)">{{ permiso.descripcion || '-' }}</td>
-                        <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">
+                        <td class="px-2 py-2 font-mono font-semibold border border-table-border">{{ permiso.codigo }}</td>
+                        <td class="px-2 py-2 border border-table-border">{{ permiso.modulo }}</td>
+                        <td class="px-2 py-2 border border-table-border">{{ permiso.accion }}</td>
+                        <td class="px-2 py-2 border border-table-border text-gray">{{ permiso.descripcion || '-' }}</td>
+                        <td class="px-2 py-2 text-center border border-table-border">
                             <label [for]="'perm-' + permiso.permisoId" class="relative inline-block w-8 h-4 cursor-pointer">
                                 <input type="checkbox" [id]="'perm-' + permiso.permisoId" [checked]="permiso.asignado"
                                     (change)="togglePermiso(permiso, $any($event.target).checked)" class="peer sr-only"
