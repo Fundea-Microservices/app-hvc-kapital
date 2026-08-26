@@ -2,6 +2,11 @@
    Estilos hover para acceso-page — Paleta HVC Kapital
    ========================================================================== */
 
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
 /* Botón "Añadir" (naranja acento HVC) */
 .btn-acceso-add {
   background-color: var(--hvc-accent-orange);

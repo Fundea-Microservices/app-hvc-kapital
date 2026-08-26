@@ -2,6 +2,11 @@
    Estilos hover para upsert-puesto — Paleta HVC Kapital
    ========================================================================== */
 
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
 /* Botón "Cancelar" (gris suave con borde HVC) */
 .btn-puesto-cancel {
   color: var(--hvc-primary-dark);

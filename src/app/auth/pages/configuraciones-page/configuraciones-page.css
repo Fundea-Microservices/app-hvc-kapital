@@ -2,6 +2,11 @@
    Estilos hover para configuraciones-page — Paleta HVC Kapital
    ========================================================================== */
 
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
 /* Toggle switch — Amarillo Oro cuando activo */
 .peer:checked ~ .toggle-track {
   background-color: var(--hvc-accent-gold);

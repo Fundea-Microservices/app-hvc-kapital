@@ -2,6 +2,11 @@
    Estilos para permisos-rol-page — Paleta HVC Kapital
    ========================================================================== */
 
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
 
 
 /* Botón "Buscar" (naranja acento) */

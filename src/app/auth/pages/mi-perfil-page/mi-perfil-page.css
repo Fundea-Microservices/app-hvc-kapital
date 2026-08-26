@@ -2,6 +2,11 @@
    Estilos para mi-perfil-page — Paleta HVC Kapital
    ========================================================================== */
 
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
 /* Botón "Cambiar contraseña" (naranja acento) */
 .perfil-btn-password {
   background-color: var(--hvc-accent-orange);

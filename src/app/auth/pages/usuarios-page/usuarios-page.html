@@ -1,5 +1,5 @@
-<nav class="mb-4" aria-label="breadcrumb">
-    <ol class="flex flex-wrap text-sm text-primary-dark">
+<nav class="mb-4 bg-[var(--color-hover)]" aria-label="breadcrumb">
+    <ol class="flex flex-wrap text-sm text-primary-dark bg-[var(--color-hover)]">
         <li class="flex items-center">
             <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
             <span class="mx-2">></span>
@@ -12,7 +12,7 @@
     </ol>
 </nav>
 
-<div class="bg-white shadow rounded-lg border border-primary-light">
+<div class="shadow rounded-lg border border-primary-light ">
     <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
         <h2 class="text-lg font-semibold text-primary-dark">Usuarios</h2>
         <button (click)="openUpsertModal(true)"

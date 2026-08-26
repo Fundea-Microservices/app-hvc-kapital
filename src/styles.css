@@ -41,24 +41,25 @@
   /* ==========================================================================
      🎨 SIDEBAR — Modifica los valores hex para ajustar el color
      ========================================================================== */
-  --color-sidebar-bg: #FA9A37;        /* ← Fondo del sidebar */
-  --color-sidebar-border: #FA9A37;    /* ← Borde derecho */
-  --color-sidebar-hover: #FCC232;     /* ← Hover de items */
-  --color-sidebar-active: #071737;    /* ← Item activo */
-  --color-sidebar-text: #071737;      /* ← Texto e iconos */
-  --color-sidebar-text-active: #1E335E; /* ← Texto item activo */
+  --color-sidebar-bg: #071737;        /* ← Fondo del sidebar */
+  --color-sidebar-border: #1E335E;    /* ← Borde derecho */
+  --color-sidebar-hover: #1E335E;     /* ← Hover de items */
+  --color-sidebar-active: #FA9A37;    /* ← Item activo */
+  --color-sidebar-text: #ffffff;      /* ← Texto e iconos */
+  --color-sidebar-text-active: #cbd5e1; /* ← Texto item activo */
 
   /* ==========================================================================
      🎨 NAVBAR — Modifica los valores hex para ajustar el color
      ========================================================================== */
-  --color-navbar-bg: #95A2BB;         /* ← Fondo del navbar */
-  --color-navbar-border: #95A2BB;     /* ← Borde inferior */
-  --color-navbar-hover: #1E335E;      /* ← Hover de botones */
-  --color-navbar-text: #f1f5f9;       /* ← Texto principal */
-  --color-navbar-text-secondary: #cbd5e1; /* ← Texto secundario (rol) */
+  --color-navbar-bg: #f1f5f9;         /* ← Fondo del navbar */
+  --color-navbar-border: #f1f5f9;     /* ← Borde inferior */
+  --color-navbar-hover: #cbd5e1;      /* ← Hover de botones */
+  --color-navbar-text: #071737;       /* ← Texto principal */
+  --color-navbar-text-secondary: #1E335E; /* ← Texto secundario (rol) */
 
   /* UI Genéricos */
   --color-hover: #eef0f2;
+  --color-bg-auth: #eef0f2;   /* ← Fondo de páginas de auth */
 
   /* Tabla */
   --color-table-border: #cbd5e1;
@@ -86,6 +87,7 @@
    ========================================================================== */
 body {
   font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, sans-serif;
+  background-color: var(--bg);
 }
 
 /* ==========================================================================
@@ -110,7 +112,8 @@ body {
   --hvc-danger: var(--color-danger);
 
   /* Variables base de la aplicación */
-  --bg: #fafbfc;
+  --bg: var(--color-bg-auth);
+  --bg-auth: var(--color-bg-auth);
   --border: #eef0f2;
   --text: var(--color-primary-dark);
   --textsecun: var(--color-gray);
@@ -144,10 +147,11 @@ body {
    *   75%  → moderado
    *   100% → color pleno (el hex de @theme)
    */
-  --sidebar-intensity: 35%;
-  --navbar-intensity: 35%;
-  --sidebar-border-intensity: 35%;
-  --navbar-border-intensity: 35%;
+  --sidebar-intensity: 100%;
+  --navbar-intensity: 100%;
+  --sidebar-border-intensity: 100%;
+  --navbar-border-intensity: 100%;
+  --bg-auth-intensity: 100%;    /* ← Intensidad del fondo auth (0%=blanco, 100%=color pleno) */
 
   /* Sidebar */
   --sidebar-bg: var(--color-sidebar-bg);
