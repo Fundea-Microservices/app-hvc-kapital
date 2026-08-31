@@ -7,8 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy:ubuntu": "git fetch origin && git pull && npm install && ng build --configuration production && sudo rm -rf /var/www/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /var/www/hvc-kapital/",
-    "deploy:amazon": "git fetch origin && git pull && npm install && ng build --configuration production && sudo rm -rf /usr/share/nginx/html/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /usr/share/nginx/html/hvc-kapital"
+    "deploy:ubuntu": "git fetch origin && git pull && npm install && ng build --configuration development && sudo rm -rf /var/www/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /var/www/ProyectosFundea/hvc-kapital/app",
+    "deploy:amazon": "git fetch origin && git pull && npm install && ng build --configuration development && sudo rm -rf /usr/share/nginx/html/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /usr/share/nginx/html/hvc-kapital"
   },
   "private": true,
   "dependencies": {
