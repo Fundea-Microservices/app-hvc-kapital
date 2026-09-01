@@ -8,9 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "deploy:ubuntu": "git fetch origin && git pull && npm install && ng build --configuration production && sudo rm -rf /var/www/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /var/www/hvc-kapital/",
-    "deploy:amazon": "git fetch origin && git pull && npm install && ng build --configuration production && sudo rm -rf /usr/share/nginx/html/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /usr/share/nginx/html/hvc-kapital",
-    "storybook": "ng run app-hvc-kapital:storybook",
-    "build-storybook": "ng run app-hvc-kapital:build-storybook"
+    "deploy:amazon": "git fetch origin && git pull && npm install && ng build --configuration production && sudo rm -rf /usr/share/nginx/html/hvc-kapital/* && sudo cp -r dist/app-hvc-kapital/* /usr/share/nginx/html/hvc-kapital"
   },
   "private": true,
   "dependencies": {
@@ -41,8 +39,6 @@
     "@angular/build": "^21.2.21",
     "@angular/cli": "^21.2.21",
     "@angular/compiler-cli": "^21.2.20",
-    "@storybook/angular": "^10.5.9",
-    "@storybook/angular-vite": "^10.5.9",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20",
     "jasmine-core": "~5.7.0",
@@ -51,7 +47,6 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.2.0",
-    "storybook": "^10.5.9",
     "typescript": "~5.9.3",
     "vite": "latest"
   }
