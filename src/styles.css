@@ -42,7 +42,7 @@
      🎨 SIDEBAR — Modifica los valores hex para ajustar el color
      ========================================================================== */
   --color-sidebar-bg: #071737;        /* ← Fondo del sidebar */
-  --color-sidebar-border: #1E335E;    /* ← Borde derecho */
+  --color-sidebar-border: #eef0f2;    /* ← Borde derecho */
   --color-sidebar-hover: #1E335E;     /* ← Hover de items */
   --color-sidebar-active: #FA9A37;    /* ← Item activo */
   --color-sidebar-text: #ffffff;      /* ← Texto e iconos */
@@ -51,8 +51,8 @@
   /* ==========================================================================
      🎨 NAVBAR — Modifica los valores hex para ajustar el color
      ========================================================================== */
-  --color-navbar-bg: #f1f5f9;         /* ← Fondo del navbar */
-  --color-navbar-border: #f1f5f9;     /* ← Borde inferior */
+  --color-navbar-bg: #eef0f2;         /* ← Fondo del navbar */
+  --color-navbar-border: #071737;     /* ← Borde inferior */
   --color-navbar-hover: #cbd5e1;      /* ← Hover de botones */
   --color-navbar-text: #071737;       /* ← Texto principal */
   --color-navbar-text-secondary: #1E335E; /* ← Texto secundario (rol) */

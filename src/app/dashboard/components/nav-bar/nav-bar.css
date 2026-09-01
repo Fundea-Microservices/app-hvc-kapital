@@ -18,7 +18,7 @@
   transition: background-color 0.2s ease;
 }
 .navbar-user-btn:hover {
-  background-color: var(--navbar-border);
+  background-color: var(--navbar-hover);
 }
 
 /* Items del dropdown del usuario */
