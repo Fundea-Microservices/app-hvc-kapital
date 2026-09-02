@@ -1,4 +1,4 @@
-const API_URL = 'http://172.25.5.11:3200/'
+const API_URL = 'http://172.25.5.11:3200'
 
 export const environment = {
     production: true,
