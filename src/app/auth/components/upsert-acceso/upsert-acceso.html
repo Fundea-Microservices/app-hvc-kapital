@@ -17,9 +17,9 @@
         <label class="block text-sm font-medium mb-1 text-primary-dark">Menú principal</label>
         <select class="w-full input-control p-2 border rounded border-primary-light" formControlName="mainMenuId">
           <option [ngValue]="null">Seleccione opción</option>
-          @for (a of (accesos() || []); track a.accesoId) {
+          @for (a of (accesos() || []); track a.id) {
             @if (a.menu.principal) {
-              <option [value]="a.menu.menuId">{{ a.menu.label }}</option>
+              <option [value]="a.menu.id">{{ a.menu.label }}</option>
             }
           }
         </select>

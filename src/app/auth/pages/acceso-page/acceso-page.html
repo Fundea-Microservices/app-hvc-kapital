@@ -23,8 +23,8 @@
       <label class="block text-sm font-medium mb-1 text-primary-dark">Rol</label>
       <select class="w-full input-control p-2 border rounded border-primary-light" (change)="onRolChange($any($event.target).value)">
         <option value="">Seleccione un rol...</option>
-        @for (r of (roles() || []); track r.rolId) {
-        <option [value]="r.rolId">{{ r.nombre }}</option>
+        @for (r of (roles() || []); track r.id) {
+        <option [value]="r.id">{{ r.nombre }}</option>
         }
       </select>
     </div>

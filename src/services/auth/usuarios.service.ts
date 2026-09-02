@@ -22,6 +22,15 @@ export class UsuariosService extends HttpService {
     super(http);
   }
 
+  /**
+   * Los `<select>` opcionales devuelven '' (y 'undefined' si la opción se pintó
+   * sin id). El API valida UUID, así que esos valores deben viajar como undefined.
+   */
+  private limpiarId(valor?: string | null): string | undefined {
+    if (!valor || valor === 'undefined' || valor === 'null') return undefined;
+    return valor;
+  }
+
   async getUsuarios({ page = 1, limit = 10, busqueda = '', all = false , puestoNombre = ''} = {}): Promise<UsuarioListResponse | null> {
     try {
       let params: any = { page, limit, busqueda };
@@ -144,11 +153,11 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
 
   async updateUsuario(usuario: IUsuario): Promise<UsuarioResponse | null> {
     try {
-      const { usuarioId, nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursal_id, activo } = usuario;
-      const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${usuarioId}`, {
+      const { id, nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursalId, activo } = usuario;
+      const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, {
         nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId,
-        puestoId: puestoId || undefined,
-        sucursal_id: sucursal_id || undefined,
+        puestoId: this.limpiarId(puestoId),
+        sucursalId: this.limpiarId(sucursalId),
         activo,
       }));
       if (resp.body?.success) {

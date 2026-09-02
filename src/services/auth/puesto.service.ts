@@ -34,8 +34,8 @@ export class PuestoService extends HttpService {
         params = {...params, todos: all};
       }
       const resp = await firstValueFrom(this.get<PuestoListResponse>(`${this.endpoints.empresa}`, params));
-      if (resp.body?.success) {        
-        // this.toastr.success(resp.body.message, 'Success');      
+      if (resp.body?.success) {
+        // this.toastr.success(resp.body.message, 'Success');
         return resp.body;
       }
 
@@ -65,10 +65,10 @@ export class PuestoService extends HttpService {
   async updatePuesto(puestoUpdate: IPuesto): Promise<PuestoResponse | null> {
     try {
       // Preparamos los datos para actualizar
-      const { puestoId, nombre } = puestoUpdate;
-      const resp = await firstValueFrom(this.put<PuestoResponse>(`${this.endpoints.empresa}/${puestoId}`, {
+      const { id, nombre } = puestoUpdate;
+      const resp = await firstValueFrom(this.put<PuestoResponse>(`${this.endpoints.empresa}/${id}`, {
         nombre
-      }));          
+      }));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
         return resp.body;
@@ -82,7 +82,7 @@ export class PuestoService extends HttpService {
     }
   }
 
-  async createPuesto(createPuesto: Omit<IPuesto, 'puestoId'>): Promise<PuestoResponse | null> {
+  async createPuesto(createPuesto: Omit<IPuesto, 'id'>): Promise<PuestoResponse | null> {
     try {
       // Obtenemos solo lo necesario para crear el puesto
       const { nombre } = createPuesto;
@@ -96,8 +96,8 @@ export class PuestoService extends HttpService {
 
       return null;
     } catch (error: any) {
-      console.log("🚀 ~ RolService ~ createRol ~ error:", error)
-      this.toastr.error(error?.error?.message || 'Error al crear rol', 'Error');
+      console.log("🚀 ~ PuestoService ~ createPuesto ~ error:", error)
+      this.toastr.error(error?.error?.message || 'Error al crear puesto', 'Error');
       return null;
     }
   }

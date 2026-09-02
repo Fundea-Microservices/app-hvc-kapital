@@ -21,9 +21,9 @@
     <div class="p-3 text-sm text-navbar-text-secondary">Sin accesos asignados</div>
 } @else {
 <div class="hs-accordion-group" id="side-menu-accordion-group">
-    @for(acceso of accesos(); track acceso.accesoId){
+    @for(acceso of accesos(); track acceso.id){
         <!-- Item de acordeón por cada acceso -->
-        <div class="hs-accordion" [id]="acceso.accesoId">
+        <div class="hs-accordion" [id]="acceso.id">
             <button type="button"
                 class="hs-accordion-toggle sidebar-accordion-toggle w-full flex items-center gap-x-3 py-2.5 px-3 text-sm font-semibold rounded-lg focus:outline-none"
                 [id]="acceso.accesoId + '-btn'"
@@ -42,10 +42,10 @@
             <div
                 class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden"
                 role="region"
-                [id]="acceso.accesoId + '-content'"
-                [attr.aria-labelledby]="acceso.accesoId + '-btn'">
+                [id]="acceso.id + '-content'"
+                [attr.aria-labelledby]="acceso.id + '-btn'">
                 <div class="pl-6 space-y-1 mt-1">
-                    @for(submenu of acceso.subMenus; track submenu.accesoId){
+                    @for(submenu of acceso.subMenus; track submenu.id){
                         <a [routerLink]="prefix + submenu.menu.pathWeb"
                             routerLinkActive="border-l-4 border-accent-orange"
                             class="sidebar-submenu-item flex items-center gap-x-3 py-2 px-3 text-sm font-medium focus:outline-none">
