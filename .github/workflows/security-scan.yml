@@ -68,3 +68,8 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           severity: 'HIGH,CRITICAL'
+
+  deploy-frontend:
+    name: "Desplegar Frontend Angular"
+    needs: deploy-api
+    uses: ./.github/workflows/deploy-frontend.yml
