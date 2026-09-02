@@ -7,15 +7,21 @@ import { TokenVerifierService } from './token-verifier.service';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router, private tokenVerifier: TokenVerifierService) {}
+  constructor(private authService: AuthService, private router: Router, private tokenVerifier: TokenVerifierService) { }
 
   canActivate(): boolean | UrlTree {
-  if (this.authService.isAuthenticated()) {
-    // Iniciar verificación periódica del token (si no está activa)
-    this.tokenVerifier.ensureStarted();
-    return true;
+    if (this.authService.isAuthenticated()) {
+      // Iniciar verificación periódica del token (si no está activa)
+      this.tokenVerifier.ensureStarted();
+      return true;
+    }
+
+    // Había token pero está vencido/corrupto: se limpia la sesión antes de salir
+    if (this.authService.token) {
+      this.authService.logout(AuthService.MSG_SESION_EXPIRADA);
+    }
+
+    // Si no está autenticado, envía al login de Fundea
+    return this.router.createUrlTree(['/login']);
   }
-  // Si no está autenticado, envía al login de Fundea
-  return this.router.createUrlTree(['/login']);
-}
 };

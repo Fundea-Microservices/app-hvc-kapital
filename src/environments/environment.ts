@@ -1,5 +1,4 @@
-//const API_URL = 'http://localhost:3400/'//CAMBIAR A 3030
-const API_URL = 'http://localhost:3030/'
+const API_URL = 'http://172.25.5.11:3200'
 
 export const environment = {
     production: true,

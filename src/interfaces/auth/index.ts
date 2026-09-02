@@ -1,5 +1,5 @@
 export interface IPuesto {
-    puestoId?: string;  // UUID del puesto
+    id?: string;        // UUID del puesto
     nombre: string;    // Nombre del puesto
     // Relaciones
     usuarios?: IUsuario[];  // Usuarios asociados al puesto
@@ -17,7 +17,7 @@ export interface ISucursal {
 }
 
 export interface IUsuario {
-  usuarioId?: string;             // UUID del usuario
+  id?: string;                   // UUID del usuario
   nombreCompleto: string;        // Nombre completo concatenado
   nombre1: string;               // Primer nombre
   nombre2?: string | null;       // Segundo nombre
@@ -34,7 +34,7 @@ export interface IUsuario {
   activo: boolean;               // Estado del usuario (activo/inactivo)
   rolId: string;                 // ID del rol asignado
   puestoId?: string | null;      // ID del puesto (si aplica)
-  sucursal_id?: string | null;     // ID de la sucursal (si aplica)
+  sucursalId?: string | null;    // ID de la sucursal (si aplica)
 
   // Relaciones
   rol?: IRol;                    // Objeto del rol relacionado
@@ -48,7 +48,7 @@ export interface IUsuario {
 }
 
 export interface IAcceso {
-  accesoId?: string;              // UUID del acceso
+  id?: string;                   // UUID del acceso
   ordenMenu: number;             // Orden del menú
   showApp: boolean;              // Si se muestra en la app móvil
   showWeb: boolean;              // Si se muestra en la web
@@ -70,7 +70,7 @@ export interface IAcceso {
 }
 
 export interface ISubmenu {
-  accesoId?: string;              // UUID del acceso
+  id?: string;                   // UUID del acceso
   ordenMenu: number;             // Orden del menú
   showApp: boolean;              // Si se muestra en la app móvil
   showWeb: boolean;              // Si se muestra en la web
@@ -118,7 +118,7 @@ export interface ILogin {
  * Se asignan a roles (IPermisoRol) y, como excepción, a usuarios (IPermisoUsuario).
  */
 export interface IPermiso {
-  permisoId?: string;            // UUID del permiso
+  id?: string;                   // UUID del permiso
   codigo: string;                // Código único (ej. "USR_CREAR")
   modulo: string;                // Módulo al que pertenece (ej. "usuarios")
   accion: string;                // Acción que habilita (ej. "crear")
@@ -159,7 +159,7 @@ export interface IPermisoUsuario {
 
 
 export interface IMenu {
-  menuId?: string;        // UUID del menú
+  id?: string;            // UUID del menú
   label: string;          // Nombre o etiqueta del menú
   descripcion: string;    // Descripción del menú
   pathApp: string;        // Ruta de la aplicación móvil o cliente
@@ -189,7 +189,7 @@ export enum TipoConfiguracion {
  * Representa una configuración del sistema.
  */
 export interface IConfig {
-  configId?: string;            // UUID único de la configuración
+  id?: string;                  // UUID único de la configuración
   llave: string;                // Clave identificadora de la configuración (ej. "TOKEN_EXPIRATION")
   valor: string;                // Valor de la configuración (almacenado como texto)
   tipo: TipoConfiguracion;      // Tipo de dato (string, number, boolean, array, object)
