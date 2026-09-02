@@ -1,6 +1,9 @@
 name: "Deploy Frontend (Angular + nginx)"
 
 on:
+  push:
+    branches: ["develop", "production", "certification"]
+  workflow_dispatch:
   workflow_call:
 
 permissions:
