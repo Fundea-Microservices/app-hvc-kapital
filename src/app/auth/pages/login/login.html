@@ -1,62 +1,62 @@
-<div class="min-h-screen w-full bg-[#0a1626] flex flex-col p-4">
+<div class="min-h-screen w-full flex flex-col p-4 bg-primary-dark">
 
   <!-- Main Content -->
   <div class="main-container flex grow items-center justify-center p-4">
 
+    <!-- CAMBIO: Fondo de la tarjeta a bg-white y sombra acentuada -->
     <div class="box-login w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 rounded-3xl
-           bg-[#0f2138] border border-[#1b3553]
-           shadow-2xl relative overflow-hidden">
-
+           relative overflow-hidden bg-white shadow-2xl">
 
       <!-- Company Logo -->
-      <div class="flex flex-col items-center justify-center p-10 bg-[#0b1b30]">
+      <!-- CAMBIO: Se eliminó bg-primary-dark de este contenedor -->
+      <div class="flex flex-col items-center justify-center p-10">
 
-        <div class="w-60 h-60 flex items-center justify-center rounded-full">
-          <img src="images/logo.png" class="w-full h-full object-contain" alt="Logo" />
+        <div class="w-auto h-auto flex items-center justify-center rounded-full">
+          <img src="images/hvc_logo.png" class="w-full h-full object-contain" alt="Logo HVC Kapital" />
         </div>
 
-        <h2 class="mt-6 text-sky-100 text-2xl font-semibold text-center leading-tight">
+        <!-- CAMBIO: Texto a text-primary-dark para contrastar con el blanco -->
+        <h2 class="mt-6 text-2xl font-semibold text-center leading-tight text-primary-dark">
           Panel Administrativo <br />
         </h2>
       </div>
 
-
       <!-- Login Form -->
-      <div class="p-10 flex flex-col justify-center text-slate-100">
+      <div class="p-10 flex flex-col justify-center">
 
-        <h1 class="text-4xl font-bold mb-2 text-white">Ingreso</h1>
-        <p class="text-2xl text-sky-300/80 mb-8">Accede a tu cuenta</p>
-
+        <!-- CAMBIO: Título principal a text-primary-dark -->
+        <h1 class="text-4xl font-bold mb-2 text-primary-dark">Ingreso</h1>
+        <p class="text-2xl mb-8 text-gray-light">Accede a tu cuenta</p>
 
           <!-- Usuario -->
-          <label class="text-slate-300 text-sm">Usuario</label>
+          <!-- CAMBIO: Label a text-primary-light (Azul Grisáceo) -->
+          <label class="text-sm font-medium text-primary-light">Usuario</label>
+          <!-- CAMBIO: Inputs con bordes y texto oscuro -->
           <input type="text" name="username"
-            class="w-full mt-1 mb-6 px-4 py-2 rounded-xl bg-[#0b1b30]
-                 border border-[#1b3553] text-slate-100 outline-none
-                 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40 transition-all"
+            class="login-input w-full mt-1 mb-6 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-transparent focus:border-primary focus:ring-1 focus:ring-primary"
             [value]="userName()" (input)="userName.set(txtUserName.value)" #txtUserName>
+            
           <!-- Contraseña -->
-          <label class="text-slate-300 text-sm">Contraseña</label>
+          <label class="text-sm font-medium text-primary-light">Contraseña</label>
           <input type="password" name="password"
-            class="w-full mt-1 mb-8 px-4 py-2 rounded-xl bg-[#0b1b30]
-                 border border-[#1b3553] text-slate-100 outline-none
-                 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40 transition-all"
+            class="login-input w-full mt-1 mb-8 px-4 py-2 rounded-xl outline-none transition-all border border-gray-light text-primary-dark bg-transparent focus:border-primary focus:ring-1 focus:ring-primary"
             [value]="password()" (input)="password.set(txtPassword.value)"
             (keydown.enter)="login()"
             #txtPassword >
+            
           @if(errorObj().isError) {
-          <div class="text-red-400 text-sm text-center">
+          <div class="text-sm text-center text-danger mb-4">
             {{ errorObj().message }}
           </div>
           }
+          
           <!-- Botón Ingresar -->
+          <!-- CAMBIO: Se aplica la clase btn-hvc-primary de tu CSS -->
           <button type="button"
-            class="w-full py-3 rounded-xl bg-linear-to-r from-sky-500 to-blue-700
-                 hover:from-sky-400 hover:to-blue-600 transition-all
-                 text-white font-semibold shadow-lg hover:shadow-sky-500/40"
+            class="login-btn w-full py-3 rounded-xl transition-all font-semibold shadow-lg btn-hvc-primary"
             [disabled]="loading()" (click)="login()">
             @if (loading()) {
-              <span class="inline-flex items-center gap-2">
+              <span class="inline-flex items-center justify-center gap-2">
                 <svg class="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -74,10 +74,11 @@
   </div>
 
   <!-- Footer -->
+  <!-- Mantenemos los colores claros aquí porque sigue sobre el fondo oscuro exterior -->
   <footer class="text-center mt-10 mb-4">
-    <span class="text-sm text-slate-400 sm:text-center">
+    <span class="text-sm sm:text-center text-gray-light">
       © 2026
-      <a [routerLink]="['/']" class="hover:underline hover:text-sky-300">Admin</a>. All Rights Reserved.
+      <a [routerLink]="['/']" class="hover:underline text-white">KVC Kapital</a>. All Rights Reserved.
     </span>
   </footer>
 

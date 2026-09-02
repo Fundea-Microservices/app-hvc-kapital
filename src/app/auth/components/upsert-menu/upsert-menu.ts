@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [ReactiveFormsModule, CustomIconComponent],
   templateUrl: './upsert-menu.html',
+  styleUrls: ['./upsert-menu.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertMenuComponent implements OnDestroy {

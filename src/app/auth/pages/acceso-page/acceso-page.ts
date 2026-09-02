@@ -13,6 +13,7 @@ import { CustomIconComponent } from '../../../shared/components/custom-icon/cust
   standalone: true,
   imports: [RouterLink, UpsertAccesoComponent, CustomIconComponent],
   templateUrl: './acceso-page.html',
+  styleUrl: './acceso-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AccesoPageComponent {

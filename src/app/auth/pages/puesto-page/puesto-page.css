@@ -1,0 +1,48 @@
+/* Estilos para puesto-page — Paleta HVC Kapital */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+.puesto-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.puesto-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+.puesto-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.puesto-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+.puesto-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.puesto-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+.puesto-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.puesto-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+.puesto-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.puesto-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.puesto-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}

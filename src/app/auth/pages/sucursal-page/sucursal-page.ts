@@ -26,6 +26,7 @@ const emptySucursal: ISucursal = {
   standalone: true,
   imports: [RouterLink, CustomIconComponent, PaginationComponent, UpsertSucursalComponent],
   templateUrl: './sucursal-page.html',
+  styleUrl: './sucursal-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SucursalPageComponent {

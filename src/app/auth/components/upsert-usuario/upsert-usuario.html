@@ -2,38 +2,38 @@
   <!-- Nombres -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Primer nombre</label>
-      <input type="text" formControlName="nombre1" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Primer nombre</label>
+      <input type="text" formControlName="nombre1" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
       @if (form().get('nombre1')?.touched && form().get('nombre1')?.invalid) {
-      <div class="text-red-600 text-xs mt-1">Requerido (min 2)</div>
+      <div class="text-xs mt-1 text-danger">Requerido (min 2)</div>
       }
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Segundo nombre</label>
-      <input type="text" formControlName="nombre2" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Segundo nombre</label>
+      <input type="text" formControlName="nombre2" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Tercer nombre</label>
-      <input type="text" formControlName="nombre3" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Tercer nombre</label>
+      <input type="text" formControlName="nombre3" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
     </div>
   </div>
 
   <!-- Apellidos -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Primer apellido</label>
-      <input type="text" formControlName="apellido1" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Primer apellido</label>
+      <input type="text" formControlName="apellido1" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
       @if (form().get('apellido1')?.touched && form().get('apellido1')?.invalid) {
-      <div class="text-red-600 text-xs mt-1">Requerido (min 2)</div>
+      <div class="text-xs mt-1 text-danger">Requerido (min 2)</div>
       }
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Segundo apellido</label>
-      <input type="text" formControlName="apellido2" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Segundo apellido</label>
+      <input type="text" formControlName="apellido2" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Tercer apellido</label>
-      <input type="text" formControlName="apellido3" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Tercer apellido</label>
+      <input type="text" formControlName="apellido3" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
     </div>
   </div>
 
@@ -41,15 +41,15 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     @if(!autoEdit()){
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
-      <input type="text" formControlName="userName" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Usuario</label>
+      <input type="text" formControlName="userName" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
     </div>
     }
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-      <input type="email" formControlName="correo" class="input-control" />
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Correo</label>
+      <input type="email" formControlName="correo" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
       @if (form().get('correo')?.touched && form().get('correo')?.invalid) {
-      <div class="text-red-600 text-xs mt-1">Correo inválido</div>
+      <div class="text-xs mt-1 text-danger">Correo inválido</div>
       }
     </div>
   </div>
@@ -57,10 +57,10 @@
   <!-- Password (solo al crear) -->
   @if (nuevo()) {
   <div>
-    <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-    <input type="password" formControlName="clave" class="input-control" />
+    <label class="block text-sm font-medium mb-1 text-primary-dark">Contraseña</label>
+    <input type="password" formControlName="clave" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
     @if (form().get('clave')?.touched && form().get('clave')?.invalid) {
-    <div class="text-red-600 text-xs mt-1">Mínimo 6 caracteres</div>
+    <div class="text-xs mt-1 text-danger">Mínimo 6 caracteres</div>
     }
   </div>
   }
@@ -69,8 +69,8 @@
   <!-- Rol y Puesto -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
-      <select formControlName="rolId" class="input-control">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Rol</label>
+      <select formControlName="rolId" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary">
         <option value="">Seleccione un rol</option>
         @for (rol of (roles() || []); track rol.id) {
         <option [value]="rol.id">{{ rol.nombre }}</option>
@@ -78,8 +78,8 @@
       </select>
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Puesto <span class="text-gray-400 font-normal">(opcional)</span></label>
-      <select formControlName="puestoId" class="input-control">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Puesto <span class="font-normal text-gray-light">(opcional)</span></label>
+      <select formControlName="puestoId" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary">
         <option value="">Sin puesto</option>
         @for (p of (puestos() || []); track p.id) {
         <option [value]="p.id">{{ p.nombre }}</option>
@@ -90,8 +90,8 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-1 gap-3">
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Sucursal <span class="text-gray-400 font-normal">(opcional)</span></label>
-      <select formControlName="sucursalId" class="input-control">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Sucursal <span class="font-normal text-gray-light">(opcional)</span></label>
+      <select formControlName="sucursal_id" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary">
         <option value="">Sin sucursal</option>
         @for (s of (sucursales() || []); track s.id) {
         <option [value]="s.id">{{ s.nombre }}</option>
@@ -99,7 +99,7 @@
       </select>
     </div>
   </div>
- 
+
   }
 
   <!-- Activo -->
@@ -107,21 +107,21 @@
     <label class="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" formControlName="activo" class="sr-only peer" />
       <div
-        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 transition-colors">
+        class="w-11 h-6 peer-focus:outline-none peer-focus:ring-2 rounded-full transition-colors bg-gray-light ring-primary">
       </div>
       <div
         class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
       </div>
-      <span class="ml-3 text-sm font-medium text-gray-700">Activo</span>
+      <span class="ml-3 text-sm font-medium text-primary-dark">Activo</span>
     </label>
   </div>
 
   <!-- Botones -->
   <div class="flex justify-end space-x-3 pt-2">
     <button type="button" (click)="onCancel()"
-      class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Cancelar</button>
+      class="btn-usuario-cancel px-4 py-2 text-sm font-medium rounded-md">Cancelar</button>
     <button type="submit" [disabled]="isLoading() || form().invalid"
-      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">{{
+      class="btn-hvc-primary px-4 py-2 text-sm font-medium rounded-md disabled:opacity-50">{{
       btnText }}</button>
   </div>
 </form>

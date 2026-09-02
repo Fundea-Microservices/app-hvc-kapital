@@ -16,6 +16,7 @@ import { ISucursal } from '../../../../interfaces/auth';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './upsert-sucursal.html',
+  styleUrls: ['./upsert-sucursal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertSucursalComponent {

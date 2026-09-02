@@ -22,6 +22,7 @@ const emptyPermiso: IPermiso = {
   selector: 'app-permiso-page',
   imports: [RouterLink, CustomIconComponent, TimezoneDatePipe, PaginationComponent, UpsertPermisoComponent],
   templateUrl: './permiso-page.html',
+  styleUrl: './permiso-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PermisoPageComponent {

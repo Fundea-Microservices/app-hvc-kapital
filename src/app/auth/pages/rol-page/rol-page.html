@@ -1,25 +1,25 @@
 <nav class="mb-4" aria-label="breadcrumb">
-    <ol class="flex flex-wrap text-sm text-gray-700">
+    <ol class="flex flex-wrap text-sm text-primary-dark">
         <li class="flex items-center">
-            <a routerLink="/dashboard" class="text-blue-600 hover:underline">Inicio</a>
+            <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
             <span class="mx-2">></span>
         </li>
         <li class="flex items-center">
-            <a routerLink="/dashboard/tesoreria" class="text-blue-600 hover:underline">Configuración</a>
+            <a routerLink="/dashboard/tesoreria" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
             <span class="mx-2">></span>
         </li>
-        <li class="flex items-center text-gray-500">
+        <li class="flex items-center text-primary-light">
             Roles
         </li>
     </ol>
 </nav>
 
 
-<div class="bg-white shadow rounded-lg border border-gray-300">
-    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-300">
-        <h2 class="text-lg font-semibold text-gray-800">Roles</h2>
+<div class="shadow rounded-lg border border-primary-light">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
+        <h2 class="text-lg font-semibold text-primary-dark">Roles</h2>
         <button (click)="openUpsertModal(true)"
-            class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+            class="btn-hvc-primary px-4 py-2 text-sm rounded transition">
             Nuevo rol
         </button>
     </div>
@@ -30,11 +30,11 @@
                 <label for="searchRol" class="sr-only">Buscar rol</label>
                 <input type="text" id="searchRol" placeholder="Buscar rol..." [value]="buscador()"
                     (input)="onSearch($any($event.target).value)"
-                    class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    class="rol-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
             </div>
             <div>
                 <button type="button" (click)="fetchData()" [disabled]="isLoading()"
-                    class="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition disabled:opacity-50">
+                    class="rol-btn-search px-4 py-2 text-sm rounded transition disabled:opacity-50">
                     @if (isLoading()) {
                     Buscando...
                     } @else {
@@ -46,7 +46,7 @@
 
         <div class="mt-6 overflow-x-auto">
             <table class="gc-table min-w-full text text-left">
-                <thead class="bg-white text-black">
+                <thead>
                     <tr>
                         <th class="gc-th">#</th>
                         <th class="gc-th">Nombre</th>
@@ -58,46 +58,48 @@
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                        <td colspan="7" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             Cargando roles ...
                         </td>
                     </tr>
                     } @else if (rolesList().length === 0) {
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                        <td colspan="7" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             <app-custom-icon name="user-round-cog" class="inline mr-2"></app-custom-icon>
                             No se encontraron roles
                         </td>
                     </tr>
                     } @else {
-                    @for (rol of rolesList(); track rol.id; let i = $index) {
-                    <tr class="hover:bg-gray-300 odd:bg-white even:bg-gray-100">
-                        <td class="px-2 py-2 text-center border border-gray-300 justify-center">
+                    @for (rol of rolesList(); track rol.rolId; let i = $index) {
+                    <tr class="rol-table-row">
+                        <td class="px-2 py-2 text-center justify-center border border-table-border">
                             {{ (pagination().page - 1) * pagination().pageSize + i + 1 }}
                         </td>
-                        <td class="px-2 py-2 border border-gray-300">{{ rol.nombre }}</td>
-                        <td class="px-2 py-2 border border-gray-300 text-center">
-                            <div class="flex justify-center items-center">
-                                <label [for]="'switch-' + rol.id" class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" [id]="'switch-' + rol.id" [checked]="rol.activo"
-                                        (change)="toggleRolStatus(rol, cbxActivo.checked)" #cbxActivo
-                                        [disabled]="rol.esAdmin" class="peer sr-only">
-                                    <div class="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50"></div>
-                                </label>
-                            </div>
+                        <td class="px-2 py-2 border border-table-border">{{ rol.nombre }}</td>
+                        <td class="px-2 py-2 text-center border border-table-border">
+                            <label [for]="'switch-' + rol.rolId" class="relative inline-block w-8 h-4 cursor-pointer">
+                                <input type="checkbox" [id]="'switch-' + rol.rolId" [checked]="rol.activo"
+                                    (change)="toggleRolStatus(rol, $any($event.target).checked)" class="peer sr-only"
+                                    [disabled]="rol.esAdmin">
+                                <span
+                                    class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+                                    [style.backgroundColor]="rol.activo ? 'var(--hvc-accent-gold)' : ''"></span>
+                                <span
+                                    class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
+                                    [style.transform]="rol.activo ? 'translateX(1.25rem)' : ''"></span>
+                            </label>
                         </td>
 
-
-                        <td class="px-2 py-2 text-center border border-gray-300">
+                        <td class="px-2 py-2 text-center border border-table-border">
                             {{ rol.created_at | tzDate: 'dd/MM/yyyy' }}
                         </td>
-                        <td class="px-3 py-1.5 text-center border space-x-2 border-gray-300">
+                        <td class="px-3 py-1.5 text-center space-x-2 border border-table-border">
                             <button (click)="openUpsertModal(false, rol)"
-                                class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition">
+                                class="rol-btn-edit px-2 py-1 text-white rounded text-xs transition">
                                 <app-custom-icon [name]="'square-pen'" [color]="'#eee'" [size]="18"></app-custom-icon>
                             </button>
                             <button (click)="openDeleteModal(rol)"
-                                class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition">
+                                class="rol-btn-delete px-2 py-1 text-white rounded text-xs transition">
                                 <app-custom-icon [name]="'trash-2'" [color]="'#eee'" [size]="18"></app-custom-icon>
                             </button>
                         </td>
@@ -108,7 +110,6 @@
             </table>
         </div>
 
-        <!-- Paginación -->
         @if (pagination().totalItems > 0) {
         <div class="mt-4 flex justify-center items-center">
             <app-pagination [paginationObj]="pagination()" (changePage)="onChangePage($event)" [showText]="true" />
@@ -125,14 +126,15 @@
     <div
         class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 h-[calc(100%-56px)] sm:mx-auto">
         <div
-            class="max-h-full overflow-hidden flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl pointer-events-auto dark:bg-white-800 dark:border-white-700 dark:shadow-neutral-700/70">
-            <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200 dark:border-gray-300">
-                <h3 id="hs-upsert-modal-label" class="font-bold text-gray-800 dark:text-gray-900">
+            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+            <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+                <h3 id="hs-upsert-modal-label" class="font-bold text-primary-dark">
                     {{ modal().titulo }}
                 </h3>
                 <button type="button" (click)="closeModal()"
-                    class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-hidden focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600"
-                    aria-label="Close" data-hs-overlay="#hs-scroll-inside-body-modal">
+                    class="size-8 inline-flex justify-center items-center rounded-full"
+                    class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+                    aria-label="Close">
                     <span class="sr-only">Close</span>
                     <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -158,14 +160,15 @@
     <div
         class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 h-[calc(100%-56px)] sm:mx-auto">
         <div
-            class="max-h-full overflow-hidden flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl pointer-events-auto ">
-            <div class="flex justify-between items-center py-3 px-4 border-b border-gray-200 ">
-                <h3 id="hs-delete-modal-label" class="font-bold text-gray-800 ">
+            class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+            <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+                <h3 id="hs-delete-modal-label" class="font-bold text-primary-dark">
                     Eliminar rol
                 </h3>
                 <button type="button" (click)="closeModal()"
-                    class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-hidden focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none "
-                    aria-label="Close" data-hs-overlay="#hs-scroll-inside-body-modal">
+                    class="size-8 inline-flex justify-center items-center rounded-full"
+                    class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+                    aria-label="Close">
                     <span class="sr-only">Close</span>
                     <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -178,8 +181,7 @@
             <div class="p-4 overflow-y-auto">
                 <div class="space-y-4">
                     <div class="flex">
-                        <div class=" flex-1 bg-red-50 border border-red-200 text-sm text-red-800 rounded-lg p-4 dark:bg-red-800/10 dark:border-red-900 dark:text-red-500"
-                            role="alert" tabindex="-1" aria-labelledby="hs-with-list-label">
+                        <div class="flex-1 text-sm rounded-lg p-4 bg-danger/10 text-primary-dark" role="alert" tabindex="-1">
                             <div class="flex">
                                 <div class="shrink-0">
                                     <svg class="shrink-0 size-4 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -194,32 +196,19 @@
                                     <h3 id="hs-with-list-label" class="text-sm font-semibold">
                                         Esta seguro de eliminar el rol "{{ rolEdit().nombre }}"?
                                     </h3>
-                                    <!-- <div class="mt-2 text-sm text-red-700 dark:text-red-400">
-                                        <ul class="list-disc space-y-1 ps-5">
-                                            <li>
-                                                This username is already in use
-                                            </li>
-                                            <li>
-                                                Email field can't be empty
-                                            </li>
-                                            <li>
-                                                Please enter a valid phone number
-                                            </li>
-                                        </ul>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-gray-200">
+            <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-primary-light">
                 <button type="button" (click)="closeModal()"
-                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-white border border-primary-light">
                     Cerrar
                 </button>
                 <button type="button" (click)="deleteRol(rolEdit())"
-                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-red-600 text-white hover:bg-red-700 focus:outline-hidden focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none">
+                    class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg text-white bg-danger">
                     Eliminar
                 </button>
             </div>

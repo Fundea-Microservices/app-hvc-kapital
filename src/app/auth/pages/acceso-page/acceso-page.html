@@ -1,27 +1,27 @@
 <nav class="mb-4" aria-label="breadcrumb">
-  <ol class="flex flex-wrap text-sm text-gray-700">
+  <ol class="flex flex-wrap text-sm text-primary-dark">
     <li class="flex items-center">
-      <a routerLink="/dashboard" class="text-blue-600 hover:underline">Inicio</a>
+      <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
       <span class="mx-2">></span>
     </li>
     <li class="flex items-center">
-      <a routerLink="/dashboard/config" class="text-blue-600 hover:underline">Configuración</a>
+      <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
       <span class="mx-2">></span>
     </li>
-    <li class="flex items-center text-gray-500">Accesos</li>
+    <li class="flex items-center text-primary-light">Accesos</li>
   </ol>
 </nav>
 
-<div class="bg-white shadow rounded-lg border border-gray-300">
-  <div class="flex items-center justify-between px-4 py-3 border-b border-gray-300">
-    <h2 class="text-lg font-semibold text-gray-800">Asignación de accesos por rol</h2>
+<div class="shadow rounded-lg border border-primary-light">
+  <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
+    <h2 class="text-lg font-semibold text-primary-dark">Asignación de accesos por rol</h2>
   </div>
 
   <div class="p-4 space-y-4">
     <!-- Select de roles -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
-      <select class="w-full input-control p-2 border rounded" (change)="onRolChange($any($event.target).value)">
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Rol</label>
+      <select class="w-full input-control p-2 border rounded border-primary-light" (change)="onRolChange($any($event.target).value)">
         <option value="">Seleccione un rol...</option>
         @for (r of (roles() || []); track r.id) {
         <option [value]="r.id">{{ r.nombre }}</option>
@@ -30,7 +30,7 @@
     </div>
 
     @if(selectedRolId().trim() === ''){
-    <div class="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+    <div class="p-4 border-l-4 bg-warning/15 border-warning text-primary-dark">
       <p>Por favor, seleccione un rol para gestionar sus accesos.</p>
     </div>
     } @else {
@@ -44,13 +44,13 @@
         <ul class="mt-2 text-[0.75em] space-y-1">
           @for (menu of principalMenus; track menu.id) {
           @if (!isAssigned(menu.id)){
-          <li class="flex items-center justify-between bg-white border border-gray-200 rounded px-3 py-2">
+          <li class="flex items-center justify-between bg-white rounded px-3 py-2 border border-primary-light">
             <div class="flex items-center gap-2">
               <app-custom-icon [name]="menu.icono" [size]="18"></app-custom-icon>
               <span>{{ menu.label }}</span>
             </div>
             <button
-              class="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-full"
+              class="btn-acceso-add inline-flex items-center px-3 py-1 text-white text-xs font-medium rounded-full"
               (click)="abrirAsignar(menu)">{{ 'Añadir' }}</button>
           </li>
           }}
@@ -64,19 +64,19 @@
             placeholder="Buscar submenús..." 
             [value]="filterSubmenus()"
             (input)="onFilterSubmenusChange($any($event.target).value)"
-            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            class="w-full px-3 py-1.5 text-sm rounded-md focus:outline-none focus:ring-2 border border-primary-light ring-primary" />
         </div>
 
         <ul class="mt-2 text-[0.75em] space-y-1">
           @for (menu of subMenusAvailable(); track menu.id) {
           @if (!isAssigned(menu.id)){
-          <li class="flex items-center justify-between bg-white border border-gray-200 rounded px-3 py-1">
+          <li class="flex items-center justify-between bg-white rounded px-3 py-1 border border-primary-light">
             <div class="flex items-center gap-2">
               <app-custom-icon [name]="menu.icono" [size]="16"></app-custom-icon>
               <span>{{ menu.label }}</span>
             </div>
             <button
-              class="inline-flex items-center px-3 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-full"
+              class="btn-acceso-add inline-flex items-center px-3 py-0.5 text-white text-xs rounded-full"
               (click)="abrirAsignar(menu)">{{ 'Añadir' }}</button>
           </li>
           }}
@@ -86,52 +86,52 @@
       <div class="col-span-4">
         <div class="overflow-x-auto">
           
-          <h4 class="text-sm text-green-500">Arraste los submenus para ordenarlos</h4>
-          <table class="min-w-full text-[0.85em] divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+          <h4 class="text-sm text-accent-orange">Arraste los submenus para ordenarlos</h4>
+          <table class="min-w-full text-[0.85em] divide-y">
+            <thead style="background-color: var(--table-header-bg)">
               <tr>
-                <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">Orden</th>
-                <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">Menú</th>
-                <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">Activo</th>
-                <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">APP</th>
-                <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">Web</th>
-                <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">Acciones</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-table-header">Orden</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-table-header">Menú</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-table-header">Activo</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-table-header">APP</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-table-header">Web</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-table-header">Acciones</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
+            <tbody style="background-color: var(--table-row-bg)">
               @for (item of accesos(); track item.id; let i = $index) {
-              <tr class="odd:bg-white even:bg-gray-100">
-                <td class="px-3 py-2 text-center align-middle"><b>{{ item.ordenMenu }}</b></td>
-                <td class="px-3 py-2 align-middle">
+              <tr class="acceso-table-row">
+                <td class="px-3 py-2 text-center align-middle border border-table-border"><b>{{ item.ordenMenu }}</b></td>
+                <td class="px-3 py-2 align-middle border border-table-border">
                   <div class="flex items-center gap-2">
                     <app-custom-icon [name]="item.menu.icono" [size]="18"></app-custom-icon>
                     <b>{{ item.menu.label }}</b>
                   </div>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle">
+                <td class="px-3 py-2 text-center align-middle border border-table-border">
                   <input type="checkbox" id="switchCheckDefault{{i}}"
-                    class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-0" [checked]="item.activo"
+                    class="h-4 w-4 rounded focus:ring-0" style="accent-color: var(--hvc-accent-orange); border-color: var(--hvc-primary-light)" [checked]="item.activo"
                     (change)="changeActive(item, cbxActive.checked)" [value]="item.activo" #cbxActive>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle text-[0.8em]">
+                <td class="px-3 py-2 text-center align-middle text-[0.8em] border border-table-border">
                   <input type="checkbox" id="cbxShowApp{{i}}"
-                    class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-0" [checked]="item.showApp"
+                    class="h-4 w-4 rounded focus:ring-0" style="accent-color: var(--hvc-accent-orange); border-color: var(--hvc-primary-light)" [checked]="item.showApp"
                     (change)="changeShowApp(item, cbxShowApp.checked)" [disabled]="!item.activo" [value]="item.showApp"
                     #cbxShowApp>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle text-[0.8em]">
+                <td class="px-3 py-2 text-center align-middle text-[0.8em] border border-table-border">
                   <input type="checkbox" id="cbxShowWeb{{i}}"
-                    class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-0" [checked]="item.showWeb"
+                    class="h-4 w-4 rounded focus:ring-0" style="accent-color: var(--hvc-accent-orange); border-color: var(--hvc-primary-light)" [checked]="item.showWeb"
                     (change)="changeShowWeb(item, cbxShowWeb.checked)" [disabled]="!item.activo" [value]="item.showWeb"
                     #cbxShowWeb>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle">
+                <td class="px-3 py-2 text-center align-middle" style="border: 1px solid var(--table-border-color)">
                   <button (click)="eliminarAcceso(item)"
-                    class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition" type="button"
+                    class="btn-acceso-delete px-2 py-1 text-white rounded text-xs transition" type="button"
                     aria-label="Eliminar acceso">
                     <app-custom-icon [name]="'trash-2'" [color]="'#eee'" [size]="18"></app-custom-icon>
                   </button>
@@ -139,45 +139,45 @@
               </tr>
 
               @for (subacceso of item.subMenus; track subacceso.id; let j = $index) {
-        <tr class="odd:bg-white even:bg-gray-100 hover:bg-gray-200"
+        <tr class="acceso-table-row-sub"
           draggable="true"
           (dragstart)="onDragStartSub(subacceso)"
                   (dragover)="onDragOver($event)"
                   (drop)="onDropSub(j, item.menu.id!)">
-                <td class="pl-4 py-2 text-center align-middle">
+                <td class="pl-4 py-2 text-center align-middle border border-table-border">
               {{ item.ordenMenu + '.' + subacceso.ordenMenu }}
                 </td>
-                <td class="pl-4 py-2 align-middle">
+                <td class="pl-4 py-2 align-middle border border-table-border">
                   <div class="flex items-center gap-2">
                     <app-custom-icon [name]="subacceso.menu.icono" [size]="18"></app-custom-icon>
                     {{ subacceso.menu.label }}
                   </div>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle">
+                <td class="px-3 py-2 text-center align-middle border border-table-border">
                   <input type="checkbox" id="switchCheckDefaultSub{{i}}"
-                    class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-0" [checked]="subacceso.activo"
+                    class="h-4 w-4 rounded focus:ring-0" style="accent-color: var(--hvc-accent-orange); border-color: var(--hvc-primary-light)" [checked]="subacceso.activo"
                     (change)="changeActive(subacceso, cbxActive.checked)" [disabled]="!item.activo"
                     [value]="subacceso.activo" #cbxActive>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle text-[0.8em]">
+                <td class="px-3 py-2 text-center align-middle text-[0.8em] border border-table-border">
                   <input type="checkbox" id="cbxShowAppSub{{i}}"
-                    class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-0" [checked]="subacceso.showApp"
+                    class="h-4 w-4 rounded focus:ring-0" style="accent-color: var(--hvc-accent-orange); border-color: var(--hvc-primary-light)" [checked]="subacceso.showApp"
                     (change)="changeShowApp(subacceso, cbxShowApp.checked)"
                     [disabled]="!subacceso.activo || !item.activo" [value]="subacceso.showApp" #cbxShowApp>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle text-[0.8em]">
+                <td class="px-3 py-2 text-center align-middle text-[0.8em] border border-table-border">
                   <input type="checkbox" id="cbxShowWebSub{{i}}"
-                    class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-0" [checked]="subacceso.showWeb"
+                    class="h-4 w-4 rounded focus:ring-0" style="accent-color: var(--hvc-accent-orange); border-color: var(--hvc-primary-light)" [checked]="subacceso.showWeb"
                     (change)="changeShowWeb(subacceso, cbxShowWeb.checked)"
                     [disabled]="!subacceso.activo || !item.activo" [value]="subacceso.showWeb" #cbxShowWeb>
                 </td>
 
-                <td class="px-3 py-2 text-center align-middle">
+                <td class="px-3 py-2 text-center align-middle" style="border: 1px solid var(--table-border-color)">
                   <button (click)="eliminarAcceso(subacceso)"
-                    class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition" type="button"
+                    class="btn-acceso-delete px-2 py-1 text-white rounded text-xs transition" type="button"
                     aria-label="Eliminar subacceso">
                     <app-custom-icon [name]="'trash-2'" [color]="'#eee'" [size]="18"></app-custom-icon>
                   </button>
@@ -196,8 +196,8 @@
     <!-- Modal inline -->
     @if (showUpsert() && upsertMenu() && selectedRol()) {
     <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg shadow-lg border border-gray-300 w-full max-w-2xl p-4">
-        <h4 class="text-base font-semibold text-gray-800 mb-3">Asignar acceso</h4>
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-4" style="border: 1px solid var(--hvc-primary-light)">
+        <h4 class="text-base font-semibold mb-3" style="color: var(--hvc-primary-dark)">Asignar acceso</h4>
         <app-upsert-acceso [menu]="upsertMenu()!" [rol]="selectedRolStrict()" [accesos]="(accesos() || [])"
           [isLoading]="guardando()" (save)="onSaveAcceso($event)" (cancel)="cerrarModal()"></app-upsert-acceso>
       </div>

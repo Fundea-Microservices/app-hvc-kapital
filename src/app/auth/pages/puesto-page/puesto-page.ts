@@ -16,6 +16,7 @@ const emptyPuesto: IPuesto = {
   selector: 'app-puesto-page',
   imports: [RouterLink, CustomIconComponent, PaginationComponent, UpsertPuestoComponent],
   templateUrl: './puesto-page.html',
+  styleUrl: './puesto-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PuestoPageComponent {

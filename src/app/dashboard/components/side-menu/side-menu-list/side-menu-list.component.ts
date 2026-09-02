@@ -10,6 +10,7 @@ import { IAcceso } from '../../../../../interfaces/auth';
   selector: 'app-side-menu-list',
   imports: [CustomIconComponent, RouterModule],
   templateUrl: './side-menu-list.component.html',
+  styleUrl: './side-menu-list.component.css',
 })
 export class SideMenuListComponent implements OnInit, AfterViewInit {
   private router = inject(Router);

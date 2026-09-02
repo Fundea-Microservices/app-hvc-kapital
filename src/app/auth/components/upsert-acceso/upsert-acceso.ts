@@ -8,6 +8,7 @@ import { IAcceso, IMenu, IRol } from '../../../../interfaces/auth';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './upsert-acceso.html',
+  styleUrls: ['./upsert-acceso.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class UpsertAccesoComponent {

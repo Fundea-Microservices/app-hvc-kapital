@@ -17,6 +17,7 @@ import { IPuesto } from '../../../../interfaces/auth';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './upsert-puesto.component.html',
+  styleUrls: ['./upsert-puesto.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpsertPuestoComponent {

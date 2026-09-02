@@ -21,6 +21,7 @@ const emptyRol: IRol = {
   selector: 'app-rol-page',
   imports: [RouterLink, CustomIconComponent, TimezoneDatePipe, PaginationComponent, UpsertRolComponent],
   templateUrl: './rol-page.html',
+  styleUrl: './rol-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RolPageComponent {

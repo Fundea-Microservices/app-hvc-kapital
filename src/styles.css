@@ -1,192 +1,341 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 @import "preline/variants.css";
+@import "./styles/colors.css";
+@import "ngx-toastr/toastr"; /* ✅ Estilos de ngx-toastr */
+
+/* ==========================================================================
+   @theme — Paleta oficial HVC Kapital
+   Registra los colores como tokens de Tailwind v4.
+   Genera automáticamente: bg-primary, text-danger, border-success, etc.
+   Con variantes: hover:bg-primary, focus:ring-danger, dark:bg-success, etc.
+   ========================================================================== */
+@theme {
+  /* Primarios */
+  --color-primary: #1E335E;
+  --color-primary-dark: #071737;
+  --color-primary-light: #95A2BB;
+
+  /* Acentos */
+  --color-accent-orange: #FA9A37;
+  --color-accent-gold: #FCC232;
+  --color-accent-peach: #F9D3AD;
+
+  /* Neutros */
+  --color-gray: #8D9EBF;
+  --color-gray-light: #A4ABBD;
+
+  /* Estado */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* Variantes de opacidad para estado (shades) */
+  --color-success-50: #f0fdf4;
+  --color-success-500: #22c55e;
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-danger-50: #fef2f2;
+  --color-danger-500: #ef4444;
+
+  /* ==========================================================================
+     🎨 SIDEBAR — Modifica los valores hex para ajustar el color
+     ========================================================================== */
+  --color-sidebar-bg: #071737;        /* ← Fondo del sidebar */
+  --color-sidebar-border: #eef0f2;    /* ← Borde derecho */
+  --color-sidebar-hover: #1E335E;     /* ← Hover de items */
+  --color-sidebar-active: #FA9A37;    /* ← Item activo */
+  --color-sidebar-text: #ffffff;      /* ← Texto e iconos */
+  --color-sidebar-text-active: #cbd5e1; /* ← Texto item activo */
+
+  /* ==========================================================================
+     🎨 NAVBAR — Modifica los valores hex para ajustar el color
+     ========================================================================== */
+  --color-navbar-bg: #eef0f2;         /* ← Fondo del navbar */
+  --color-navbar-border: #071737;     /* ← Borde inferior */
+  --color-navbar-hover: #cbd5e1;      /* ← Hover de botones */
+  --color-navbar-text: #071737;       /* ← Texto principal */
+  --color-navbar-text-secondary: #1E335E; /* ← Texto secundario (rol) */
+
+  /* UI Genéricos */
+  --color-hover: #eef0f2;
+  --color-bg-auth: #eef0f2;   /* ← Fondo de páginas de auth */
+
+  /* Tabla */
+  --color-table-border: #cbd5e1;
+  --color-table-header-bg: #ffffff;
+  --color-table-header: #1E335E;
+  --color-table-row-bg: #ffffff;
+}
 
 /* Safelist: clases dinámicas de estados de pedido definidas en TypeScript */
 @source inline("bg-amber-100 text-amber-700 border-amber-200 bg-amber-400 bg-amber-50 border-amber-300");
 @source inline("bg-blue-100 text-blue-700 border-blue-200 bg-blue-400 bg-blue-50 border-blue-300");
-@source inline("bg-orange-100 text-orange-700 border-orange-200 bg-orange-400 bg-orange-50 border-orange-300");
+@source inline("bg-orange-100 text-orange-700 border-orange-200 bg-orange-400 bg-orange-50 border-amber-300");
 @source inline("bg-pink-100 text-pink-700 border-pink-200 bg-pink-400 bg-pink-50 border-pink-300");
 @source inline("bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200 bg-fuchsia-400 bg-fuchsia-50 border-fuchsia-300");
 @source inline("bg-indigo-100 text-indigo-700 border-indigo-200 bg-indigo-400 bg-indigo-50 border-indigo-300");
 @source inline("bg-purple-100 text-purple-700 border-purple-200 bg-purple-400 bg-purple-50 border-purple-300");
 @source inline("bg-sky-100 text-sky-700 text-sky-800 border-sky-200 bg-sky-400 bg-sky-50 border-sky-300");
 @source inline("bg-green-100 text-green-700 border-green-200 bg-green-400 bg-green-50 border-green-300");
-@import "./styles/colors.css";
-@import "ngx-toastr/toastr"; /* ✅ Estilos de ngx-toastr */
 
-/* Custom color utilities for the corporate dashboard */
-.bg-primary-50 { background-color: rgb(189, 226, 245); }
-/* .bg-primary-100 { background-color: rgb(162, 215, 243); } */
-.bg-primary-100 { background-color: rgb(189, 226, 246); }
-.bg-primary-200 { background-color: rgb(134, 203, 241); }
-.bg-primary-500 { background-color: rgb(98, 189, 239); }
-.bg-primary-600 { background-color: rgb(42, 154, 214); }
-.bg-primary-700 { background-color: rgb(29, 134, 191); }
-.bg-primary-800 { background-color: rgb(13, 103, 151); }
+/* Safelist: clases HVC que se usan dinámicamente */
+@source inline("bg-primary text-primary border-primary bg-primary-dark text-primary-dark bg-primary-light text-primary-light bg-success text-success bg-warning text-warning bg-danger text-danger bg-accent-orange bg-accent-gold bg-accent-peach bg-gray bg-gray-light text-gray text-gray-light bg-sidebar-bg bg-sidebar-hover bg-sidebar-active text-sidebar-bg text-sidebar-hover text-sidebar-active");
 
-.bg-primary { background-color: rgb(22 93 152); }  /* #165D98*/
-.bg-secondary { background-color: rgb(242 242 242); }  /* #f2f2f2 */
-.bg-terciary { background-color: rgb(242 171 29); }  /* #F2AC1D*/
-.text-primary { color: rgb(22 93 152); }  /* #165D98*/
-.text-secondary { color: rgb(242 242 242); }  /* #F2F2F2*/
-.text-terciary { color: rgb(242 171 29); }  /* #F2AC1D*/
-
-.bg-secondary-300 { background-color: rgb(178, 188, 202); }
-.bg-secondary-500 { background-color: rgb(100 116 139); }
-.bg-secondary-600 { background-color: rgb(71 85 105); }
-.bg-secondary-700 { background-color: rgb(51 65 85); }
-.bg-secondary-100 { background-color: rgb(221, 226, 232); }
-.bg-secondary-50 { background-color: rgb(248 250 252); }
-
-.bg-success-500 { background-color: rgb(34 197 94); }
-.bg-success-50 { background-color: rgb(240 253 244); }
-.bg-warning-500 { background-color: rgb(245 158 11); }
-.bg-warning-50 { background-color: rgb(255 251 235); }
-.bg-danger-500 { background-color: rgb(239 68 68); }
-.bg-danger-50 { background-color: rgb(254 242 242); }
-
-.bg-corporate-dark-blue { background-color: rgb(30 58 138); }
-.bg-corporate-light-blue { background-color: rgb(59 130 246); }
-.bg-corporate-accent-gold { background-color: rgb(245 158 11); }
-
-.text-primary-500 { color: rgb(98, 189, 239); }
-.text-primary-600 { color: rgb(42, 154, 214); }
-.text-primary-700 { color: rgb(29, 134, 191); }
-.text-primary-800 { color: rgb(13, 103, 151); }
-
-.text-secondary-500 { color: rgb(100 116 139); }
-.text-secondary-600 { color: rgb(71 85 105); }
-.text-secondary-700 { color: rgb(51 65 85); }
-.text-secondary-900 { color: rgb(15 23 42); }
-
-.text-success-500 { color: rgb(34 197 94); }
-.text-success-700 { color: rgb(21 128 61); }
-.text-warning-500 { color: rgb(245 158 11); }
-.text-warning-700 { color: rgb(180 83 9); }
-.text-warning-300 { color: rgb(252 211 77); }
-.text-danger-500 { color: rgb(239 68 68); }
-.text-danger-600 { color: rgb(220 38 38); }
-.text-danger-700 { color: rgb(185 28 28); }
-
-.border-primary-500 { border-color: rgb(14 165 233); }
-.border-primary-200 { border-color: rgb(186 230 253); }
-
-/* Gradients */
-.bg-gradient-to-r.from-primary-500.to-primary-800 {
-  background: linear-gradient(to right, rgb(14 165 233), rgb(7 89 133));
+/* ==========================================================================
+   Tipografía — Inter (Google Fonts)
+   ========================================================================== */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, sans-serif;
+  background-color: var(--bg);
 }
 
-.bg-gradient-to-r.from-primary-50.to-secondary-50 {
-  background: linear-gradient(to right, rgb(240 249 255), rgb(248 250 252));
-}
-
-/* Hover states */
-.hover\:bg-primary-50:hover { background-color: rgb(240 249 255); }
-.hover\:bg-primary-200:hover { background-color: rgb(186 230 253); }
-.hover\:bg-secondary-50:hover { background-color: rgb(248 250 252); }
-.hover\:bg-success-50:hover { background-color: rgb(240 253 244); }
-.hover\:bg-warning-50:hover { background-color: rgb(255 251 235); }
-.hover\:bg-danger-50:hover { background-color: rgb(254 242 242); }
-
-.hover\:text-primary-700:hover { color: rgb(3 105 161); }
-.hover\:text-secondary-900:hover { color: rgb(15 23 42); }
-.hover\:text-success-700:hover { color: rgb(21 128 61); }
-.hover\:text-warning-700:hover { color: rgb(180 83 9); }
-.hover\:text-danger-700:hover { color: rgb(185 28 28); }
-
-/* Ring styles */
-.ring-primary-200 { --tw-ring-color: rgb(186 230 253); }
-
-/* Custom scrollbar styles */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: rgb(248 250 252);
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgb(203 213 225);
-  border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgb(148 163 184);
-}
-
-/* Reusable form control with primary focus */
-.input-control {
-  display: block;
-  width: 100%;
-  border-radius: 0.375rem; /* rounded-md */
-  border: 1px solid rgb(209 213 219); /* gray-300 */
-  padding: 0.5rem 0.75rem; /* px-3 py-2 */
-  font-size: 0.875rem; /* text-sm */
-  outline: none;
-}
-.input-control:focus {
-  border-color: rgb(14 165 233); /* primary-500 */
-}
-
-.sidebar-item-link {
-  background-color: #bfdbfe; /* bg-primary-200 → azul claro */
-  color: #1d4ed8;            /* text-primary-700 → azul intenso */
-  border-left: 4px solid #3b82f6; /* border-l-4 border-primary-500 → borde izquierdo azul */
-}
-
-/* ==============================
-   Global table styles (centralized)
-   Use class="gc-table" on all tables; optional gc-table--compact for smaller cells
-   Customize via CSS variables below
-============================== */
+/* ==========================================================================
+   Variables CSS globales — Paleta HVC Kapital
+   Usadas por componentes CSS: botones, toastr, tablas, etc.
+   ========================================================================== */
 :root {
-  --table-font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  --table-font-size: 0.875rem; /* text-sm */
-  --table-text-color: rgb(17 24 39); /* gray-900 */
-  --table-header-bg: #ffffff; /* white */
-  --table-header-color: #0f172a; /* slate-900 */
-  --table-row-bg: #ffffff; /* white */
-  --table-row-alt-bg: #f3f4f6; /* gray-100 */
-  --table-row-hover-bg: #e5e7eb; /* gray-200 */
-  --table-border-color: #cbd5e1; /* slate-300 */
-  --table-cell-py: 0.5rem; /* 8px */
-  --table-cell-px: 0.5rem; /* 8px */
+  /* === Colores HVC → Ahora referencian @theme (fuente de verdad) === */
+  --hvc-primary: var(--color-primary);
+  --hvc-primary-light: var(--color-primary-light);
+  --hvc-primary-dark: var(--color-primary-dark);
 
+  --hvc-accent-orange: var(--color-accent-orange);
+  --hvc-accent-gold: var(--color-accent-gold);
+  --hvc-accent-peach: var(--color-accent-peach);
 
-  /*primera paleta */
-  --text: #272643;
-  --background: #f8f8fb;
-  --primary: #6c6aab;
-  --secondary: #a6a5cf;
-  --accent: #7a78bc;
+  --hvc-gray: var(--color-gray);
+  --hvc-gray-light: var(--color-gray-light);
 
+  --hvc-success: var(--color-success);
+  --hvc-warning: var(--color-warning);
+  --hvc-danger: var(--color-danger);
 
-    /*segunda paleta */
-  --text: #1F1F20;
-  --background: #FFFFFF;
-  --primary: #E3E3E3;
-  --secondary: #E3E3E3;
-  --accent: #E3E0F3;
+  /* Variables base de la aplicación */
+  --bg: var(--color-bg-auth);
+  --bg-auth: var(--color-bg-auth);
+  --border: #eef0f2;
+  --text: var(--color-primary-dark);
+  --textsecun: var(--color-gray);
+  --hover: var(--color-hover);
 
-  /* segunda paleta */
+  /* Tabla variables */
+  --table-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --table-font-size: 0.875rem;
+  --table-text-color: var(--color-primary-dark);
+  --table-header-bg: var(--color-table-header-bg);
+  --table-header-color: var(--color-primary);
+  --table-row-bg: var(--color-table-row-bg);
+  --table-row-alt-bg: #f3f4f6;
+  --table-row-hover-bg: #e5e7eb;
+  --table-border-color: var(--color-table-border);
+  --table-cell-py: 0.5rem;
+  --table-cell-px: 0.5rem;
 
-  --text: #050315;
---background: #fbfbfe;
---primary: #2f27ce;
---secondary: #dedcff;
---accent: #433bff;
+  /* ==========================================================================
+     🎛️  DASHBOARD CONTROLS
 
-/* Actual en uso */
---bg: #fafbfc;
---border: #eef0f2;
---text: #1e2328;
---textsecun: #979a9c;
---hover: #eef0f2;
+     Modifica los valores hex en @theme para cambiar el color base.
+     Ajusta --sidebar-intensity y --navbar-intensity para graduar la fuerza.
+     ========================================================================== */
 
+  /*
+   * INTENSIDAD — Controla qué tan fuerte se ve el color.
+   *   0%   → blanco puro (invisible)
+   *   25%  → muy suave / lavado
+   *   50%  → intermedio
+   *   75%  → moderado
+   *   100% → color pleno (el hex de @theme)
+   */
+  --sidebar-intensity: 100%;
+  --navbar-intensity: 100%;
+  --sidebar-border-intensity: 100%;
+  --navbar-border-intensity: 100%;
+  --bg-auth-intensity: 100%;    /* ← Intensidad del fondo auth (0%=blanco, 100%=color pleno) */
+
+  /* Sidebar */
+  --sidebar-bg: var(--color-sidebar-bg);
+  --sidebar-border: var(--color-sidebar-border);
+  --sidebar-hover: var(--color-sidebar-hover);
+  --sidebar-text: var(--color-sidebar-text);
+  --sidebar-text-active: var(--color-sidebar-text-active);
+
+  /* Navbar */
+  --navbar-bg: var(--color-navbar-bg);
+  --navbar-border: var(--color-navbar-border);
+  --navbar-hover: var(--color-navbar-hover);
+  --navbar-text: var(--color-navbar-text);
+  --navbar-text-secondary: var(--color-navbar-text-secondary);
 }
 
+/* ==========================================================================
+   Botones — Paleta HVC Kapital
+   ========================================================================== */
+.btn-hvc-primary {
+  background-color: var(--hvc-primary);
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+.btn-hvc-primary:hover {
+  background-color: var(--hvc-primary-dark);
+}
+
+.btn-hvc-accent {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+.btn-hvc-accent:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* ==========================================================================
+   🎛️  DASHBOARD INTENSITY — Clases que responden a --sidebar-intensity / --navbar-intensity
+
+   Cambia el porcentaje en :root para graduar la fuerza del color.
+   0% = blanco | 50% = suave | 100% = color pleno
+   ========================================================================== */
+.sidebar-bg-variable {
+  background-color: color-mix(in srgb, var(--color-sidebar-bg) var(--sidebar-intensity, 100%), white);
+}
+.navbar-bg-variable {
+  background-color: color-mix(in srgb, var(--color-navbar-bg) var(--navbar-intensity, 100%), white);
+}
+.sidebar-border-variable {
+  border-color: color-mix(in srgb, var(--color-sidebar-border) var(--sidebar-border-intensity, 100%), white);
+}
+.navbar-border-variable {
+  border-color: color-mix(in srgb, var(--color-navbar-border) var(--navbar-border-intensity, 100%), white);
+}
+
+/*
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │  GUÍA DE ESCALA — Rangos válidos para cada color de la paleta HVC      │
+ * │  (de más claro a más oscuro)                                           │
+ * ├─────────────────────────────────────────────────────────────────────────┤
+ * │                                                                       │
+ * │  #95A2BB (Azul Claro / primary-light)                                 │
+ * │  ─────────────────────────────────────                                 │
+ * │  Más claro:  #c8ced8 → #b8c2d0 → #a8b4c4 → #95A2BB                   │
+ * │  Más oscuro: #8493a8 → #738298 → #627188 → #516078                    │
+ * │                                                                       │
+ * │  #1E335E (Azul Primario)                                               │
+ * │  ─────────────────────────────────                                     │
+ * │  Más claro:  #4a6088 → #3a5078 → #2e4468 → #1E335E                    │
+ * │  Más oscuro: #182a4d → #13213c → #0e1a2e → #071737                    │
+ * │                                                                       │
+ * │  #071737 (Azul Oscuro / primary-dark)                                  │
+ * │  ──────────────────────────────────────                                │
+ * │  Más claro:  #1a2d50 → #152644 → #10203a → #071737                    │
+ * │  Más oscuro: #05122b → #040e22 → #030a18 → #02060f                    │
+ * │                                                                       │
+ * │  #8D9EBF (Gris Azulado / gray)                                         │
+ * │  ──────────────────────────────────                                    │
+ * │  Más claro:  #b0bdd0 → #a4b2c8 → #98a7c0 → #8D9EBF                    │
+ * │  Más oscuro: #7d8eac → #6d7e99 → #5d6e86 → #4d5e73                    │
+ * │                                                                       │
+ * │  #A4ABBD (Gris Suave / gray-light)                                     │
+ * │  ───────────────────────────────────                                   │
+ * │  Más claro:  #c4c9d4 → #b8bfcc → #b0b8c4 → #A4ABBD                    │
+ * │  Más oscuro: #949bab → #848b9b → #747b8b → #646b7b                    │
+ * │                                                                       │
+ * │  💡 Tip: Los colores más claros funcionan para fondos con texto oscuro. │
+ * │     Los más oscuros funcionan para fondos con texto blanco.            │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ */
+
+/* ==========================================================================
+   Variables CSS para Toastr — Paleta HVC Kapital
+   ========================================================================== */
+:root {
+  --toastr-success-bg: var(--color-success);
+  --toastr-success-text: #ffffff;
+  --toastr-success-border: #16a34a;
+
+  --toastr-error-bg: var(--color-danger);
+  --toastr-error-text: #ffffff;
+  --toastr-error-border: #dc2626;
+
+  --toastr-warning-bg: var(--color-warning);
+  --toastr-warning-text: #ffffff;
+  --toastr-warning-border: #d97706;
+
+  --toastr-info-bg: var(--color-primary);
+  --toastr-info-text: #ffffff;
+  --toastr-info-border: #1a2d50;
+}
+
+/* ==========================================================================
+   Overrides de ngx-toastr — Paleta HVC Kapital
+   ========================================================================== */
+.toast {
+  border-radius: 8px !important;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, sans-serif !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+}
+
+.toast .toast-title {
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+}
+
+.toast .toast-message {
+  font-size: 0.8125rem !important;
+}
+
+.toast .toast-close-button {
+  color: inherit !important;
+  opacity: 0.7 !important;
+}
+
+.toast .toast-close-button:hover {
+  opacity: 1 !important;
+}
+
+.toast .toast-progress {
+  height: 3px !important;
+}
+
+/* Success */
+.toast-success {
+  background-color: var(--toastr-success-bg) !important;
+  color: var(--toastr-success-text) !important;
+}
+.toast-success .toast-progress > div {
+  background-color: var(--toastr-success-border) !important;
+}
+
+/* Error */
+.toast-error {
+  background-color: var(--toastr-error-bg) !important;
+  color: var(--toastr-error-text) !important;
+}
+.toast-error .toast-progress > div {
+  background-color: var(--toastr-error-border) !important;
+}
+
+/* Warning */
+.toast-warning {
+  background-color: var(--toastr-warning-bg) !important;
+  color: var(--toastr-warning-text) !important;
+}
+.toast-warning .toast-progress > div {
+  background-color: var(--toastr-warning-border) !important;
+}
+
+/* Info */
+.toast-info {
+  background-color: var(--toastr-info-bg) !important;
+  color: var(--toastr-info-text) !important;
+}
+.toast-info .toast-progress > div {
+  background-color: var(--toastr-info-border) !important;
+}
+
+/* ==========================================================================
+   Tablas CSS
+   ========================================================================== */
 .gc-table {
   width: 100%;
   border-collapse: collapse;
@@ -215,20 +364,6 @@
 .gc-table tbody tr:nth-child(even) { background-color: var(--table-row-alt-bg); }
 .gc-table tbody tr:hover { background-color: var(--table-row-hover-bg); }
 
-/* Compact variant */
 .gc-table--compact { font-size: 0.8125rem; }
 .gc-table--compact th,
 .gc-table--compact td { padding: 0.375rem 0.5rem; }
-
-/* Centralized header cell class for reuse even outside .gc-table */
-.gc-th {
-  background-color: var(--table-header-bg);
-  color: var(--table-header-color);
-  font-weight: 700;
-  text-align: center;
-  padding: var(--table-cell-py) var(--table-cell-px);
-  border: 1px solid var(--table-border-color);
-}
-.gc-th--left { text-align: left; }
-.gc-th--center { text-align: center; }
-.gc-th--right { text-align: right; }

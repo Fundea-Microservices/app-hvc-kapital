@@ -1,0 +1,25 @@
+/* ==========================================================================
+   Estilos hover para upsert-usuario — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Botón "Cancelar" (gris suave con borde HVC) */
+.btn-usuario-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: var(--hvc-primary-light);
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.btn-usuario-cancel:hover {
+  background-color: var(--hvc-gray);
+  color: #ffffff;
+}
+
+/* Toggle switch — Naranja HVC cuando activo */
+.peer:checked + div:first-of-type {
+  background-color: var(--hvc-accent-orange) !important;
+}

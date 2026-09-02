@@ -7,6 +7,7 @@ import { AccesoService } from '../../../../services/auth/acceso.service';
   selector: 'app-login',
   imports: [RouterLink],
   templateUrl: './login.html',
+  styleUrl: './login.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoginComponent { 

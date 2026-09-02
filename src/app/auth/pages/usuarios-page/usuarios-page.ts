@@ -32,6 +32,7 @@ const emptyUsuario: IUsuario = {
   selector: 'app-usuarios-page',
   imports: [RouterLink, FormsModule, PaginationComponent, UpsertUsuarioComponent, CustomIconComponent],
   templateUrl: './usuarios-page.html',
+  styleUrl: './usuarios-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class UsuariosPageComponent {

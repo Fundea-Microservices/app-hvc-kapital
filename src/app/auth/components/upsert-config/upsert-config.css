@@ -1,0 +1,56 @@
+/* ==========================================================================
+   Estilos hover para upsert-config — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Botón "Cancelar" (gris suave con borde HVC) */
+.btn-config-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: var(--hvc-primary-light);
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.btn-config-cancel:hover {
+  background-color: var(--hvc-gray);
+  color: #ffffff;
+}
+
+/* Botón "Eliminar" (rojo peligro) */
+.btn-config-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.btn-config-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+/* Items de array */
+.config-array-item:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.config-array-item:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.config-array-item:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+/* Fila de tabla de objetos */
+.config-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.config-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.config-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+/* Toggle switch — Naranja HVC cuando activo */
+.peer:checked + div:first-of-type {
+  background-color: var(--hvc-accent-orange) !important;
+}

@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Estilos para permiso-page — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+
+
+/* Botón "Buscar" (naranja acento) */
+.permiso-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.permiso-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Editar" (naranja acento) */
+.permiso-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.permiso-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Eliminar" (rojo peligro) */
+.permiso-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.permiso-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+/* Input de búsqueda */
+.permiso-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.permiso-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+/* Fila de tabla */
+.permiso-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.permiso-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.permiso-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}

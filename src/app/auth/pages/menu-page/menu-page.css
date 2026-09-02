@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Estilos para menu-page — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Toggle switch — Amarillo Oro cuando activo */
+.peer:checked ~ .toggle-track {
+  background-color: var(--hvc-accent-gold);
+}
+.peer:checked ~ .toggle-thumb {
+  transform: translateX(1.25rem);
+}
+
+/* Botón "Nuevo submenú" (naranja acento) */
+.menu-btn-submenu {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.menu-btn-submenu:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Editar" (naranja acento) */
+.menu-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.menu-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Eliminar" (rojo peligro) */
+.menu-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.menu-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+/* Tabs */
+.menu-tab {
+  color: var(--hvc-primary-light);
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.menu-tab:hover {
+  color: var(--hvc-primary-dark);
+}
+.menu-tab.active {
+  color: var(--hvc-primary-dark);
+  border-bottom-color: var(--hvc-accent-orange);
+  font-weight: 600;
+}
+
+/* Inputs de búsqueda */
+.menu-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.menu-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+/* Fila de tabla */
+.menu-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.menu-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.menu-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}

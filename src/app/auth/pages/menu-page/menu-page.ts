@@ -25,6 +25,7 @@ const emptyMenu: IMenu = {
   standalone: true,
   imports: [RouterLink, CustomIconComponent, UpsertMenuComponent, PaginationComponent],
   templateUrl: './menu-page.html',
+  styleUrl: './menu-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class MenuPageComponent {

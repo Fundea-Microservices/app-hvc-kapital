@@ -21,6 +21,7 @@ const emptyConfig: IConfig = {
   standalone: true,
   imports: [RouterLink, PaginationComponent, UpsertConfigComponent, CustomIconComponent],
   templateUrl: './configuraciones-page.html',
+  styleUrl: './configuraciones-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ConfiguracionesPageComponent {

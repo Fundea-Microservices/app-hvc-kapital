@@ -1,11 +1,11 @@
 <form [formGroup]="form()" (ngSubmit)="onSubmit()" class="space-y-4">
-  <p class="text-sm text-gray-700">
+  <p class="text-sm text-primary-dark">
     Asignar {{ menu().principal ? 'menú' : 'submenú' }}
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border text-gray-700 ml-1">
+    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-peach border border-primary-light text-primary-dark">
       {{ menu().label }}
     </span>
     al rol
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border text-gray-700 ml-1">
+    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-peach border border-primary-light text-primary-dark">
       {{ rol().nombre }}
     </span>
   </p>
@@ -14,8 +14,8 @@
     <!-- Si es submenú, elegir el menú principal -->
     @if (!menu().principal) {
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Menú principal</label>
-        <select class="w-full input-control p-2 border rounded" formControlName="mainMenuId">
+        <label class="block text-sm font-medium mb-1 text-primary-dark">Menú principal</label>
+        <select class="w-full input-control p-2 border rounded border-primary-light" formControlName="mainMenuId">
           <option [ngValue]="null">Seleccione opción</option>
           @for (a of (accesos() || []); track a.id) {
             @if (a.menu.principal) {
@@ -24,36 +24,35 @@
           }
         </select>
         @if (form().get('mainMenuId')?.touched && form().get('mainMenuId')?.errors?.['required']) {
-          <div class="text-red-600 text-xs mt-1">Menú principal es requerido</div>
+          <div class="text-xs mt-1 text-danger">Menú principal es requerido</div>
         }
       </div>
     }
 
     <!-- Orden -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Orden (colocar antes de)</label>
-      <select class="w-full input-control p-2 border rounded" formControlName="ordenMenu">
+    <div><label class="block text-sm font-medium mb-1 text-primary-dark">Orden (colocar antes de)</label>
+        <select class="w-full input-control p-2 border rounded border-primary-light" formControlName="ordenMenu">
         @for (op of opcionesOrden; track op.value) {
           <option [value]="op.value">{{ op.label }}</option>
         }
       </select>
       @if (form().get('ordenMenu')?.touched && form().get('ordenMenu')?.invalid) {
-        <div class="text-red-600 text-xs mt-1">Orden del menú es requerido</div>
+        <div class="text-xs mt-1 text-danger">Orden del menú es requerido</div>
       }
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <label class="inline-flex items-center gap-2">
-      <input type="checkbox" formControlName="activo" class="rounded">
+    <label class="inline-flex items-center gap-2 text-primary-dark">
+      <input type="checkbox" formControlName="activo" class="rounded accent-accent-orange">
       Activo
     </label>
-    <label class="inline-flex items-center gap-2">
-      <input type="checkbox" formControlName="showApp" class="rounded">
+    <label class="inline-flex items-center gap-2 text-primary-dark">
+      <input type="checkbox" formControlName="showApp" class="rounded accent-accent-orange">
       Mostrar en app móvil
     </label>
-    <label class="inline-flex items-center gap-2">
-      <input type="checkbox" formControlName="showWeb" class="rounded">
+    <label class="inline-flex items-center gap-2 text-primary-dark">
+      <input type="checkbox" formControlName="showWeb" class="rounded accent-accent-orange">
       Mostrar en app web
     </label>
   </div>
@@ -62,7 +61,7 @@
     <button
       type="button"
       (click)="onCancel()"
-      class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+      class="btn-acceso-cancel px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2"
       >
       Cancelar
     </button>
@@ -70,7 +69,7 @@
     <button
       type="submit"
       [disabled]="isLoading() || form().invalid"
-      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="btn-hvc-primary px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
       {{ menu().principal ? 'Asignar menú' : 'Asignar submenú' }}
     </button>

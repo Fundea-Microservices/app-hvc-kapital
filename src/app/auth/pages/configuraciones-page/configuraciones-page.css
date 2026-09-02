@@ -1,0 +1,45 @@
+/* ==========================================================================
+   Estilos hover para configuraciones-page — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Toggle switch — Amarillo Oro cuando activo */
+.peer:checked ~ .toggle-track {
+  background-color: var(--hvc-accent-gold);
+}
+.peer:checked ~ .toggle-thumb {
+  transform: translateX(1.25rem);
+}
+
+/* Botón "Editar" (naranja acento HVC) */
+.config-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.config-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Eliminar" (rojo peligro) */
+.config-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.config-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+/* Fila de tabla de configuraciones */
+.config-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.config-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.config-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}
