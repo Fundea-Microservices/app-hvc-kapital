@@ -65,7 +65,7 @@
                             <td colspan="6" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">No hay menús principales</td>
                         </tr>
                         } @else {
-                        @for (m of getMenusPrincipalesPageSlice(); track m.menuId; let i = $index) {
+                        @for (m of getMenusPrincipalesPageSlice(); track m.id; let i = $index) {
                         <tr class="menu-table-row">
                             <td class="px-2 py-2 text-center" class="px-2 py-2 text-center border border-table-border">{{ (paginationMenus().page - 1) *
                                 paginationMenus().pageSize + i + 1 }}</td>
@@ -75,7 +75,7 @@
                             <td class="px-2 py-2 border border-table-border">{{ m.label }}</td>
                             <td class="px-2 py-2 border border-table-border">{{ m.pathWeb || '-' }}</td>
                             <td class="px-2 py-2 text-center border border-table-border">
-                                <label [for]="'switch-m-'+m.menuId"
+                                <label [for]="'switch-m-'+m.id"
                                     class="relative inline-block w-8 h-4 cursor-pointer">
                                     <input type="checkbox" [id]="'switch-m-'+m.id" [checked]="m.activo"
                                         (change)="onToggleActivo(m, $any($event.target).checked)" class="peer sr-only">
@@ -143,7 +143,7 @@
                             <td colspan="6" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">No hay submenús</td>
                         </tr>
                         } @else {
-                        @for (m of getSubmenusPageSlice(); track m.menuId; let i = $index) {
+                        @for (m of getSubmenusPageSlice(); track m.id; let i = $index) {
                         <tr class="menu-table-row">
                             <td class="px-2 py-2 text-center" style="border: 1px solid var(--table-border-color)">{{ (paginationSubs().page - 1) *
                                 paginationSubs().pageSize + i + 1 }}</td>
@@ -153,7 +153,7 @@
                             <td class="px-2 py-2 border border-table-border">{{ m.label }}</td>
                             <td class="px-2 py-2 border border-table-border">{{ m.pathWeb || '-' }}</td>
                             <td class="px-2 py-2 text-center border border-table-border">
-                                <label [for]="'switch-sm-'+m.menuId"
+                                <label [for]="'switch-sm-'+m.id"
                                     class="relative inline-block w-8 h-4 cursor-pointer">
                                     <input type="checkbox" [id]="'switch-sm-'+m.id" [checked]="m.activo"
                                         (change)="onToggleActivo(m, $any($event.target).checked)" class="peer sr-only">

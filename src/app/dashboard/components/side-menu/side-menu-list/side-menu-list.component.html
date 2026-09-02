@@ -26,10 +26,10 @@
         <div class="hs-accordion" [id]="acceso.id">
             <button type="button"
                 class="hs-accordion-toggle sidebar-accordion-toggle w-full flex items-center gap-x-3 py-2.5 px-3 text-sm font-semibold rounded-lg focus:outline-none"
-                [id]="acceso.accesoId + '-btn'"
+                [id]="acceso.id + '-btn'"
                 aria-expanded="false"
-                [attr.aria-controls]="acceso.accesoId + '-content'"
-                [attr.data-hs-accordion]="'#' + (acceso.accesoId + '-content')">
+                [attr.aria-controls]="acceso.id + '-content'"
+                [attr.data-hs-accordion]="'#' + (acceso.id + '-content')">
                 <app-custom-icon [name]="acceso.menu.icono" [color]="'var(--sidebar-text)'"></app-custom-icon>
                 {{acceso.menu.label}}
                 <svg class="hs-accordion-active:rotate-180 shrink-0 size-4 ml-auto transition-transform duration-200"

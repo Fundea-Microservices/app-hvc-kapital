@@ -42,8 +42,8 @@
       <div class="col-span-2">
         <b>Menús</b>
         <ul class="mt-2 text-[0.75em] space-y-1">
-          @for (menu of principalMenus; track menu.menuId) {
-          @if (!isAssigned(menu.menuId)){
+          @for (menu of principalMenus; track menu.id) {
+          @if (!isAssigned(menu.id)){
           <li class="flex items-center justify-between bg-white rounded px-3 py-2 border border-primary-light">
             <div class="flex items-center gap-2">
               <app-custom-icon [name]="menu.icono" [size]="18"></app-custom-icon>
@@ -68,8 +68,8 @@
         </div>
 
         <ul class="mt-2 text-[0.75em] space-y-1">
-          @for (menu of subMenusAvailable(); track menu.menuId) {
-          @if (!isAssigned(menu.menuId)){
+          @for (menu of subMenusAvailable(); track menu.id) {
+          @if (!isAssigned(menu.id)){
           <li class="flex items-center justify-between bg-white rounded px-3 py-1 border border-primary-light">
             <div class="flex items-center gap-2">
               <app-custom-icon [name]="menu.icono" [size]="16"></app-custom-icon>
@@ -99,7 +99,7 @@
               </tr>
             </thead>
             <tbody style="background-color: var(--table-row-bg)">
-              @for (item of accesos(); track item.accesoId; let i = $index) {
+              @for (item of accesos(); track item.id; let i = $index) {
               <tr class="acceso-table-row">
                 <td class="px-3 py-2 text-center align-middle border border-table-border"><b>{{ item.ordenMenu }}</b></td>
                 <td class="px-3 py-2 align-middle border border-table-border">
@@ -138,12 +138,12 @@
                 </td>
               </tr>
 
-              @for (subacceso of item.subMenus; track subacceso.accesoId; let j = $index) {
+              @for (subacceso of item.subMenus; track subacceso.id; let j = $index) {
         <tr class="acceso-table-row-sub"
           draggable="true"
           (dragstart)="onDragStartSub(subacceso)"
                   (dragover)="onDragOver($event)"
-                  (drop)="onDropSub(j, item.menu.menuId!)">
+                  (drop)="onDropSub(j, item.menu.id!)">
                 <td class="pl-4 py-2 text-center align-middle border border-table-border">
               {{ item.ordenMenu + '.' + subacceso.ordenMenu }}
                 </td>
