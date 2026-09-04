@@ -1,13 +1,8 @@
-name: "CD Develop - Pipeline (Fronted)"
+name: "CD Develop - Pipeline (Frontend)"
 
 on:
   push:
     branches: [ "develop" ]
-    # Solo se ejecuta si hay cambios en la carpeta de la APP
-    paths:
-      - 'app/**'
-      - '.github/workflows/cd-deploy.yml'
-      - '.github/workflows/deploy-frontend.yml'
 
 jobs:
   # 1. Mandar a llamar al flujo de seguridad
@@ -15,8 +10,8 @@ jobs:
     name: "Validaciones de Seguridad"
     uses: ./.github/workflows/security-scan.yml
 
-  # 2. Si el escaneo es exitoso, proceder con el despliegue del API
-  desplegar-backend:
-    name: "Despliegue del Fronted"
+  # 2. Si el escaneo es exitoso, proceder con el despliegue del Frontend
+  desplegar-frontend:
+    name: "Despliegue del Frontend"
     needs: ejecutar-seguridad
     uses: ./.github/workflows/deploy-frontend.yml
