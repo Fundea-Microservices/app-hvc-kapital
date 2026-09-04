@@ -6,7 +6,7 @@ on:
     # Solo se ejecuta si hay cambios en la carpeta de la APP
     paths:
       - 'app/**'
-      - '.github/workflows/cd-develop.yml'
+      - '.github/workflows/cd-deploy.yml'
       - '.github/workflows/deploy-frontend.yml'
 
 jobs:
