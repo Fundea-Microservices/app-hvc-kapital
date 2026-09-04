@@ -1,4 +1,4 @@
-name: "CD Develop - Pipeline (Frontend)"
+name: "CD Develop - Pipeline (Fronted)"
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
     name: "Validaciones de Seguridad"
     uses: ./.github/workflows/security-scan.yml
 
-  # 2. Si el escaneo es exitoso, proceder con el despliegue del Frontend
-  desplegar-frontend: 
-    name: "Despliegue del Frontend" 
+  # 2. Si el escaneo es exitoso, proceder con el despliegue del API
+  desplegar-backend:
+    name: "Despliegue del Fronted"
     needs: ejecutar-seguridad
     uses: ./.github/workflows/deploy-frontend.yml
