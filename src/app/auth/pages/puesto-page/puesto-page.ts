@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChi
 import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { IPuesto, IRol } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { PuestoService } from '../../../../services/auth/puesto.service';

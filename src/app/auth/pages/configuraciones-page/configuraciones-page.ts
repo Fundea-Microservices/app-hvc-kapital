@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { IConfig, TipoConfiguracion } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { ConfigService } from '../../../../services/auth/config.service';
 import { UpsertConfigComponent } from '../../components/upsert-config/upsert-config';
 

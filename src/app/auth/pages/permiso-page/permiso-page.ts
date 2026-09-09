@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { PermisoService } from '../../../../services/auth/permiso.service';
 import { IPermiso } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { TimezoneDatePipe } from '../../../shared/pipes/timezone-date.pipe';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, input, Output, output } from '@angular/core';
+import { IPagination } from '../../../../interfaces/shared';
 
 
 @Component({

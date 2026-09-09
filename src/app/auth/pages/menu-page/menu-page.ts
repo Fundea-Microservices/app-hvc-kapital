@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { IMenu } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import type { ApiMetadata } from '../../../../interfaces/api-response';
 import { MenuService } from '../../../../services/auth/menu.service';
 import { UpsertMenuComponent } from '../../components/upsert-menu/upsert-menu';

@@ -1,0 +1,55 @@
+/* ==========================================================================
+   Bitácora de Autorización — Estilos HVC Kapital
+   =========================================================================═ */
+
+/* Tabs de filtro */
+.bitacora-tab {
+  color: var(--hvc-primary-light);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+}
+.bitacora-tab:hover {
+  color: var(--hvc-primary-dark);
+  background: rgba(0, 0, 0, 0.03);
+}
+.bitacora-tab.active {
+  color: var(--hvc-accent-orange);
+  border-bottom-color: var(--hvc-accent-orange);
+  font-weight: 600;
+}
+
+/* Búsqueda */
+.bitacora-search-input {
+  border: 1px solid var(--hvc-primary-light);
+}
+.bitacora-search-input:focus {
+  border-color: var(--hvc-primary);
+  box-shadow: 0 0 0 2px rgba(30, 51, 94, 0.15);
+}
+
+/* Tabla — filas */
+.bitacora-table-row {
+  transition: background-color 0.15s ease;
+}
+.bitacora-table-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Botón ver detalle */
+.bitacora-btn-view {
+  background-color: var(--hvc-primary);
+  transition: background-color 0.2s ease;
+}
+.bitacora-btn-view:hover {
+  background-color: var(--hvc-primary-dark);
+}
+
+/* Botón eliminar */
+.bitacora-btn-delete {
+  background-color: var(--hvc-danger, #EF4444);
+  transition: background-color 0.2s ease;
+}
+.bitacora-btn-delete:hover {
+  background-color: #dc2626;
+}

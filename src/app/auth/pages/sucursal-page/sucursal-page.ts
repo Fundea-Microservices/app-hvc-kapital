@@ -11,6 +11,7 @@ import { CustomIconComponent } from '../../../shared/components/custom-icon/cust
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { SucursalService } from '../../../../services/auth/sucursal.service';
 import { ISucursal } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { UpsertSucursalComponent } from '../../components/upsert-sucursal/upsert-sucursal';
 
 const emptySucursal: ISucursal = {

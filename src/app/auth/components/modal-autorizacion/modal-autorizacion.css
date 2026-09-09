@@ -1,0 +1,40 @@
+/* ==========================================================================
+   Modal de Autorización — Estilos HVC Kapital
+   ========================================================================== */
+
+:host {
+  display: block;
+}
+
+/* Input de código de autorización — focus ring naranja */
+:host ::ng-deep input[type="text"][formcontrolname="auth_code"] {
+  letter-spacing: 0.15em;
+}
+
+:host ::ng-deep input[type="text"][formcontrolname="auth_code"]:focus {
+  border-color: var(--hvc-accent-orange);
+  box-shadow: 0 0 0 2px rgba(250, 154, 55, 0.25);
+}
+
+/* Botón de confirmar — efecto hover */
+button.bg-accent-orange:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  transition: all 0.15s ease;
+}
+
+button.bg-accent-orange:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Badge del permiso */
+.badge-permiso {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: rgba(250, 154, 55, 0.15);
+  color: #FA9A37;
+}

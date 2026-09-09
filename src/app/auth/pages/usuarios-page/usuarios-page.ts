@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
 import { IUsuario, IRol, IPuesto } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { UpsertUsuarioComponent } from '../../components/upsert-usuario/upsert-usuario';
 import { RolService } from '../../../../services/auth/rol.service';
 import { PuestoService } from '../../../../services/auth/puesto.service';
