@@ -36,6 +36,10 @@ export interface IUsuario {
   puestoId?: string | null;      // ID del puesto (si aplica)
   sucursalId?: string | null;    // ID de la sucursal (si aplica)
 
+  // Autorización
+  auth_code?: string | null;     // Código de autorización único del usuario
+  autoriza?: boolean;            // Si el usuario puede autorizar acciones de otros
+
   // Relaciones
   rol?: IRol;                    // Objeto del rol relacionado
   puesto?: IPuesto;              // Objeto del puesto relacionado
@@ -124,6 +128,7 @@ export interface IPermiso {
   accion: string;                // Acción que habilita (ej. "crear")
   descripcion?: string | null;   // Descripción opcional
   activo: boolean;               // Estado del permiso
+  requires_auth?: boolean;       // Si la acción requiere autorización adicional
 
   // Auditoría
   created_at: Date;
@@ -134,6 +139,7 @@ export interface IPermiso {
 export interface IPermisoRol {
   rolId: string;
   permisoId: string;
+  autoriza?: boolean;            // Si el rol puede autorizar este permiso
   permiso?: IPermiso;            // Relación incluida en los listados
 }
 
@@ -154,6 +160,7 @@ export interface IPermisoUsuario {
   usuarioId: string;
   permisoId: string;
   permitido: boolean;
+  autoriza?: boolean;            // Si el usuario puede autorizar este permiso
   permiso?: IPermiso;            // Relación incluida en los listados
 }
 
