@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChi
 import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { RolService } from '../../../../services/auth/rol.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { IRol } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { TimezoneDatePipe } from '../../../shared/pipes/timezone-date.pipe';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { UpsertRolComponent } from '../../components/upsert-rol/upsert-rol';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 const emptyRol: IRol = {
   id: '',
@@ -20,13 +22,14 @@ const emptyRol: IRol = {
 
 @Component({
   selector: 'app-rol-page',
-  imports: [RouterLink, CustomIconComponent, TimezoneDatePipe, PaginationComponent, UpsertRolComponent],
+  imports: [RouterLink, CustomIconComponent, TimezoneDatePipe, PaginationComponent, UpsertRolComponent, ModalAutorizacionComponent],
   templateUrl: './rol-page.html',
   styleUrl: './rol-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RolPageComponent {
   rolService = inject(RolService);
+  autorizacionService = inject(AutorizacionService);
   rolesList = signal<IRol[]>([]);
   metadata = signal({});
   nuevoRol = signal(true);
@@ -208,45 +211,81 @@ export default class RolPageComponent {
 
 
   async createRol(rol: IRol) {
-    let resp = await this.rolService.createRol(rol)
-    if (resp?.success) {
-      // Agregar el nuevo rol a la lista local sin recargar toda la tabla
-      const nuevoRol = resp.data;
-      this.rolesList.update(roles => [nuevoRol, ...roles]);
-      
-      // Actualizar el total de items
-      this.pagination.update(p => ({
-        ...p,
-        totalItems: p.totalItems + 1
-      }));
-      
-      this.closeModal();
-      this.rolEdit.set(emptyRol)
-      this.nuevoRol.set(true); // Reseteamos el estado de nuevo rol
+    try {
+      let resp = await this.rolService.createRol(rol);
+      if (resp?.success) {
+        const nuevoRol = resp.data;
+        this.rolesList.update(roles => [nuevoRol, ...roles]);
+        this.pagination.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+        this.closeModal();
+        this.rolEdit.set(emptyRol);
+        this.nuevoRol.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/roles', metodoHttp: 'POST', body: { nombre: rol.nombre } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+              this.rolEdit.set(emptyRol);
+              this.nuevoRol.set(true);
+            }
+          }
+        );
+      }
     }
   }
 
   async updateRol(rol: IRol) {
-    let resp = await this.rolService.updateRol(rol)
-    if (resp?.success) {
-      // Actualizar el rol en la lista local sin recargar toda la tabla
-      const rolActualizado = resp.data;
-      this.rolesList.update(roles => 
-        roles.map(r => r.id === rolActualizado.id ? rolActualizado : r)
-      );
-      
-      this.closeModal();
+    try {
+      let resp = await this.rolService.updateRol(rol);
+      if (resp?.success) {
+        const rolActualizado = resp.data;
+        this.rolesList.update(roles =>
+          roles.map(r => r.id === rolActualizado.id ? rolActualizado : r)
+        );
+        this.closeModal();
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/roles', metodoHttp: 'PUT', body: { nombre: rol.nombre, activo: rol.activo, invitado: rol.invitado }, params: { id: rol.id! } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+            }
+          }
+        );
+      }
     }
   }
 
-
   async deleteRol(rol: IRol) {
-    const response = await this.rolService.deleteRol(rol.id || '');
-    if (response?.success) {
-      this.fetchData();
-      this.closeModal();
-      this.rolEdit.set(emptyRol);
-      this.nuevoRol.set(true); // Reseteamos el estado de nuevo rol
+    try {
+      const response = await this.rolService.deleteRol(rol.id || '');
+      if (response?.success) {
+        this.fetchData();
+        this.closeModal();
+        this.rolEdit.set(emptyRol);
+        this.nuevoRol.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/roles', metodoHttp: 'DELETE', params: { id: rol.id! } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+              this.rolEdit.set(emptyRol);
+              this.nuevoRol.set(true);
+            }
+          }
+        );
+      }
     }
   }
 

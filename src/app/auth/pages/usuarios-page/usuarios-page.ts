@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { IUsuario, IRol, IPuesto } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { UpsertUsuarioComponent } from '../../components/upsert-usuario/upsert-usuario';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 import { RolService } from '../../../../services/auth/rol.service';
 import { PuestoService } from '../../../../services/auth/puesto.service';
 import { SucursalService } from '../../../../services/auth/sucursal.service';
@@ -31,7 +33,7 @@ const emptyUsuario: IUsuario = {
 
 @Component({
   selector: 'app-usuarios-page',
-  imports: [RouterLink, FormsModule, PaginationComponent, UpsertUsuarioComponent, CustomIconComponent],
+  imports: [RouterLink, FormsModule, PaginationComponent, UpsertUsuarioComponent, CustomIconComponent, ModalAutorizacionComponent],
   templateUrl: './usuarios-page.html',
   styleUrl: './usuarios-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +44,7 @@ export default class UsuariosPageComponent {
   puestoService = inject(PuestoService);
   sucursalService = inject(SucursalService);
   private authService = inject(AuthService);
+  autorizacionService = inject(AutorizacionService);
 
   esAdmin = computed(() => this.authService.user()?.rol?.esAdmin ?? false);
 
@@ -175,44 +178,81 @@ export default class UsuariosPageComponent {
 
   async createUsuario(usuario: IUsuario) {
     const { id, created_at, updated_at, deleted_at, ...payload } = usuario;
-    const resp = await this.usuariosService.createUsuario(payload as any);
-    if (resp?.success) {
-      // Agregar el nuevo usuario a la lista local sin recargar toda la tabla
-      const nuevoUsuario = resp.data;
-      this.usuariosList.update(usuarios => [nuevoUsuario, ...usuarios]);
-      
-      // Actualizar el total de items
-      this.pagination.update(p => ({
-        ...p,
-        totalItems: p.totalItems + 1
-      }));
-      
-      this.closeModal();
-      this.usuarioEdit.set({ ...emptyUsuario });
-      this.nuevoUsuario.set(true);
+    try {
+      const resp = await this.usuariosService.createUsuario(payload as any);
+      if (resp?.success) {
+        const nuevoUsuario = resp.data;
+        this.usuariosList.update(usuarios => [nuevoUsuario, ...usuarios]);
+        this.pagination.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+        this.closeModal();
+        this.usuarioEdit.set({ ...emptyUsuario });
+        this.nuevoUsuario.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/usuarios', metodoHttp: 'POST', body: payload },
+          {
+            onSuccess: () => {
+              this.fetchData();
+              this.usuarioEdit.set({ ...emptyUsuario });
+              this.nuevoUsuario.set(true);
+            }
+          }
+        );
+      }
     }
   }
 
   async updateUsuario(usuario: IUsuario) {
-    const resp = await this.usuariosService.updateUsuario(usuario);
-    if (resp?.success) {
-      // Actualizar el usuario en la lista local sin recargar toda la tabla
-      const usuarioActualizado = resp.data;
-      this.usuariosList.update(usuarios => 
-        usuarios.map(u => u.id === usuarioActualizado.id ? usuarioActualizado : u)
-      );
-      
-      this.closeModal();
+    try {
+      const resp = await this.usuariosService.updateUsuario(usuario);
+      if (resp?.success) {
+        const usuarioActualizado = resp.data;
+        this.usuariosList.update(usuarios =>
+          usuarios.map(u => u.id === usuarioActualizado.id ? usuarioActualizado : u)
+        );
+        this.closeModal();
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/usuarios', metodoHttp: 'PUT', body: usuario, params: { id: usuario.id! } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+            }
+          }
+        );
+      }
     }
   }
 
   async deleteUsuario(usuario: IUsuario) {
-    const resp = await this.usuariosService.deleteUsuario(usuario.id || '');
-    if (resp?.success) {
-      this.fetchData();
-      this.closeModal();
-      this.usuarioEdit.set({ ...emptyUsuario });
-      this.nuevoUsuario.set(true);
+    try {
+      const resp = await this.usuariosService.deleteUsuario(usuario.id || '');
+      if (resp?.success) {
+        this.fetchData();
+        this.closeModal();
+        this.usuarioEdit.set({ ...emptyUsuario });
+        this.nuevoUsuario.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/usuarios', metodoHttp: 'DELETE', params: { id: usuario.id! } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+              this.usuarioEdit.set({ ...emptyUsuario });
+              this.nuevoUsuario.set(true);
+            }
+          }
+        );
+      }
     }
   }
 

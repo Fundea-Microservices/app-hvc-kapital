@@ -59,6 +59,7 @@ export class MenuService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ MenuService ~ createMenu ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al crear menú', 'Error');
       return null;
@@ -77,6 +78,7 @@ export class MenuService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ MenuService ~ updateMenu ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al actualizar menú', 'Error');
       return null;
@@ -92,6 +94,7 @@ export class MenuService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ MenuService ~ deleteMenu ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al eliminar menú', 'Error');
       return null;

@@ -140,6 +140,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       return null;
 
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.error('🚀 ~ UsuariosService ~ createUsuario ~ error:', error);
 
       const apiMessage = Array.isArray(error?.error?.message)
@@ -166,6 +167,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ UsuariosService ~ updateUsuario ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al actualizar usuario', 'Error');
       return null;
@@ -181,6 +183,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ UsuariosService ~ deleteUsuario ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al eliminar usuario', 'Error');
       return null;
