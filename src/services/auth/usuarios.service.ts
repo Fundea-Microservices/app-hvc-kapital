@@ -16,6 +16,7 @@ export class UsuariosService extends HttpService {
     usuarios: '/auth/usuarios',
     cambiarClave: '/auth/usuarios/cambiar-clave',
     resetClave: '/auth/usuarios/reset-clave',
+    porAuthCode: '/auth/usuarios/por-auth-code',
   };
 
   constructor(http: HttpClient, private toastr: ToastrService, private storage: StorageService) {
@@ -79,9 +80,10 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
         huella,
         activo,
         documento,
-        tipoDocumento,
-        estados,
-        lastPasswordUpdate
+        tipoDocumento,        
+        lastPasswordUpdate,
+        auth_code,
+        autoriza
       } = usuario as any;
 
       // 1. Calcular nombreCompleto si no se provee
@@ -106,8 +108,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
         userName: userName || '',
         correo: correo || '',
         rolId: finalRolId,
-        activo: activo ?? true,
-        estados: estados || 'ACTIVO',
+        activo: activo ?? true,        
       };
 
       // 4. Agregar opcionales solo si tienen valor real
@@ -123,6 +124,8 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       if (finalSucursalId && finalSucursalId.trim() !== '') rawPayload['sucursalId'] = finalSucursalId;
       if (fotoUrl && fotoUrl.trim() !== '') rawPayload['fotoUrl'] = fotoUrl;
       if (huella && huella.trim() !== '') rawPayload['huella'] = huella;
+      if (auth_code && auth_code.trim() !== '') rawPayload['auth_code'] = auth_code;
+      if (autoriza !== undefined && autoriza !== null) rawPayload['autoriza'] = autoriza;
 
       // NOTA: Si el backend ya tiene @Type(() => Date) en el DTO, puedes descomentar la siguiente línea:
       // if (lastPasswordUpdate) rawPayload['lastPasswordUpdate'] = new Date(lastPasswordUpdate).toISOString();
@@ -154,13 +157,29 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
 
   async updateUsuario(usuario: IUsuario): Promise<UsuarioResponse | null> {
     try {
-      const { id, nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursalId, activo } = usuario;
-      const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, {
-        nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId,
+      const { id, nombre1, nombre2, nombre3, apellido1, apellido2, apellido3, userName, correo, rolId, puestoId, sucursalId, activo, auth_code, autoriza } = usuario as any;
+
+      // Calcular nombreCompleto igual que en createUsuario
+      const nombreCompleto = [nombre1, nombre2, nombre3, apellido1, apellido2, apellido3]
+        .filter(Boolean)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const payload: Record<string, any> = {
+        nombreCompleto,
+        nombre1, nombre2, nombre3, apellido1, apellido2, apellido3,
+        userName, correo, rolId,
         puestoId: this.limpiarId(puestoId),
         sucursalId: this.limpiarId(sucursalId),
         activo,
-      }));
+      };
+
+      // Agregar auth_code y autoriza solo si tienen valor
+      if (auth_code && auth_code.trim() !== '') payload['auth_code'] = auth_code;
+      if (autoriza !== undefined && autoriza !== null) payload['autoriza'] = autoriza;
+
+      const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, payload));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
         return resp.body;
@@ -216,6 +235,35 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
     } catch (error: any) {
       console.log('🚀 ~ UsuariosService ~ resetClave ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al restablecer contraseña', 'Error');
+      return null;
+    }
+  }
+
+  /**
+   * Busca un usuario por su auth_code.
+   * GET /auth/usuarios/por-auth-code/:auth_code
+   *
+   * Retorna el usuario si:
+   * - El auth_code existe
+   * - El usuario está activo
+   * - El usuario tiene autoriza = true
+   *
+   * Retorna null si no se encuentra o hay error.
+   * Útil para validar unicidad de auth_code al crear/editar usuarios.
+   */
+  async getUsuarioByAuthCode(authCode: string): Promise<UsuarioResponse | null> {
+    try {
+      const resp = await firstValueFrom(
+        this.get<UsuarioResponse>(`${this.endpoints.porAuthCode}/${encodeURIComponent(authCode)}`)
+      );
+      if (resp.body?.success) return resp.body;
+      return null;
+    } catch (error: any) {
+      // 400 con AUTH-19-02 significa que no existe usuario con ese auth_code
+      // Esto es un resultado válido (no es error para nosotros)
+      if (error?.status === 400) return null;
+      console.log('🚀 ~ UsuariosService ~ getUsuarioByAuthCode ~ error:', error);
+      this.toastr.error(error?.error?.message || 'Error al buscar usuario por auth_code', 'Error');
       return null;
     }
   }

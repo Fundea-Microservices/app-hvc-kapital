@@ -5,7 +5,9 @@ import { CustomIconComponent } from '../../../shared/components/custom-icon/cust
 import { IConfig, TipoConfiguracion } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { ConfigService } from '../../../../services/auth/config.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { UpsertConfigComponent } from '../../components/upsert-config/upsert-config';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 const emptyConfig: IConfig = {
   id: '',
@@ -20,13 +22,14 @@ const emptyConfig: IConfig = {
 @Component({
   selector: 'app-configuraciones-page',
   standalone: true,
-  imports: [RouterLink, PaginationComponent, UpsertConfigComponent, CustomIconComponent],
+  imports: [RouterLink, PaginationComponent, UpsertConfigComponent, CustomIconComponent, ModalAutorizacionComponent],
   templateUrl: './configuraciones-page.html',
   styleUrl: './configuraciones-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ConfiguracionesPageComponent {
   configService = inject(ConfigService);
+  autorizacionService = inject(AutorizacionService);
 
   configs = signal<IConfig[]>([]);
   isLoading = signal(false);
@@ -153,46 +156,72 @@ export default class ConfiguracionesPageComponent {
   }
 
   async createConfig(cfg: IConfig) {
-    const { id, created_at, updated_at, deleted_at, ...payload } = cfg as any;
-    const resp = await this.configService.createConfig(payload);
-    if (resp?.success) {
-      // Agregar la nueva configuración a la lista local sin recargar toda la tabla
-      const nuevaConfig = resp.data;
-      this.configs.update(configs => [nuevaConfig, ...configs]);
-      this.updatePaginationTotals();
-      
-      this.closeModal();
-      this.configEdit.set({ ...emptyConfig });
-      this.nuevoConfig.set(true);
+    try {
+      const { id, created_at, updated_at, deleted_at, ...payload } = cfg as any;
+      const resp = await this.configService.createConfig(payload);
+      if (resp?.success) {
+        const nuevaConfig = resp.data;
+        this.configs.update(configs => [nuevaConfig, ...configs]);
+        this.updatePaginationTotals();
+        this.closeModal();
+        this.configEdit.set({ ...emptyConfig });
+        this.nuevoConfig.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/config', metodoHttp: 'POST', body: cfg },
+          { onSuccess: () => this.fetchData() }
+        );
+      }
     }
   }
 
   async updateConfig(cfg: IConfig) {
-    const resp = await this.configService.updateConfig(cfg.id || '', {
-      llave: cfg.llave,
-      tipo: cfg.tipo,
-      valor: cfg.valor,
-      descripcion: cfg.descripcion,
-      activo: cfg.activo,
-    });
-    if (resp?.success) {
-      // Actualizar la configuración en la lista local sin recargar toda la tabla
-      const configActualizada = resp.data;
-      this.configs.update(configs => 
-        configs.map(c => c.id === configActualizada.id ? configActualizada : c)
-      );
-      
-      this.closeModal();
+    try {
+      const resp = await this.configService.updateConfig(cfg.id || '', {
+        llave: cfg.llave,
+        tipo: cfg.tipo,
+        valor: cfg.valor,
+        descripcion: cfg.descripcion,
+        activo: cfg.activo,
+      });
+      if (resp?.success) {
+        const configActualizada = resp.data;
+        this.configs.update(configs =>
+          configs.map(c => c.id === configActualizada.id ? configActualizada : c)
+        );
+        this.closeModal();
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/config', metodoHttp: 'PUT', body: cfg, params: { id: cfg.id! } },
+          { onSuccess: () => this.fetchData() }
+        );
+      }
     }
   }
 
   async deleteConfig(cfg: IConfig) {
-    const resp = await this.configService.deleteConfig(cfg.id || '');
-    if (resp?.success) {
-      await this.fetchData();
-      this.closeModal();
-      this.configEdit.set({ ...emptyConfig });
-      this.nuevoConfig.set(true);
+    try {
+      const resp = await this.configService.deleteConfig(cfg.id || '');
+      if (resp?.success) {
+        await this.fetchData();
+        this.closeModal();
+        this.configEdit.set({ ...emptyConfig });
+        this.nuevoConfig.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/config', metodoHttp: 'DELETE', params: { id: cfg.id! } },
+          { onSuccess: () => { this.fetchData(); this.configEdit.set({ ...emptyConfig }); this.nuevoConfig.set(true); } }
+        );
+      }
     }
   }
 

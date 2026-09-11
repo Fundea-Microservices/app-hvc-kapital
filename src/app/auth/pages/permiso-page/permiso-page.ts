@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChi
 import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { PermisoService } from '../../../../services/auth/permiso.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { IPermiso } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { TimezoneDatePipe } from '../../../shared/pipes/timezone-date.pipe';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { UpsertPermisoComponent } from '../../components/upsert-permiso/upsert-permiso';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 const emptyPermiso: IPermiso = {
   id: '',
@@ -21,13 +23,14 @@ const emptyPermiso: IPermiso = {
 
 @Component({
   selector: 'app-permiso-page',
-  imports: [RouterLink, CustomIconComponent, TimezoneDatePipe, PaginationComponent, UpsertPermisoComponent],
+  imports: [RouterLink, CustomIconComponent, TimezoneDatePipe, PaginationComponent, UpsertPermisoComponent, ModalAutorizacionComponent],
   templateUrl: './permiso-page.html',
   styleUrl: './permiso-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PermisoPageComponent {
   permisoService = inject(PermisoService);
+  autorizacionService = inject(AutorizacionService);
   permisosList = signal<IPermiso[]>([]);
   nuevoPermiso = signal(true);
   permisoEdit = signal<IPermiso>({ ...emptyPermiso });
@@ -184,41 +187,65 @@ export default class PermisoPageComponent {
   }
 
   async createPermiso(permiso: IPermiso) {
-    let resp = await this.permisoService.createPermiso(permiso);
-    if (resp?.success) {
-      const nuevoPermiso = resp.data;
-      this.permisosList.update(permisos => [nuevoPermiso, ...permisos]);
-
-      this.pagination.update(p => ({
-        ...p,
-        totalItems: p.totalItems + 1
-      }));
-
-      this.closeModal();
-      this.permisoEdit.set({ ...emptyPermiso });
-      this.nuevoPermiso.set(true);
+    try {
+      let resp = await this.permisoService.createPermiso(permiso);
+      if (resp?.success) {
+        const nuevoPermiso = resp.data;
+        this.permisosList.update(permisos => [nuevoPermiso, ...permisos]);
+        this.pagination.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+        this.closeModal();
+        this.permisoEdit.set({ ...emptyPermiso });
+        this.nuevoPermiso.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/permisos', metodoHttp: 'POST', body: permiso },
+          { onSuccess: () => this.fetchData() }
+        );
+      }
     }
   }
 
   async updatePermiso(permiso: IPermiso) {
-    let resp = await this.permisoService.updatePermiso(permiso);
-    if (resp?.success) {
-      const permisoActualizado = resp.data;
-      this.permisosList.update(permisos =>
-        permisos.map(p => p.id === permisoActualizado.id ? permisoActualizado : p)
-      );
-
-      this.closeModal();
+    try {
+      let resp = await this.permisoService.updatePermiso(permiso);
+      if (resp?.success) {
+        const permisoActualizado = resp.data;
+        this.permisosList.update(permisos =>
+          permisos.map(p => p.id === permisoActualizado.id ? permisoActualizado : p)
+        );
+        this.closeModal();
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/permisos', metodoHttp: 'PUT', body: permiso, params: { id: permiso.id! } },
+          { onSuccess: () => this.fetchData() }
+        );
+      }
     }
   }
 
   async deletePermiso(permiso: IPermiso) {
-    const response = await this.permisoService.deletePermiso(permiso.id || '');
-    if (response?.success) {
-      this.fetchData();
-      this.closeModal();
-      this.permisoEdit.set({ ...emptyPermiso });
-      this.nuevoPermiso.set(true);
+    try {
+      const response = await this.permisoService.deletePermiso(permiso.id || '');
+      if (response?.success) {
+        this.fetchData();
+        this.closeModal();
+        this.permisoEdit.set({ ...emptyPermiso });
+        this.nuevoPermiso.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428 && error.error?.requiresAuth) {
+        this.closeModal();
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/permisos', metodoHttp: 'DELETE', params: { id: permiso.id! } },
+          { onSuccess: () => { this.fetchData(); this.permisoEdit.set({ ...emptyPermiso }); this.nuevoPermiso.set(true); } }
+        );
+      }
     }
   }
 
