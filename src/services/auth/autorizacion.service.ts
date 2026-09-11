@@ -215,15 +215,45 @@ export class AutorizacionService extends HttpService {
         );
         pending.onSuccess?.(resp.body.data);
       } else {
-        this.toastr.error(
-          resp.body?.message || 'Error al ejecutar con autorización',
-          'Error de Autorización'
-        );
+        // Error en la respuesta (no es error HTTP, es respuesta del backend con success=false)
+        const errorMsg = resp.body?.message || 'Error al ejecutar con autorización';
+        this.toastr.error(errorMsg, 'Error de Autorización');
         pending.onError?.(resp.body);
       }
     } catch (error: any) {
-      const msg = error?.error?.message || 'Código de autorización inválido';
-      this.toastr.error(msg, 'Error de Autorización');
+      // Diferenciar tipos de error según el status HTTP y el mensaje del backend
+      const backendMsg = error?.error?.message || '';
+      const statusCode = error?.status;
+
+      if (statusCode === 403) {
+        // Sin permisos para autorizar o auto-autorización
+        if (backendMsg.toLowerCase().includes('propia') || backendMsg.toLowerCase().includes('mismo')) {
+          // El usuario intenta autorizar su propia acción
+          this.toastr.error(
+            'No puede autorizar su propia acción',
+            'Error de Autorización'
+          );
+        } else {
+          // No tiene permisos para autorizar este permiso
+          this.toastr.error(
+            'No tiene permisos para autorizar',
+            'Sin Permisos'
+          );
+        }
+      } else if (statusCode === 400 || statusCode === 401) {
+        // Código de autorización inválido
+        this.toastr.error(
+          backendMsg || 'Código de autorización inválido',
+          'Error de Autorización'
+        );
+      } else {
+        // Otro error (500, red, etc.)
+        this.toastr.error(
+          backendMsg || 'Error al procesar la autorización',
+          'Error'
+        );
+      }
+
       pending.onError?.(error);
     } finally {
       this._procesando.set(false);
