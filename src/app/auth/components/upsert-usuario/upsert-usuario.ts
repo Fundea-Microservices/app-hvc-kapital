@@ -9,8 +9,11 @@ import {
   signal
 } from '@angular/core';
 
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
 import { IUsuario, IPuesto, IRol, ISucursal } from '../../../../interfaces/auth';
+import { UsuariosService } from '../../../../services/auth/usuarios.service';
+import { from, of } from 'rxjs';
+import { first, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-upsert-usuario',
@@ -22,6 +25,7 @@ import { IUsuario, IPuesto, IRol, ISucursal } from '../../../../interfaces/auth'
 })
 export class UpsertUsuarioComponent {
   private fb = inject(FormBuilder);
+  private usuariosService = inject(UsuariosService);
 
 
   usuario = input.required<IUsuario>();
@@ -58,6 +62,13 @@ export class UpsertUsuarioComponent {
         sucursalId: [u?.sucursalId ?? ''],
         activo: [u?.activo ?? true],
         clave: [''], // solo requerido al crear
+        auth_code: {
+          value: u?.auth_code ?? '',
+          validators: [Validators.minLength(3), Validators.maxLength(20)],
+          asyncValidators: this.crearValidadorUnicidadAuthCode(u?.id),
+          updateOn: 'blur',
+        },
+        autoriza: [u?.autoriza ?? false],
       });
 
       if (isNuevo) {
@@ -76,6 +87,8 @@ export class UpsertUsuarioComponent {
           sucursalId: '',
           activo: true,
           clave: '',
+          auth_code: { value: '', validators: [Validators.minLength(3), Validators.maxLength(20)], asyncValidators: this.crearValidadorUnicidadAuthCode(), updateOn: 'blur' },
+          autoriza: false,
         });
       }
 
@@ -87,6 +100,11 @@ export class UpsertUsuarioComponent {
     return this.nuevo() ? 'Crear Usuario' : 'Actualizar Usuario';
   }
 
+  get mostrarAuthCode(): boolean {
+    const v = this.form().get('autoriza')?.value;
+    return v === true;
+  }
+
   onSubmit() {
     if (this.form().valid) {
       const raw = this.form().value;
@@ -95,6 +113,8 @@ export class UpsertUsuarioComponent {
         ...raw,
         puestoId: raw.puestoId || undefined,
         sucursalId: raw.sucursalId || undefined,
+        auth_code: raw.auth_code || null,
+        autoriza: raw.autoriza ?? false,
       } as IUsuario;
       this.save.emit(value);
     }
@@ -102,5 +122,38 @@ export class UpsertUsuarioComponent {
 
   onCancel() {
     this.cancel.emit();
+  }
+
+  /**
+   * Crea un validador asíncrono que verifica si el auth_code ya existe
+   * en otro usuario. Se ejecuta al perder el foco (blur) del campo.
+   *
+   * @param excludeUserId ID del usuario que se está editando (se excluye de la validación)
+   */
+  private crearValidadorUnicidadAuthCode(excludeUserId?: string): AsyncValidatorFn {
+    return (control: AbstractControl) => {
+      const authCode = (control.value || '').toString().trim();
+
+      // Si está vacío, no validar (el campo es opcional)
+      if (!authCode) return of(null);
+
+      return from(this.usuariosService.getUsuarioByAuthCode(authCode)).pipe(
+        first(),
+        map(resp => {
+          // Si encontró un usuario con ese auth_code:
+          if (resp?.data) {
+            const usuario = resp.data as IUsuario;
+            // Si es el mismo usuario que se está editando, es válido (su propio auth_code)
+            if (excludeUserId && usuario.id === excludeUserId) {
+              return null;
+            }
+            // Si es otro usuario, el auth_code está duplicado
+            return { authCodeDuplicado: { authCode, usuarioExistente: usuario.userName } };
+          }
+          // No se encontró ningún usuario con ese auth_code → válido
+          return null;
+        })
+      );
+    };
   }
 }
