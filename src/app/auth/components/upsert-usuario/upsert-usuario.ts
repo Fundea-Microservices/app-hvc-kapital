@@ -62,12 +62,14 @@ export class UpsertUsuarioComponent {
         sucursalId: [u?.sucursalId ?? ''],
         activo: [u?.activo ?? true],
         clave: [''], // solo requerido al crear
-        auth_code: {
-          value: u?.auth_code ?? '',
-          validators: [Validators.minLength(3), Validators.maxLength(20)],
-          asyncValidators: this.crearValidadorUnicidadAuthCode(u?.id),
-          updateOn: 'blur',
-        },
+        auth_code: this.fb.control(
+          u?.auth_code ?? '',
+          {
+            validators: [Validators.minLength(3), Validators.maxLength(20)],
+            asyncValidators: this.crearValidadorUnicidadAuthCode(u?.id),
+            updateOn: 'blur',
+          }
+        ),
         autoriza: [u?.autoriza ?? false],
       });
 
@@ -87,7 +89,7 @@ export class UpsertUsuarioComponent {
           sucursalId: '',
           activo: true,
           clave: '',
-          auth_code: { value: '', validators: [Validators.minLength(3), Validators.maxLength(20)], asyncValidators: this.crearValidadorUnicidadAuthCode(), updateOn: 'blur' },
+          auth_code: '',
           autoriza: false,
         });
       }
@@ -113,7 +115,7 @@ export class UpsertUsuarioComponent {
         ...raw,
         puestoId: raw.puestoId || undefined,
         sucursalId: raw.sucursalId || undefined,
-        auth_code: raw.auth_code || null,
+        auth_code: typeof raw.auth_code === 'string' && raw.auth_code.trim() !== '' ? raw.auth_code.trim() : null,
         autoriza: raw.autoriza ?? false,
       } as IUsuario;
       this.save.emit(value);

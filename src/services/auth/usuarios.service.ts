@@ -124,7 +124,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       if (finalSucursalId && finalSucursalId.trim() !== '') rawPayload['sucursalId'] = finalSucursalId;
       if (fotoUrl && fotoUrl.trim() !== '') rawPayload['fotoUrl'] = fotoUrl;
       if (huella && huella.trim() !== '') rawPayload['huella'] = huella;
-      if (auth_code && auth_code.trim() !== '') rawPayload['auth_code'] = auth_code;
+      if (typeof auth_code === 'string' && auth_code.trim() !== '') rawPayload['auth_code'] = auth_code.trim();
       if (autoriza !== undefined && autoriza !== null) rawPayload['autoriza'] = autoriza;
 
       // NOTA: Si el backend ya tiene @Type(() => Date) en el DTO, puedes descomentar la siguiente línea:
@@ -142,9 +142,10 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
 
-    } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.error('🚀 ~ UsuariosService ~ createUsuario ~ error:', error);
+    } catch (error: any) {      
+      if (error.status === 428) {        
+        throw error;
+      }      
 
       const apiMessage = Array.isArray(error?.error?.message)
         ? error.error.message.join(' | ')
@@ -176,7 +177,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       };
 
       // Agregar auth_code y autoriza solo si tienen valor
-      if (auth_code && auth_code.trim() !== '') payload['auth_code'] = auth_code;
+      if (typeof auth_code === 'string' && auth_code.trim() !== '') payload['auth_code'] = auth_code.trim();
       if (autoriza !== undefined && autoriza !== null) payload['autoriza'] = autoriza;
 
       const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, payload));
