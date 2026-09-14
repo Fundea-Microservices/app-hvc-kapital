@@ -115,27 +115,29 @@ export default class SucursalPageComponent {
         try {
           const resp = await this.sucursalService.createSucursal(sucursal);
           if (resp?.success) { this.fetchData(); this.closeModal(); }
-        } catch (error: any) {
-          if (error.status === 428 && error.error?.requiresAuth) {
-            this.closeModal();
-            this.autorizacionService.ejecutarConCallbacks(
-              { endpoint: 'auth/sucursal', metodoHttp: 'POST', body: sucursal },
-              { onSuccess: () => this.fetchData() }
-            );
-          }
+        } catch (error: any) {if (error.status === 428) {
+             this.closeModal();
+             const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+             this.autorizacionService.ejecutarConCallbacks(
+               { endpoint: 'auth/sucursal', metodoHttp: 'POST', body: sucursal },
+               { onSuccess: () => this.fetchData() },
+               d
+             );
+           }
         }
       } else {
         try {
           const resp = await this.sucursalService.updateSucursal(sucursal.id!, sucursal);
           if (resp?.success) { this.fetchData(); this.closeModal(); }
-        } catch (error: any) {
-          if (error.status === 428 && error.error?.requiresAuth) {
-            this.closeModal();
-            this.autorizacionService.ejecutarConCallbacks(
-              { endpoint: 'auth/sucursal', metodoHttp: 'PUT', body: sucursal, params: { id: sucursal.id! } },
-              { onSuccess: () => this.fetchData() }
-            );
-          }
+        } catch (error: any) {if (error.status === 428) {
+             this.closeModal();
+             const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+             this.autorizacionService.ejecutarConCallbacks(
+               { endpoint: 'auth/sucursal', metodoHttp: 'PUT', body: sucursal, params: { id: sucursal.id! } },
+               { onSuccess: () => this.fetchData() },
+               d
+             );
+           }
         }
       }
     } finally {
@@ -147,14 +149,15 @@ export default class SucursalPageComponent {
     try {
       const resp = await this.sucursalService.deleteSucursal(sucursal.id!);
       if (resp?.success) { this.fetchData(); this.closeModal(); }
-    } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
-        this.closeModal();
-        this.autorizacionService.ejecutarConCallbacks(
-          { endpoint: 'auth/sucursal', metodoHttp: 'DELETE', params: { id: sucursal.id! } },
-          { onSuccess: () => { this.fetchData(); this.closeModal(); } }
-        );
-      }
+    } catch (error: any) {if (error.status === 428) {
+         this.closeModal();
+         const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+         this.autorizacionService.ejecutarConCallbacks(
+           { endpoint: 'auth/sucursal', metodoHttp: 'DELETE', params: { id: sucursal.id! } },
+           { onSuccess: () => { this.fetchData(); this.closeModal(); } },
+           d
+         );
+       }
     }
   }
 }

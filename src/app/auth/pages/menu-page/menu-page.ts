@@ -200,8 +200,9 @@ export default class MenuPageComponent {
         this.nuevoMenu.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/menus', metodoHttp: 'POST', body: payload },
           {
@@ -210,7 +211,8 @@ export default class MenuPageComponent {
               this.menuEdit.set({ ...emptyMenu });
               this.nuevoMenu.set(true);
             }
-          }
+          },
+          d
         );
       }
     }
@@ -233,15 +235,17 @@ export default class MenuPageComponent {
         this.closeModal();
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/menus', metodoHttp: 'PUT', body: menu, params: { id: menu.id! } },
           {
             onSuccess: () => {
               this.fetchData();
             }
-          }
+          },
+          d
         );
       }
     }
@@ -257,8 +261,9 @@ export default class MenuPageComponent {
         this.nuevoMenu.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/menus', metodoHttp: 'DELETE', params: { id: menu.id! } },
           {
@@ -267,7 +272,8 @@ export default class MenuPageComponent {
               this.menuEdit.set({ ...emptyMenu });
               this.nuevoMenu.set(true);
             }
-          }
+          },
+          d
         );
       }
     }

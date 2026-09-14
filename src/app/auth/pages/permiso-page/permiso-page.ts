@@ -198,11 +198,13 @@ export default class PermisoPageComponent {
         this.nuevoPermiso.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/permisos', metodoHttp: 'POST', body: permiso },
-          { onSuccess: () => this.fetchData() }
+          { onSuccess: () => this.fetchData() },
+          d
         );
       }
     }
@@ -219,11 +221,13 @@ export default class PermisoPageComponent {
         this.closeModal();
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/permisos', metodoHttp: 'PUT', body: permiso, params: { id: permiso.id! } },
-          { onSuccess: () => this.fetchData() }
+          { onSuccess: () => this.fetchData() },
+          d
         );
       }
     }
@@ -239,11 +243,13 @@ export default class PermisoPageComponent {
         this.nuevoPermiso.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/permisos', metodoHttp: 'DELETE', params: { id: permiso.id! } },
-          { onSuccess: () => { this.fetchData(); this.permisoEdit.set({ ...emptyPermiso }); this.nuevoPermiso.set(true); } }
+          { onSuccess: () => { this.fetchData(); this.permisoEdit.set({ ...emptyPermiso }); this.nuevoPermiso.set(true); } },
+          d
         );
       }
     }

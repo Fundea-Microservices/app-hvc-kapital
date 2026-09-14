@@ -222,8 +222,9 @@ export default class RolPageComponent {
         this.nuevoRol.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/roles', metodoHttp: 'POST', body: { nombre: rol.nombre } },
           {
@@ -232,7 +233,8 @@ export default class RolPageComponent {
               this.rolEdit.set(emptyRol);
               this.nuevoRol.set(true);
             }
-          }
+          },
+          d
         );
       }
     }
@@ -249,15 +251,17 @@ export default class RolPageComponent {
         this.closeModal();
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/roles', metodoHttp: 'PUT', body: { nombre: rol.nombre, activo: rol.activo, invitado: rol.invitado }, params: { id: rol.id! } },
           {
             onSuccess: () => {
               this.fetchData();
             }
-          }
+          },
+          d
         );
       }
     }
@@ -273,8 +277,9 @@ export default class RolPageComponent {
         this.nuevoRol.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/roles', metodoHttp: 'DELETE', params: { id: rol.id! } },
           {
@@ -283,7 +288,8 @@ export default class RolPageComponent {
               this.rolEdit.set(emptyRol);
               this.nuevoRol.set(true);
             }
-          }
+          },
+          d
         );
       }
     }

@@ -188,9 +188,14 @@ export default class UsuariosPageComponent {
         this.usuarioEdit.set({ ...emptyUsuario });
         this.nuevoUsuario.set(true);
       }
-    } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+    } catch (error: any) {      
+      if (error.status === 428) {        
         this.closeModal();
+        // El backend puede no enviar requiresAuth/permisoId/permisoCodigo
+        // Detectamos 428 solo por status code
+        const datos428 = error.error?.requiresAuth
+          ? error.error
+          : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };        
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/usuarios', metodoHttp: 'POST', body: payload },
           {
@@ -199,8 +204,9 @@ export default class UsuariosPageComponent {
               this.usuarioEdit.set({ ...emptyUsuario });
               this.nuevoUsuario.set(true);
             }
-          }
-        );
+          },
+          datos428
+        );        
       }
     }
   }
@@ -216,15 +222,19 @@ export default class UsuariosPageComponent {
         this.closeModal();
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const datos428 = error.error?.requiresAuth
+          ? error.error
+          : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/usuarios', metodoHttp: 'PUT', body: usuario, params: { id: usuario.id! } },
           {
             onSuccess: () => {
               this.fetchData();
             }
-          }
+          },
+          datos428
         );
       }
     }
@@ -240,8 +250,11 @@ export default class UsuariosPageComponent {
         this.nuevoUsuario.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const datos428 = error.error?.requiresAuth
+          ? error.error
+          : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/usuarios', metodoHttp: 'DELETE', params: { id: usuario.id! } },
           {
@@ -250,7 +263,8 @@ export default class UsuariosPageComponent {
               this.usuarioEdit.set({ ...emptyUsuario });
               this.nuevoUsuario.set(true);
             }
-          }
+          },
+          datos428
         );
       }
     }

@@ -168,11 +168,13 @@ export default class ConfiguracionesPageComponent {
         this.nuevoConfig.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/config', metodoHttp: 'POST', body: cfg },
-          { onSuccess: () => this.fetchData() }
+          { onSuccess: () => this.fetchData() },
+          d
         );
       }
     }
@@ -195,11 +197,13 @@ export default class ConfiguracionesPageComponent {
         this.closeModal();
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/config', metodoHttp: 'PUT', body: cfg, params: { id: cfg.id! } },
-          { onSuccess: () => this.fetchData() }
+          { onSuccess: () => this.fetchData() },
+          d
         );
       }
     }
@@ -215,11 +219,13 @@ export default class ConfiguracionesPageComponent {
         this.nuevoConfig.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/config', metodoHttp: 'DELETE', params: { id: cfg.id! } },
-          { onSuccess: () => { this.fetchData(); this.configEdit.set({ ...emptyConfig }); this.nuevoConfig.set(true); } }
+          { onSuccess: () => { this.fetchData(); this.configEdit.set({ ...emptyConfig }); this.nuevoConfig.set(true); } },
+          d
         );
       }
     }

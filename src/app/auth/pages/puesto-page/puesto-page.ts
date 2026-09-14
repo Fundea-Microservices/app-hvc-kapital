@@ -214,11 +214,13 @@ export default class PuestoPageComponent {
         this.nuevoPuesto.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/puestos', metodoHttp: 'POST', body: puesto },
-          { onSuccess: () => this.fetchData() }
+          { onSuccess: () => this.fetchData() },
+          d
         );
       }
     }
@@ -235,11 +237,13 @@ export default class PuestoPageComponent {
         this.closeModal();
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/puestos', metodoHttp: 'PUT', body: puesto, params: { id: puesto.id! } },
-          { onSuccess: () => this.fetchData() }
+          { onSuccess: () => this.fetchData() },
+          d
         );
       }
     }
@@ -255,11 +259,13 @@ export default class PuestoPageComponent {
         this.nuevoPuesto.set(true);
       }
     } catch (error: any) {
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {
         this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
           { endpoint: 'auth/puestos', metodoHttp: 'DELETE', params: { id: puesto.id! } },
-          { onSuccess: () => { this.fetchData(); this.puestoEdit.set(emptyPuesto); this.nuevoPuesto.set(true); } }
+          { onSuccess: () => { this.fetchData(); this.puestoEdit.set(emptyPuesto); this.nuevoPuesto.set(true); } },
+          d
         );
       }
     }
