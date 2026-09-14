@@ -1,19 +1,17 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
-  OnDestroy,
   Output,
-  ViewChild,
   effect,
   inject,
   input,
   signal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 
 @Component({
   selector: 'app-modal-autorizacion',
@@ -23,8 +21,10 @@ import { CustomIconComponent } from '../../../shared/components/custom-icon/cust
   styleUrls: ['./modal-autorizacion.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalAutorizacionComponent implements OnDestroy {
+export class ModalAutorizacionComponent {
   private fb = inject(FormBuilder);
+  private autorizacionService = inject(AutorizacionService);
+  private cdr = inject(ChangeDetectorRef);
 
   // ─── Inputs ───────────────────────────────────────────────────────────
   /** Código del permiso que requiere autorización (ej. "USR04") */
@@ -44,6 +44,10 @@ export class ModalAutorizacionComponent implements OnDestroy {
   @Output() cancel = new EventEmitter<void>();
 
   // ─── Estado interno ───────────────────────────────────────────────────
+  /** Visibilidad controlada por el signal del servicio */
+  private _visible = signal(false);
+  public visible = this._visible.asReadonly();
+
   form = signal<FormGroup>(
     this.fb.group({
       auth_code: [
@@ -52,23 +56,27 @@ export class ModalAutorizacionComponent implements OnDestroy {
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(10),
-          Validators.pattern(/^[A-Za-z0-9]+$/),  // Solo alfanumérico
+          Validators.pattern(/^[A-Za-z0-9]+$/),
         ],
       ],
     })
   );
 
-  @ViewChild('modal', { static: true }) modal!: ElementRef<HTMLDivElement>;
-
-  private subs: Subscription[] = [];
-
   constructor() {
-    // Reconstruir formulario cuando cambian los inputs
+    // Escuchar cambios del signal del servicio y sincronizar visibilidad.
+    // Este effect es el que dispara la apertura del modal cuando el servicio
+    // detecta un 428 y establece modalAbierto=true.
+    console.log('🟢 [ModalAutorizacion] constructor: effect created');
     effect(() => {
-      const _codigo = this.permisoCodigo();
-      const _id = this.permisoId();
-      // Resetear el formulario cuando cambia el permiso
-      this.form().reset({ auth_code: '' });
+      const abierto = this.autorizacionService.modalAbierto();
+      console.log('🟢 [ModalAutorizacion] effect fired! modalAbierto =', abierto, '_visible was:', this._visible());
+      this._visible.set(abierto);
+      console.log('🟢 [ModalAutorizacion] _visible set to:', this._visible());
+      if (!abierto) {
+        this.form().reset({ auth_code: '' });
+      }
+      this.cdr.markForCheck();
+      console.log('🟢 [ModalAutorizacion] markForCheck() called');
     });
   }
 
@@ -84,8 +92,8 @@ export class ModalAutorizacionComponent implements OnDestroy {
 
   // ─── Acciones ─────────────────────────────────────────────────────────
   onSubmit(): void {
+    console.log('🟡 [ModalAutorizacion] onSubmit called, form valid:', this.form().valid, 'visible:', this.visible());
     if (this.form().invalid) {
-      // Marcar todos los campos como touched para mostrar errores
       this.form().markAllAsTouched();
       return;
     }
@@ -97,6 +105,7 @@ export class ModalAutorizacionComponent implements OnDestroy {
   }
 
   onCancel(): void {
+    this.form().reset({ auth_code: '' });
     this.cancel.emit();
   }
 
@@ -106,36 +115,9 @@ export class ModalAutorizacionComponent implements OnDestroy {
     }
   }
 
-  // ─── Preline Overlay ──────────────────────────────────────────────────
-  open(): void {
-    const el = this.modal?.nativeElement;
-    if (!el) return;
-
-    if ((window as any).HSOverlay) {
-      new (window as any).HSOverlay(el).open();
-    } else {
-      el.classList.remove('hidden');
-      el.classList.add('pointer-events-auto');
+  onBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.onCancel();
     }
-  }
-
-  close(): void {
-    const el = this.modal?.nativeElement;
-    if (!el) return;
-
-    if ((window as any).HSOverlay) {
-      (window as any).HSOverlay.close(el);
-    } else {
-      el.classList.add('hidden');
-      el.classList.remove('open', 'pointer-events-auto');
-    }
-
-    this.form().reset({ auth_code: '' });
-  }
-
-  // ─── Ciclo de vida ────────────────────────────────────────────────────
-  ngOnDestroy(): void {
-    this.subs.forEach((s) => s.unsubscribe());
-    this.subs = [];
   }
 }
