@@ -151,3 +151,11 @@
     <!-- Hidden fallback usage to satisfy template analyzers for imported components -->
     <app-custom-icon class="hidden" [name]="'circle-help'" [color]="'#888'" [size]="16"></app-custom-icon>
 </div>
+
+<!-- MODAL AUTORIZACIÓN -->
+<app-modal-autorizacion
+    [permisoCodigo]="autorizacionService.datosAutorizacion()?.permisoCodigo || ''"
+    [permisoId]="autorizacionService.datosAutorizacion()?.permisoId || ''"
+    [isLoading]="autorizacionService.procesando()"
+    (confirm)="autorizacionService.confirmarAutorizacion($event)"
+    (cancel)="autorizacionService.cerrarModal()" />

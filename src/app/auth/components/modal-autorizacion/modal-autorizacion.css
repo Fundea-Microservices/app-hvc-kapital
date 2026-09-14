@@ -1,0 +1,91 @@
+/* ==========================================================================
+   Modal de Autorización — Estilos HVC Kapital
+   Patrón: @if + CSS directo (sin Preline HSOverlay)
+   ========================================================================== */
+
+:host {
+  display: block;
+}
+
+/* ─── Backdrop (overlay oscuro) ─────────────────────────────────────────── */
+.auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  animation: auth-backdrop-in 0.2s ease-out;
+}
+
+@keyframes auth-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── Contenido del modal ───────────────────────────────────────────────── */
+.auth-modal-content {
+  width: 100%;
+  max-width: 28rem; /* sm:max-w-md */
+  max-height: calc(100vh - 4rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1); /* shadow-sm */
+  border: 1px solid var(--hvc-primary-light, #e5e7eb);
+  animation: auth-modal-in 0.25s ease-out;
+}
+
+@keyframes auth-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─── Input de código de autorización ───────────────────────────────────── */
+:host ::ng-deep input[type="text"][formcontrolname="auth_code"] {
+  letter-spacing: 0.15em;
+}
+
+:host ::ng-deep input[type="text"][formcontrolname="auth_code"]:focus {
+  border-color: var(--hvc-accent-orange);
+  box-shadow: 0 0 0 2px rgba(250, 154, 55, 0.25);
+}
+
+/* ─── Botón de confirmar — efecto hover ─────────────────────────────────── */
+button.bg-accent-orange:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  transition: all 0.15s ease;
+}
+
+button.bg-accent-orange:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ─── Badge del permiso ─────────────────────────────────────────────────── */
+.badge-permiso {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background-color: rgba(250, 154, 55, 0.15);
+  color: #FA9A37;
+}

@@ -10,8 +10,11 @@ import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { SucursalService } from '../../../../services/auth/sucursal.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { ISucursal } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { UpsertSucursalComponent } from '../../components/upsert-sucursal/upsert-sucursal';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 const emptySucursal: ISucursal = {
   nombre: '',
@@ -24,13 +27,14 @@ const emptySucursal: ISucursal = {
 @Component({
   selector: 'app-sucursal-page',
   standalone: true,
-  imports: [RouterLink, CustomIconComponent, PaginationComponent, UpsertSucursalComponent],
+  imports: [RouterLink, CustomIconComponent, PaginationComponent, UpsertSucursalComponent, ModalAutorizacionComponent],
   templateUrl: './sucursal-page.html',
   styleUrl: './sucursal-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SucursalPageComponent {
   private sucursalService = inject(SucursalService);
+  autorizacionService = inject(AutorizacionService);
 
   sucursalesList = signal<ISucursal[]>([]);
   pagination = signal<IPagination>({ page: 1, pageSize: 10, totalItems: 0 });
@@ -108,11 +112,33 @@ export default class SucursalPageComponent {
     this.guardando.set(true);
     try {
       if (this.nuevaSucursal()) {
-        const resp = await this.sucursalService.createSucursal(sucursal);
-        if (resp?.success) { this.fetchData(); this.closeModal(); }
+        try {
+          const resp = await this.sucursalService.createSucursal(sucursal);
+          if (resp?.success) { this.fetchData(); this.closeModal(); }
+        } catch (error: any) {if (error.status === 428) {
+             this.closeModal();
+             const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+             this.autorizacionService.ejecutarConCallbacks(
+               { endpoint: 'auth/sucursal', metodoHttp: 'POST', body: sucursal },
+               { onSuccess: () => this.fetchData() },
+               d
+             );
+           }
+        }
       } else {
-        const resp = await this.sucursalService.updateSucursal(sucursal.id!, sucursal);
-        if (resp?.success) { this.fetchData(); this.closeModal(); }
+        try {
+          const resp = await this.sucursalService.updateSucursal(sucursal.id!, sucursal);
+          if (resp?.success) { this.fetchData(); this.closeModal(); }
+        } catch (error: any) {if (error.status === 428) {
+             this.closeModal();
+             const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+             this.autorizacionService.ejecutarConCallbacks(
+               { endpoint: 'auth/sucursal', metodoHttp: 'PUT', body: sucursal, params: { id: sucursal.id! } },
+               { onSuccess: () => this.fetchData() },
+               d
+             );
+           }
+        }
       }
     } finally {
       this.guardando.set(false);
@@ -120,7 +146,18 @@ export default class SucursalPageComponent {
   }
 
   async deleteSucursal(sucursal: ISucursal) {
-    const resp = await this.sucursalService.deleteSucursal(sucursal.id!);
-    if (resp?.success) { this.fetchData(); this.closeModal(); }
+    try {
+      const resp = await this.sucursalService.deleteSucursal(sucursal.id!);
+      if (resp?.success) { this.fetchData(); this.closeModal(); }
+    } catch (error: any) {if (error.status === 428) {
+         this.closeModal();
+         const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+         this.autorizacionService.ejecutarConCallbacks(
+           { endpoint: 'auth/sucursal', metodoHttp: 'DELETE', params: { id: sucursal.id! } },
+           { onSuccess: () => { this.fetchData(); this.closeModal(); } },
+           d
+         );
+       }
+    }
   }
 }

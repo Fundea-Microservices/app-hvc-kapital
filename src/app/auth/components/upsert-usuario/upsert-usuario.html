@@ -91,7 +91,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-1 gap-3">
     <div>
       <label class="block text-sm font-medium mb-1 text-primary-dark">Sucursal <span class="font-normal text-gray-light">(opcional)</span></label>
-      <select formControlName="sucursal_id" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary">
+      <select formControlName="sucursalId" class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary">
         <option value="">Sin sucursal</option>
         @for (s of (sucursales() || []); track s.id) {
         <option [value]="s.id">{{ s.nombre }}</option>
@@ -100,6 +100,25 @@
     </div>
   </div>
 
+  }
+
+  <!-- Auth Code -->
+  @if(!autoEdit() && mostrarAuthCode){
+  <div>
+    <label class="block text-sm font-medium mb-1 text-primary-dark">Código de Autorización <span class="font-normal text-gray-light">(opcional, único por usuario)</span></label>
+    <input type="text" formControlName="auth_code" placeholder="Ej. MAR123"
+      class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+    @if (form().get('auth_code')?.touched && form().get('auth_code')?.invalid) {
+    <div class="text-xs mt-1 text-danger">
+      @if (form().get('auth_code')?.errors?.['minlength']) { Mínimo 3 caracteres }
+      @if (form().get('auth_code')?.errors?.['maxlength']) { Máximo 20 caracteres }
+      @if (form().get('auth_code')?.errors?.['authCodeDuplicado']) {
+        Este código ya está registrado en el usuario "{{ form().get('auth_code')?.errors?.['authCodeDuplicado'].usuarioExistente }}"
+      }
+    </div>
+    }
+    <p class="text-xs mt-1 text-primary-light">Código único que el usuario utiliza para autorizar acciones de otros.</p>
+  </div>
   }
 
   <!-- Activo -->
@@ -115,6 +134,22 @@
       <span class="ml-3 text-sm font-medium text-primary-dark">Activo</span>
     </label>
   </div>
+
+  <!-- Autoriza -->
+  @if(!autoEdit()){
+  <div class="flex items-center">
+    <label class="relative inline-flex items-center cursor-pointer">
+      <input type="checkbox" formControlName="autoriza" class="sr-only peer" />
+      <div
+        class="w-11 h-6 peer-focus:outline-none peer-focus:ring-2 rounded-full transition-colors bg-gray-light ring-primary">
+      </div>
+      <div
+        class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
+      </div>
+      <span class="ml-3 text-sm font-medium text-primary-dark">Puede autorizar acciones de otros usuarios</span>
+    </label>
+  </div>
+  }
 
   <!-- Botones -->
   <div class="flex justify-end space-x-3 pt-2">

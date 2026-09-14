@@ -2,10 +2,13 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChi
 import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { IPuesto, IRol } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import { ToastrService } from 'ngx-toastr';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { PuestoService } from '../../../../services/auth/puesto.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { UpsertPuestoComponent } from '../../components/upsert-puesto/upsert-puesto.component';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 const emptyPuesto: IPuesto = {
   id: '',
@@ -14,13 +17,14 @@ const emptyPuesto: IPuesto = {
 
 @Component({
   selector: 'app-puesto-page',
-  imports: [RouterLink, CustomIconComponent, PaginationComponent, UpsertPuestoComponent],
+  imports: [RouterLink, CustomIconComponent, PaginationComponent, UpsertPuestoComponent, ModalAutorizacionComponent],
   templateUrl: './puesto-page.html',
   styleUrl: './puesto-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PuestoPageComponent {
   puestoService = inject(PuestoService);
+  autorizacionService = inject(AutorizacionService);
   puestosList = signal<IPuesto[]>([]);
   metadata = signal({});
   nuevoPuesto = signal(true);
@@ -199,45 +203,71 @@ export default class PuestoPageComponent {
 
 
   async createPuesto(puesto: IPuesto) {
-    let resp = await this.puestoService.createPuesto(puesto)
-    if (resp?.success) {
-      // Agregar el nuevo puesto a la lista local sin recargar toda la tabla
-      const nuevoPuesto = resp.data;
-      this.puestosList.update(puestos => [nuevoPuesto, ...puestos]);
-      
-      // Actualizar el total de items
-      this.pagination.update(p => ({
-        ...p,
-        totalItems: p.totalItems + 1
-      }));
-      
-      this.closeModal();
-      this.puestoEdit.set(emptyPuesto)
-      this.nuevoPuesto.set(true); // Reseteamos el estado de nuevo puesto
+    try {
+      let resp = await this.puestoService.createPuesto(puesto);
+      if (resp?.success) {
+        const nuevoPuesto = resp.data;
+        this.puestosList.update(puestos => [nuevoPuesto, ...puestos]);
+        this.pagination.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+        this.closeModal();
+        this.puestoEdit.set(emptyPuesto);
+        this.nuevoPuesto.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428) {
+        this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/puestos', metodoHttp: 'POST', body: puesto },
+          { onSuccess: () => this.fetchData() },
+          d
+        );
+      }
     }
   }
 
   async updatePuesto(puesto: IPuesto) {
-    let resp = await this.puestoService.updatePuesto(puesto)
-    if (resp?.success) {
-      // Actualizar el puesto en la lista local sin recargar toda la tabla
-      const puestoActualizado = resp.data;
-      this.puestosList.update(puestos => 
-        puestos.map(p => p.id === puestoActualizado.id ? puestoActualizado : p)
-      );
-      
-      this.closeModal();
+    try {
+      let resp = await this.puestoService.updatePuesto(puesto);
+      if (resp?.success) {
+        const puestoActualizado = resp.data;
+        this.puestosList.update(puestos =>
+          puestos.map(p => p.id === puestoActualizado.id ? puestoActualizado : p)
+        );
+        this.closeModal();
+      }
+    } catch (error: any) {
+      if (error.status === 428) {
+        this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/puestos', metodoHttp: 'PUT', body: puesto, params: { id: puesto.id! } },
+          { onSuccess: () => this.fetchData() },
+          d
+        );
+      }
     }
   }
 
-
   async deletePuesto(puesto: IPuesto) {
-    const response = await this.puestoService.deletePuesto(puesto.id || '');
-    if (response?.success) {
-      this.fetchData();
-      this.closeModal();
-      this.puestoEdit.set(emptyPuesto);
-      this.nuevoPuesto.set(true); // Reseteamos el estado de nuevo puesto
+    try {
+      const response = await this.puestoService.deletePuesto(puesto.id || '');
+      if (response?.success) {
+        this.fetchData();
+        this.closeModal();
+        this.puestoEdit.set(emptyPuesto);
+        this.nuevoPuesto.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428) {
+        this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/puestos', metodoHttp: 'DELETE', params: { id: puesto.id! } },
+          { onSuccess: () => { this.fetchData(); this.puestoEdit.set(emptyPuesto); this.nuevoPuesto.set(true); } },
+          d
+        );
+      }
     }
   }
 
