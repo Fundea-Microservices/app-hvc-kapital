@@ -86,7 +86,7 @@ export class AutorizacionService extends HttpService {
       return null;
     } catch (error: any) {
       // Detectar 428 (requiere autorización) — no es error, es flujo normal
-      if (error.status === 428 && error.error?.requiresAuth) {
+      if (error.status === 428) {        
         this.abrirModal(error.error);
         return null;
       }
@@ -115,42 +115,26 @@ export class AutorizacionService extends HttpService {
     callbacks: {
       onSuccess?: (data: EjecutarConAutorizacionResponse) => void;
       onError?: (error: any) => void;
-    } = {}
+    } = {},
+    datos428?: RequiereAutorizacionResponse,
   ): Promise<void> {
-    try {
-      const resp = await firstValueFrom(
-        this.post<EjecutarResponse>(`${this.endpoints.ejecutarConAutorizacion}`, request)
-      );
-
-      if (resp.body?.success) {
-        callbacks.onSuccess?.(resp.body.data);
-      } else {
-        callbacks.onError?.(resp.body);
-      }
-    } catch (error: any) {
-      // Detectar 428 — abrir modal
-      if (error.status === 428 && error.error?.requiresAuth) {
-        this._pendingRequest.set({
-          endpoint: request.endpoint,
-          metodoHttp: request.metodoHttp,
-          body: request.body,
-          params: request.params,
-          onSuccess: callbacks.onSuccess,
-          onError: callbacks.onError,
-        });
-        this._datosAutorizacion.set(error.error);
-        this._modalAbierto.set(true);
-        return;
-      }
-
-      // Otro error
-      console.log('🚀 ~ AutorizacionService ~ ejecutarConCallbacks ~ error:', error);
-      this.toastr.error(
-        error?.error?.message || 'Error al ejecutar la acción',
-        'Error'
-      );
-      callbacks.onError?.(error);
-    }
+    // El 428 ya fue recibido por la petición original del service CRUD (el
+    // service lo re-lanza y la página lo captura antes de llamar aquí), así
+    // que NO se vuelve a consultar el backend: se guarda la petición pendiente
+    // y se abre el modal directamente.
+    // NOTA: enviar un "probe" a /ejecutar-con-autorizacion sin permisoId ni
+    // auth_code solo produce un 400 de validación (el DTO los exige), por lo
+    // que la detección de 428 en esa llamada era código muerto.    
+    this._pendingRequest.set({
+      endpoint: request.endpoint,
+      metodoHttp: request.metodoHttp,
+      body: request.body,
+      params: request.params,
+      onSuccess: callbacks.onSuccess,
+      onError: callbacks.onError,
+    });    
+    this._datosAutorizacion.set(datos428 ?? null);    
+    this._modalAbierto.set(true);    
   }
 
   // ============================================================================
@@ -280,7 +264,7 @@ export class AutorizacionService extends HttpService {
    * Útil para que los componentes puedan detectar el caso.
    */
   esError428(error: any): boolean {
-    return error?.status === 428 && error?.error?.requiresAuth === true;
+    return error?.status === 428;
   }
 
   /**
