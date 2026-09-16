@@ -12,7 +12,12 @@ jobs:
     name: "Desplegar Frontend (Angular)"
     runs-on: [self-hosted, Linux, X64]
     env:
-      DEPLOY_DIR: /var/www/ProyectosFundea/hvc-kapital/app
+      # Debe coincidir EXACTAMENTE con la directiva `root` de nginx:
+      #   root /var/www/ProyectosFundea/hvc-kapital/app/app-hvc-kapital/browser;
+      DEPLOY_DIR: /var/www/ProyectosFundea/hvc-kapital/app/app-hvc-kapital/browser
+      # Salida real del build de Angular 21 (@angular/build:application):
+      # los estáticos quedan en dist/<nombre-proyecto>/browser/.
+      DIST_DIR: dist/app-hvc-kapital
     steps:
       # ──────────────────────────────────────────────────────
       # NOTA: No se verifican comandos de nginx (nginx -t,
@@ -25,9 +30,6 @@ jobs:
 
       - name: Checkout del repositorio Frontend
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
-        with:
-          repository: Fundea-Microservices/app-hvc-kapital
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configurar Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
@@ -41,21 +43,25 @@ jobs:
       - name: Compilar Angular (build)
         run: npx ng build --configuration=production
 
-      - name: Verificar que el build generó dist/
+      - name: Verificar que el build generó los archivos estáticos
         run: |
-          if [ ! -d "dist" ]; then
-            echo "❌ El directorio dist no existe. El build falló."
+          # El builder @angular/build:application deja los estáticos en
+          # dist/<nombre-proyecto>/browser/, NO en dist/ directamente.
+          if [ ! -f "${DIST_DIR}/browser/index.html" ]; then
+            echo "❌ No se encontró ${DIST_DIR}/browser/index.html. El build falló."
+            echo "Contenido de dist/:"
+            ls -R dist 2>/dev/null || echo "  (dist/ no existe)"
             exit 1
           fi
-          echo "✅ Build exitoso — dist/ encontrado."
+          echo "✅ Build exitoso — ${DIST_DIR}/browser/index.html encontrado."
 
       - name: Sincronizar frontend al directorio de nginx
         run: |
           echo "📂 Sincronizando frontend a ${DEPLOY_DIR}..."
-          rsync -av --delete \
-            --exclude 'node_modules' \
-            --exclude '.git' \
-            ./dist/ "${DEPLOY_DIR}/"
+          mkdir -p "${DEPLOY_DIR}"
+          # --delete limpia los bundles con hash de despliegues anteriores.
+          # Su alcance queda limitado al directorio que sirve nginx.
+          rsync -av --delete "./${DIST_DIR}/browser/" "${DEPLOY_DIR}/"
 
       - name: Frontend desplegado exitosamente
         run: |
