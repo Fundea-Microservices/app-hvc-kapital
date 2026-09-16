@@ -3,6 +3,14 @@ name: "CD Develop - Pipeline (Frontend)"
 on:
   push:
     branches: [ "develop" ]
+  # Permite lanzar el pipeline completo a mano desde la pestaña Actions
+  workflow_dispatch:
+
+# Evita dos despliegues simultáneos sobre el mismo directorio de nginx.
+# Los despliegues se encolan en lugar de pisarse.
+concurrency:
+  group: cd-develop-frontend
+  cancel-in-progress: false
 
 jobs:
   # 1. Mandar a llamar al flujo de seguridad
