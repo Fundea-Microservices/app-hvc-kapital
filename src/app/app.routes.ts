@@ -74,6 +74,10 @@ export const routes: Routes = [
                         path: 'usuarios',
                         loadComponent: () => import('./auth/pages/usuarios-page/usuarios-page'),
                     },
+                    {
+                        path: 'bitacora',
+                        loadComponent: () => import('./auth/pages/bitacora-page/bitacora-page'),
+                    },
                 ]
             },
             //     children: [

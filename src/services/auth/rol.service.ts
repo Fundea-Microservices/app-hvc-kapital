@@ -78,6 +78,7 @@ export class RolService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ RolService ~ updateRol ~ error:", error)
       this.toastr.error(error?.error?.message || 'Error al actualizar rol', 'Error');
       return null;
@@ -98,6 +99,7 @@ export class RolService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ RolService ~ createRol ~ error:", error)
       this.toastr.error(error?.error?.message || 'Error al crear rol', 'Error');
       return null;
@@ -114,6 +116,7 @@ export class RolService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ RolService ~ deleteRol ~ error:", error)
       this.toastr.error(error?.error?.message || 'Error al eliminar rol', 'Error');
       return null;

@@ -5,6 +5,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { RolService } from '../../../../services/auth/rol.service';
 import { PermisoRolService } from '../../../../services/auth/permiso-rol.service';
 import { IRol, IPermisoMatriz } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 
 @Component({
   selector: 'app-permisos-rol-page',

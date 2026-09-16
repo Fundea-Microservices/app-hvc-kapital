@@ -3,9 +3,12 @@ import { RouterLink } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { IMenu } from '../../../../interfaces/auth';
+import { IPagination } from '../../../../interfaces/shared';
 import type { ApiMetadata } from '../../../../interfaces/api-response';
 import { MenuService } from '../../../../services/auth/menu.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { UpsertMenuComponent } from '../../components/upsert-menu/upsert-menu';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 const emptyMenu: IMenu = {
   id: '',
@@ -23,13 +26,14 @@ const emptyMenu: IMenu = {
 @Component({
   selector: 'app-menu-page',
   standalone: true,
-  imports: [RouterLink, CustomIconComponent, UpsertMenuComponent, PaginationComponent],
+  imports: [RouterLink, CustomIconComponent, UpsertMenuComponent, PaginationComponent, ModalAutorizacionComponent],
   templateUrl: './menu-page.html',
   styleUrl: './menu-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class MenuPageComponent {
   menuService = inject(MenuService);
+  autorizacionService = inject(AutorizacionService);
 
   menusPrincipales = signal<IMenu[]>([]);
   submenus = signal<IMenu[]>([]);
@@ -180,50 +184,98 @@ export default class MenuPageComponent {
 
   async createMenu(menu: IMenu) {
     const { id, created_at, updated_at, deleted_at, ...payload } = menu;
-    const resp = await this.menuService.createMenu(payload as any);
-    if (resp?.success) {
-      // Agregar el nuevo menú a la lista local sin recargar toda la tabla
-      const nuevoMenu = resp.data;
-      if (menu.principal) {
-        this.menusPrincipales.update(menus => [nuevoMenu, ...menus]);
-        this.paginationMenus.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
-      } else {
-        this.submenus.update(subs => [nuevoMenu, ...subs]);
-        this.paginationSubs.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+    try {
+      const resp = await this.menuService.createMenu(payload as any);
+      if (resp?.success) {
+        const nuevoMenu = resp.data;
+        if (menu.principal) {
+          this.menusPrincipales.update(menus => [nuevoMenu, ...menus]);
+          this.paginationMenus.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+        } else {
+          this.submenus.update(subs => [nuevoMenu, ...subs]);
+          this.paginationSubs.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
+        }
+        this.closeModal();
+        this.menuEdit.set({ ...emptyMenu });
+        this.nuevoMenu.set(true);
       }
-      
-      this.closeModal();
-      this.menuEdit.set({ ...emptyMenu });
-      this.nuevoMenu.set(true);
+    } catch (error: any) {
+      if (error.status === 428) {
+        this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/menus', metodoHttp: 'POST', body: payload },
+          {
+            onSuccess: () => {
+              this.fetchData();
+              this.menuEdit.set({ ...emptyMenu });
+              this.nuevoMenu.set(true);
+            }
+          },
+          d
+        );
+      }
     }
   }
 
   async updateMenu(menu: IMenu) {
-    const resp = await this.menuService.updateMenu(menu);
-    if (resp?.success) {
-      // Actualizar el menú en la lista local sin recargar toda la tabla
-      const menuActualizado = resp.data;
-      if (menu.principal) {
-        this.menusPrincipales.update(menus => 
-          menus.map(m => m.id === menuActualizado.id ? menuActualizado : m)
-        );
-      } else {
-        this.submenus.update(subs => 
-          subs.map(s => s.id === menuActualizado.id ? menuActualizado : s)
+    try {
+      const resp = await this.menuService.updateMenu(menu);
+      if (resp?.success) {
+        const menuActualizado = resp.data;
+        if (menu.principal) {
+          this.menusPrincipales.update(menus =>
+            menus.map(m => m.id === menuActualizado.id ? menuActualizado : m)
+          );
+        } else {
+          this.submenus.update(subs =>
+            subs.map(s => s.id === menuActualizado.id ? menuActualizado : s)
+          );
+        }
+        this.closeModal();
+      }
+    } catch (error: any) {
+      if (error.status === 428) {
+        this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/menus', metodoHttp: 'PUT', body: menu, params: { id: menu.id! } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+            }
+          },
+          d
         );
       }
-      
-      this.closeModal();
     }
   }
 
   async deleteMenu(menu: IMenu) {
-    const resp = await this.menuService.deleteMenu(menu.id || '');
-    if (resp?.success) {
-      if (menu.principal) await this.fetchMenusPage(); else await this.fetchSubmenusPage();
-      this.closeModal();
-      this.menuEdit.set({ ...emptyMenu });
-      this.nuevoMenu.set(true);
+    try {
+      const resp = await this.menuService.deleteMenu(menu.id || '');
+      if (resp?.success) {
+        if (menu.principal) await this.fetchMenusPage(); else await this.fetchSubmenusPage();
+        this.closeModal();
+        this.menuEdit.set({ ...emptyMenu });
+        this.nuevoMenu.set(true);
+      }
+    } catch (error: any) {
+      if (error.status === 428) {
+        this.closeModal();
+        const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+        this.autorizacionService.ejecutarConCallbacks(
+          { endpoint: 'auth/menus', metodoHttp: 'DELETE', params: { id: menu.id! } },
+          {
+            onSuccess: () => {
+              this.fetchData();
+              this.menuEdit.set({ ...emptyMenu });
+              this.nuevoMenu.set(true);
+            }
+          },
+          d
+        );
+      }
     }
   }
 

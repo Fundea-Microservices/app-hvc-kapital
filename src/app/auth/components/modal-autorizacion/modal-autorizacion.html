@@ -1,0 +1,117 @@
+<!--
+  Modal de Autorización
+  Visibilidad: controlada internamente por signal 'visible' que se sincroniza
+  con autorizacionService.modalAbierto() vía effect().
+  El componente SIEMPRE está en el DOM; el @if maneja solo el contenido visual.
+-->
+@if (visible()) {
+<div class="auth-modal-backdrop"
+     role="dialog"
+     tabindex="-1"
+     aria-labelledby="auth-modal-label"
+     (keydown)="onKeydown($event)"
+     (click)="onBackdropClick($event)">
+
+  <div class="auth-modal-content" (click)="$event.stopPropagation()">
+
+    <!-- ─── Header ──────────────────────────────────────────────── -->
+    <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center justify-center w-9 h-9 rounded-full bg-accent-orange/10">
+          <app-custom-icon name="shield-check" [size]="20" color="#FA9A37" />
+        </div>
+        <div>
+          <h3 id="auth-modal-label" class="font-bold text-primary-dark">
+            Autorización Requerida
+          </h3>
+          <p class="text-xs text-primary-light">Ingrese el código de autorización</p>
+        </div>
+      </div>
+      <button type="button"
+        (click)="onCancel()"
+        class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+        aria-label="Cerrar">
+        ✕
+      </button>
+    </div>
+
+    <!-- ─── Body ────────────────────────────────────────────────── -->
+    <div class="p-4 overflow-y-auto">
+
+      <!-- Info del permiso -->
+      <div class="mb-4 p-3 rounded-lg bg-accent-orange/5 border border-accent-orange/20">
+        <p class="text-sm text-primary-dark">
+          La acción requiere autorización de un usuario autorizado.
+        </p>
+        @if (permisoCodigo()) {
+          <div class="mt-2 flex items-center gap-2">
+            <span class="text-xs text-primary-light">Permiso:</span>
+            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-accent-orange/15 text-accent-orange">
+              {{ permisoCodigo() }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Formulario -->
+      <form [formGroup]="form()" (ngSubmit)="onSubmit()">
+        <label class="block text-sm font-medium text-primary-dark mb-1">
+          Código de Autorización
+        </label>
+        <input type="text"
+          formControlName="auth_code"
+          placeholder="Ej: MAR123"
+          autocomplete="off"
+          class="w-full px-3 py-2 rounded-md border border-primary-light
+                 focus:outline-none focus:ring-2 focus:ring-primary
+                 uppercase tracking-wider font-mono text-sm" />
+
+        @if (authCodeInvalid) {
+          <div class="text-sm mt-1 space-y-1 text-danger">
+            @if (authCodeControl?.errors?.['required']) {
+              <div>El código es requerido</div>
+            }
+            @if (authCodeControl?.errors?.['minlength']) {
+              <div>Mínimo 3 caracteres</div>
+            }
+            @if (authCodeControl?.errors?.['maxlength']) {
+              <div>Máximo 10 caracteres</div>
+            }
+            @if (authCodeControl?.errors?.['pattern']) {
+              <div>Solo se permiten caracteres alfanuméricos</div>
+            }
+          </div>
+        }
+      </form>
+    </div>
+
+    <!-- ─── Footer ──────────────────────────────────────────────── -->
+    <div class="flex justify-end items-center gap-x-3 py-3 px-4 border-t border-primary-light">
+      <button type="button"
+        (click)="onCancel()"
+        [disabled]="isLoading()"
+        class="py-2 px-4 text-sm font-medium rounded-lg bg-white border border-primary-light
+               text-primary-dark hover:bg-gray-50 disabled:opacity-50">
+        Cancelar
+      </button>
+      <button type="submit"
+        (click)="onSubmit()"
+        [disabled]="form().invalid || isLoading()"
+        class="py-2 px-4 text-sm font-medium rounded-lg text-white bg-accent-orange
+               hover:bg-accent-orange/90 disabled:opacity-50
+               flex items-center gap-2">
+        @if (isLoading()) {
+          <svg class="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <span>Procesando...</span>
+        } @else {
+          <app-custom-icon name="shield-check" [size]="16" color="#ffffff" />
+          <span>Confirmar</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
