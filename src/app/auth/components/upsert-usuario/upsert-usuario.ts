@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
-import { IUsuario, IPuesto, IRol, ISucursal } from '../../../../interfaces/auth';
+import { IUsuario, IPuesto, IRol, ISucursal, MetodoAutenticacionEnum, METODOS_AUTENTICACION} from '../../../../interfaces/auth';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
 import { from, of } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
@@ -26,7 +26,7 @@ import { first, map, switchMap } from 'rxjs/operators';
 export class UpsertUsuarioComponent {
   private fb = inject(FormBuilder);
   private usuariosService = inject(UsuariosService);
-
+  public metodosDisponibles = METODOS_AUTENTICACION;
 
   usuario = input.required<IUsuario>();
   roles = input<IRol[]>([]);
@@ -60,8 +60,8 @@ export class UpsertUsuarioComponent {
         userName: [u?.userName ?? '', [Validators.required, Validators.minLength(4)]],
         correo: [u?.correo ?? '', [Validators.required, Validators.email]],
         telefono: [u?.telefono ?? '', [Validators.maxLength(20)]],
-        metodoAutenticacion: [u?.metodoAutenticacion ?? 'Local'],
-        rolId: [u?.rolId ?? '', [Validators.required]],
+        metodoAutenticacion: [u?.metodoAutenticacion ?? 'Por Defecto', [Validators.required]] as any,
+        rolId: [u?.rolId ?? 'Por Defecto', [Validators.required]],
         puestoId: [u?.puestoId ?? ''],
         sucursalId: [u?.sucursalId ?? ''],
         activo: [u?.activo ?? true],
@@ -91,8 +91,8 @@ export class UpsertUsuarioComponent {
           userName: '',
           correo: '',
           telefono: '',
-          metodoAutenticacion: 'Local',
-          rolId: '',
+          metodoAutenticacion: 'Por Defecto',
+          rolId: 'Por Defecto',
           puestoId: '',
           sucursalId: '',
           activo: true,
