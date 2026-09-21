@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
 import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
-import { IUsuario, IRol, IPuesto } from '../../../../interfaces/auth';
+import { IUsuario, IRol, IPuesto, MetodoAutenticacionEnum } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { UpsertUsuarioComponent } from '../../components/upsert-usuario/upsert-usuario';
 import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
@@ -29,6 +29,7 @@ const emptyUsuario: IUsuario = {
   puestoId: '',
   sucursalId: '',
   created_at: new Date(),
+  metodoAutenticacion: MetodoAutenticacionEnum.POR_DEFECTO,
 };
 
 @Component({
