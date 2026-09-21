@@ -16,6 +16,12 @@ export interface ISucursal {
   created_at?: Date;
 }
 
+export enum MetodoAutenticacionEnum {
+  POR_DEFECTO = 'Por Defecto',
+  LOCAL = 'Local',
+  ACTIVE_DIRECTORY = 'Active Directory'
+}
+
 export interface IUsuario {
   id?: string;                   // UUID del usuario
   nombreCompleto: string;        // Nombre completo concatenado
@@ -31,7 +37,7 @@ export interface IUsuario {
   clave: string;                 // Contraseña (hash)
   correo: string;                // Correo electrónico (único)
   telefono?: string | null;      // Número de teléfono del usuario
-  metodoAutenticacion?: string;  // Método de autenticación: 'Local' | 'ActiveDirectory'
+  metodoAutenticacion: MetodoAutenticacionEnum;  // Método de autenticación: 'Local' | 'ActiveDirectory'
   fotoUrl?: string | null;       // URL de la foto
   lastPasswordUpdate: Date;      // Última actualización de contraseña
   huella?: string | null;        // Huella digital (en base64 u otro formato)
@@ -212,3 +218,5 @@ export interface IConfig {
   updated_at?: Date | null;     // Fecha de última actualización
   deleted_at?: Date | null;     // Fecha de eliminación lógica
 }
+
+export const METODOS_AUTENTICACION = Object.values(MetodoAutenticacionEnum);
