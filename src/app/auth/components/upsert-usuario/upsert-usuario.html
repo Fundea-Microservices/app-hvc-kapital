@@ -54,6 +54,26 @@
     </div>
   </div>
 
+  <!-- Teléfono y Método de autenticación -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div>
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Teléfono <span class="font-normal text-gray-light">(opcional)</span></label>
+      <input type="text" formControlName="telefono" placeholder="Ej. +502 5555 1234"
+        class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+      @if (form().get('telefono')?.touched && form().get('telefono')?.invalid) {
+      <div class="text-xs mt-1 text-danger">Máximo 20 caracteres</div>
+      }
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1 text-primary-dark">Método de autenticación</label>
+      <select formControlName="metodoAutenticacion"
+        class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary">
+        <option value="Local">Local</option>
+        <option value="ActiveDirectory">Active Directory</option>
+      </select>
+    </div>
+  </div>
+
   <!-- Password (solo al crear) -->
   @if (nuevo()) {
   <div>

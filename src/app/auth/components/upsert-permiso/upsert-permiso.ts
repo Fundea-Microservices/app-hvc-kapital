@@ -45,6 +45,7 @@ export class UpsertPermisoComponent {
         modulo: [permiso.modulo, [Validators.required, Validators.maxLength(50)]],
         accion: [permiso.accion, [Validators.required, Validators.maxLength(50)]],
         descripcion: [permiso.descripcion ?? '', [Validators.maxLength(250)]],
+        requires_auth: [permiso.requires_auth ?? false],
         activo: [permiso.activo],
       });
 
@@ -54,6 +55,7 @@ export class UpsertPermisoComponent {
           modulo: '',
           accion: '',
           descripcion: '',
+          requires_auth: false,
           activo: true,
         });
       }
@@ -73,6 +75,7 @@ export class UpsertPermisoComponent {
         ...this.form().value,
         // El código se normaliza a mayúsculas para mantener consistencia
         codigo: String(this.form().value.codigo || '').trim().toUpperCase(),
+        requires_auth: this.form().value.requires_auth ?? false,
       };
       this.save.emit(value);
     }
