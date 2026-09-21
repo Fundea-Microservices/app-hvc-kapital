@@ -206,3 +206,12 @@
 
   </div>
 </div>
+
+<!-- Modal de Autorización -->
+<app-modal-autorizacion
+  [permisoId]="autorizacionService.datosAutorizacion()?.permisoId || ''"
+  [permisoCodigo]="autorizacionService.datosAutorizacion()?.permisoCodigo || ''"
+  [isLoading]="autorizacionService.procesando()"
+  (confirm)="autorizacionService.confirmarAutorizacion($event)"
+  (cancel)="autorizacionService.cerrarModal()"
+/>

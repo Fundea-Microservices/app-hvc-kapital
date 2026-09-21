@@ -260,6 +260,67 @@ export class AutorizacionService extends HttpService {
   // ============================================================================
 
   /**
+   * Maneja un error HTTP 428 de forma estándar.
+   *
+   * Uso en páginas (reduce boilerplate de try/catch):
+   *
+   * ```ts
+   * catch (error: any) {
+   *   this.autorizacionService.handleError428(error, {
+   *     endpoint: 'auth/usuarios',
+   *     metodoHttp: 'POST',
+   *     body: payload,
+   *     params: { id: usuario.id! },
+   *     onSuccess: () => this.fetchData(),
+   *   });
+   * }
+   * ```
+   *
+   * Si el error NO es 428, no hace nada (el servicio CRUD ya muestra toastr).
+   * Si el error SÍ es 428, cierra el modal si se provee, guarda la petición
+   * pendiente y abre el modal de autorización.
+   */
+  handleError428(
+    error: any,
+    context: {
+      endpoint: string;
+      metodoHttp: string;
+      body?: any;
+      params?: Record<string, string>;
+      onSuccess?: (data: EjecutarConAutorizacionResponse) => void;
+      onError?: (error: any) => void;
+      closeModal?: () => void;
+    }
+  ): boolean {
+    if (!this.esError428(error)) return false;
+
+    // Cerrar el modal del componente si se provee
+    context.closeModal?.();
+
+    // Extraer datos del 428 (con fallback)
+    const datos428 = error.error?.requiresAuth
+      ? error.error
+      : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
+
+    // Delegar al flujo estándar de ejecutarConCallbacks
+    this.ejecutarConCallbacks(
+      {
+        endpoint: context.endpoint,
+        metodoHttp: context.metodoHttp,
+        body: context.body,
+        params: context.params,
+      },
+      {
+        onSuccess: context.onSuccess,
+        onError: context.onError,
+      },
+      datos428
+    );
+
+    return true;
+  }
+
+  /**
    * Verifica si un error es un 428 (requiere autorización).
    * Útil para que los componentes puedan detectar el caso.
    */

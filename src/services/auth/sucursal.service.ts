@@ -54,6 +54,7 @@ export class SucursalService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       this.toastr.error(error?.error?.message || 'Error al crear sucursal', 'Error');
       return null;
     }
@@ -75,6 +76,7 @@ export class SucursalService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       this.toastr.error(error?.error?.message || 'Error al actualizar sucursal', 'Error');
       return null;
     }
@@ -89,6 +91,7 @@ export class SucursalService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       this.toastr.error(error?.error?.message || 'Error al eliminar sucursal', 'Error');
       return null;
     }

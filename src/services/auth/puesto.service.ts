@@ -76,6 +76,7 @@ export class PuestoService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PuestoService ~ updatePuesto ~ error:", error)
       this.toastr.error(error?.error?.message || 'Error al actualizar puesto', 'Error');
       return null;
@@ -96,6 +97,7 @@ export class PuestoService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PuestoService ~ createPuesto ~ error:", error)
       this.toastr.error(error?.error?.message || 'Error al crear puesto', 'Error');
       return null;
@@ -112,6 +114,7 @@ export class PuestoService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PuestoService ~ deletePuesto ~ error:", error)
       this.toastr.error(error?.error?.message || 'Error al eliminar puesto', 'Error');
       return null;

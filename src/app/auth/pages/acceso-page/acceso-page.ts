@@ -4,14 +4,16 @@ import { RouterLink } from '@angular/router';
 import { RolService } from '../../../../services/auth/rol.service';
 import { MenuService } from '../../../../services/auth/menu.service';
 import { AccesoService } from '../../../../services/auth/acceso.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { IAcceso, IMenu, IRol } from '../../../../interfaces/auth';
 import UpsertAccesoComponent from '../../components/upsert-acceso/upsert-acceso';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 @Component({
   selector: 'app-acceso-page',
   standalone: true,
-  imports: [RouterLink, UpsertAccesoComponent, CustomIconComponent],
+  imports: [RouterLink, UpsertAccesoComponent, CustomIconComponent, ModalAutorizacionComponent],
   templateUrl: './acceso-page.html',
   styleUrl: './acceso-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +22,7 @@ export default class AccesoPageComponent {
   private rolService = inject(RolService);
   private menuService = inject(MenuService);
   private accesoService = inject(AccesoService);
+  autorizacionService = inject(AutorizacionService);
 
   roles = signal<IRol[]>([]);
   selectedRolId = signal<string>('');
@@ -133,8 +136,17 @@ export default class AccesoPageComponent {
     }
     const ok = confirm('¿Eliminar este acceso?');
     if (!ok || !acceso.id) return;
-    await this.accesoService.deleteAcceso(acceso.id);
-    await this.refreshAccesos();
+    try {
+      await this.accesoService.deleteAcceso(acceso.id);
+      await this.refreshAccesos();
+    } catch (error: any) {
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/accesos',
+        metodoHttp: 'DELETE',
+        params: { id: acceso.id },
+        onSuccess: () => this.refreshAccesos(),
+      });
+    }
   }
 
   // Asignar: abre modal
@@ -155,6 +167,16 @@ export default class AccesoPageComponent {
       await this.accesoService.createAcceso(dto);
       await this.refreshAccesos();
       this.cerrarModal();
+    } catch (error: any) {
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/accesos',
+        metodoHttp: 'POST',
+        body: dto,
+        onSuccess: () => {
+          this.refreshAccesos();
+          this.cerrarModal();
+        },
+      });
     } finally {
       this.guardando.set(false);
     }
@@ -189,10 +211,19 @@ export default class AccesoPageComponent {
   }
 
   async updateAcceso(acceso: IAcceso) {
-    let resp = await this.accesoService.updateAcceso(acceso)
-    if (resp?.success) {
-      // this.fetchData()
-      this.cerrarModal();
+    try {
+      let resp = await this.accesoService.updateAcceso(acceso);
+      if (resp?.success) {
+        this.cerrarModal();
+      }
+    } catch (error: any) {
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/accesos',
+        metodoHttp: 'PUT',
+        body: { ordenMenu: acceso.ordenMenu, showApp: acceso.showApp, showWeb: acceso.showWeb, activo: acceso.activo, mainMenuId: acceso.mainMenuId, menuId: acceso.menuId, rolId: acceso.rolId },
+        params: { id: acceso.id! },
+        onSuccess: () => this.refreshAccesos(),
+      });
     }
   }
 

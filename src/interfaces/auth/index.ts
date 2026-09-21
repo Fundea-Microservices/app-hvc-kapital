@@ -25,9 +25,13 @@ export interface IUsuario {
   apellido1: string;             // Primer apellido
   apellido2?: string | null;     // Segundo apellido
   apellido3?: string | null;     // Tercer apellido
+  documento?: string | null;     // Número de documento de identificación
+  tipoDocumento?: string | null; // Tipo de documento (ej. DPI)
   userName: string;              // Nombre de usuario (único)
   clave: string;                 // Contraseña (hash)
   correo: string;                // Correo electrónico (único)
+  telefono?: string | null;      // Número de teléfono del usuario
+  metodoAutenticacion?: string;  // Método de autenticación: 'Local' | 'ActiveDirectory'
   fotoUrl?: string | null;       // URL de la foto
   lastPasswordUpdate: Date;      // Última actualización de contraseña
   huella?: string | null;        // Huella digital (en base64 u otro formato)

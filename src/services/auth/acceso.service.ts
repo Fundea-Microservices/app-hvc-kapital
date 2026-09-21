@@ -38,6 +38,7 @@ export class AccesoService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('AccesoService.createAcceso error:', error);
       this.toastr.error(error?.error?.message || 'Error al crear acceso', 'Error');
       return null;
@@ -56,6 +57,7 @@ export class AccesoService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('AccesoService.updateAcceso error:', error);
       this.toastr.error(error?.error?.message || 'Error al actualizar acceso', 'Error');
       return null;
@@ -71,6 +73,7 @@ export class AccesoService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('AccesoService.deleteAcceso error:', error);
       this.toastr.error(error?.error?.message || 'Error al eliminar acceso', 'Error');
       return null;
