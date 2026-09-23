@@ -46,3 +46,19 @@
 .rol-table-row:hover {
   background-color: var(--table-row-hover-bg);
 }
+
+.rol-tag-default {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  white-space: nowrap;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--hvc-accent-orange) 18%, white);
+  color: var(--hvc-primary);
+  border: 1px solid color-mix(in srgb, var(--hvc-accent-orange) 45%, white);
+}

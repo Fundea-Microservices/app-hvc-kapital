@@ -16,6 +16,7 @@ const emptyRol: IRol = {
   nombre: '',
   invitado: false,
   esAdmin: false,
+  porDefecto: false,
   activo: true,
   created_at: new Date(),
 }
@@ -38,6 +39,7 @@ export default class RolPageComponent {
     nombre: '',
     invitado: false,
     esAdmin: false,
+    porDefecto: false,
     activo: true,
     created_at: new Date(),
   });
@@ -215,7 +217,10 @@ export default class RolPageComponent {
       let resp = await this.rolService.createRol(rol);
       if (resp?.success) {
         const nuevoRol = resp.data;
-        this.rolesList.update(roles => [nuevoRol, ...roles]);
+        this.rolesList.update(roles => [
+          nuevoRol,
+          ...(nuevoRol.porDefecto ? roles.map(r => ({ ...r, porDefecto: false })) : roles)
+        ]);
         this.pagination.update(p => ({ ...p, totalItems: p.totalItems + 1 }));
         this.closeModal();
         this.rolEdit.set(emptyRol);
@@ -226,7 +231,7 @@ export default class RolPageComponent {
         this.closeModal();
         const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
-          { endpoint: 'auth/roles', metodoHttp: 'POST', body: { nombre: rol.nombre } },
+          { endpoint: 'auth/roles', metodoHttp: 'POST', body: { nombre: rol.nombre, porDefecto: rol.porDefecto } },
           {
             onSuccess: () => {
               this.fetchData();
@@ -246,7 +251,10 @@ export default class RolPageComponent {
       if (resp?.success) {
         const rolActualizado = resp.data;
         this.rolesList.update(roles =>
-          roles.map(r => r.id === rolActualizado.id ? rolActualizado : r)
+          roles.map(r => {
+            if (r.id === rolActualizado.id) return rolActualizado;
+            return rolActualizado.porDefecto ? { ...r, porDefecto: false } : r;
+          })
         );
         this.closeModal();
       }
@@ -255,7 +263,7 @@ export default class RolPageComponent {
         this.closeModal();
         const d = error.error?.requiresAuth ? error.error : { requiresAuth: true, permisoId: error.error?.permisoId || '', permisoCodigo: error.error?.permisoCodigo || '' };
         this.autorizacionService.ejecutarConCallbacks(
-          { endpoint: 'auth/roles', metodoHttp: 'PUT', body: { nombre: rol.nombre, activo: rol.activo, invitado: rol.invitado }, params: { id: rol.id! } },
+          { endpoint: 'auth/roles', metodoHttp: 'PUT', body: { nombre: rol.nombre, activo: rol.activo, invitado: rol.invitado, porDefecto: rol.porDefecto }, params: { id: rol.id! } },
           {
             onSuccess: () => {
               this.fetchData();
