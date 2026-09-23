@@ -69,6 +69,7 @@ export class PermisoRolService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PermisoRolService ~ asignar ~ error:", error);
       this.toastr.error(error?.error?.message || 'Error al asignar el permiso al rol', 'Error');
       return null;
@@ -89,6 +90,7 @@ export class PermisoRolService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PermisoRolService ~ retirar ~ error:", error);
       this.toastr.error(error?.error?.message || 'Error al retirar el permiso del rol', 'Error');
       return null;
@@ -129,6 +131,7 @@ export class PermisoRolService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ PermisoRolService ~ asignarPermisoUsuario ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al asignar permiso al usuario', 'Error');
       return null;
@@ -185,6 +188,7 @@ export class PermisoRolService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ PermisoRolService ~ actualizarPermisoUsuario ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al actualizar permiso del usuario', 'Error');
       return null;
@@ -211,6 +215,7 @@ export class PermisoRolService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ PermisoRolService ~ revocarPermisoUsuario ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al revocar permiso del usuario', 'Error');
       return null;

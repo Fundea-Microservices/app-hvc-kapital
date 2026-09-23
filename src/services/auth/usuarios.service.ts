@@ -219,6 +219,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ UsuariosService ~ cambiarClave ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al cambiar contraseña', 'Error');
       return null;
@@ -234,6 +235,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ UsuariosService ~ resetClave ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al restablecer contraseña', 'Error');
       return null;
