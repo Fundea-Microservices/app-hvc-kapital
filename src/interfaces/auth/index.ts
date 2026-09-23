@@ -111,6 +111,7 @@ export interface IRol {
     invitado: boolean;      // Indica si es rol invitado
     activo: boolean;        // Indica si está activo
     esAdmin: boolean;       // Indica si tiene privilegios de administrador
+    porDefecto: boolean;    // Indica si es el rol asignado por defecto a nuevos usuarios
 
     // Relaciones
     usuarios?: IUsuario[];  // Usuarios asociados al rol

@@ -82,6 +82,7 @@ export class AuthService extends HttpService {
         activo: false,
         invitado: false,
         esAdmin: false,
+        porDefecto: false,
         created_at: new Date()
       },
       metodoAutenticacion: MetodoAutenticacionEnum.POR_DEFECTO,
