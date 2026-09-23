@@ -173,6 +173,28 @@ export interface IPermisoUsuario {
   permitido: boolean;
   autoriza?: boolean;            // Si el usuario puede autorizar este permiso
   permiso?: IPermiso;            // Relación incluida en los listados
+  usuario?: IUsuario;           // Relación incluida en los listados
+}
+
+/**
+ * Estado de un permiso respecto a un usuario concreto:
+ * - `heredado`: no hay excepción directa, el permiso lo define el rol.
+ * - `permitido`: excepción directa que CONCEDE el permiso (aunque el rol no lo tenga).
+ * - `denegado`: excepción directa que NIEGA el permiso (aunque el rol lo tenga).
+ */
+export type EstadoPermisoUsuario = 'heredado' | 'permitido' | 'denegado';
+
+/**
+ * Fila de la matriz de permisos de un usuario (vista del módulo permisos-usuario).
+ * Se construye en frontend cruzando:
+ *  1. Catálogo de permisos (GET /auth/permisos),
+ *  2. Excepciones directas del usuario (GET /auth/permisos/usuario?usuarioId=),
+ *  3. Matriz del rol del usuario (GET /auth/permisos/rol/matriz?rolId=).
+ */
+export interface IPermisoMatrizUsuario extends IPermiso {
+  estado: EstadoPermisoUsuario;  // Excepción directa sobre el usuario
+  heredadoRol: boolean;          // Si el rol del usuario tiene el permiso
+  efectivo: boolean;             // Resultado efectivo tras aplicar la excepción
 }
 
 
