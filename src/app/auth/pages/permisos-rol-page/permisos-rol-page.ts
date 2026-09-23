@@ -4,12 +4,14 @@ import { CustomIconComponent } from '../../../shared/components/custom-icon/cust
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { RolService } from '../../../../services/auth/rol.service';
 import { PermisoRolService } from '../../../../services/auth/permiso-rol.service';
+import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { IRol, IPermisoMatriz } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
+import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
 @Component({
   selector: 'app-permisos-rol-page',
-  imports: [RouterLink, CustomIconComponent, PaginationComponent],
+  imports: [RouterLink, CustomIconComponent, PaginationComponent, ModalAutorizacionComponent],
   templateUrl: './permisos-rol-page.html',
   styleUrl: './permisos-rol-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +19,7 @@ import { IPagination } from '../../../../interfaces/shared';
 export default class PermisosRolPageComponent {
   private rolService = inject(RolService);
   private permisoRolService = inject(PermisoRolService);
+  autorizacionService = inject(AutorizacionService);
 
   // --- Roles / autocomplete ---
   rolesList = signal<IRol[]>([]);
@@ -150,15 +153,25 @@ export default class PermisosRolPageComponent {
     this.updateRow(permisoId, asignar);
     this.setSaving(permisoId, true);
 
-    const resp = asignar
-      ? await this.permisoRolService.asignar(rol.id, permisoId)
-      : await this.permisoRolService.retirar(rol.id, permisoId);
+    try {
+      const resp = asignar
+        ? await this.permisoRolService.asignar(rol.id, permisoId)
+        : await this.permisoRolService.retirar(rol.id, permisoId);
 
-    this.setSaving(permisoId, false);
-
-    if (!resp?.success) {
-      // Revertir si falló
+      if (!resp?.success) {
+        this.updateRow(permisoId, !asignar);
+      }
+    } catch (error: any) {
       this.updateRow(permisoId, !asignar);
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/permisos/rol',
+        metodoHttp: asignar ? 'POST' : 'DELETE',
+        body: asignar ? { rolId: rol.id, permisoId } : undefined,
+        params: asignar ? undefined : { rolId: rol.id, permisoId },
+        onSuccess: () => this.fetchMatriz(),
+      });
+    } finally {
+      this.setSaving(permisoId, false);
     }
   }
 

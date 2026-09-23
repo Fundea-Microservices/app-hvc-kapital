@@ -294,13 +294,28 @@ export default class UsuariosPageComponent {
     const clave = this.resetClaveValor();
     if (!u?.id || clave.length < 4 || this.guardandoReset()) return;
     this.guardandoReset.set(true);
-    const resp = await this.usuariosService.resetClave(u.id, clave);
-    if (resp?.success) {
-      this.modalResetClave.set(false);
-      this.resetClaveUsuario.set(null);
-      this.resetClaveValor.set('');
+    try {
+      const resp = await this.usuariosService.resetClave(u.id, clave);
+      if (resp?.success) {
+        this.modalResetClave.set(false);
+        this.resetClaveUsuario.set(null);
+        this.resetClaveValor.set('');
+      }
+    } catch (error: any) {
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/usuarios/reset-clave',
+        metodoHttp: 'POST',
+        body: { usuarioId: u.id, claveNueva: clave },
+        closeModal: () => this.modalResetClave.set(false),
+        onSuccess: () => {
+          this.modalResetClave.set(false);
+          this.resetClaveUsuario.set(null);
+          this.resetClaveValor.set('');
+        },
+      });
+    } finally {
+      this.guardandoReset.set(false);
     }
-    this.guardandoReset.set(false);
   }
 
   async toggleStatus(usuario: IUsuario, status: boolean) {
