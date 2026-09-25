@@ -49,6 +49,12 @@
 .acceso-table-row-sub:nth-child(even) {
   background-color: var(--table-row-alt-bg);
 }
+.acceso-table-row-sub {
+  cursor: grab;
+}
+.acceso-table-row-sub:active {
+  cursor: grabbing;
+}
 .acceso-table-row-sub:hover {
   background-color: var(--table-row-hover-bg);
 }

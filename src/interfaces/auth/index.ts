@@ -63,6 +63,7 @@ export interface IUsuario {
 
 export interface IAcceso {
   id?: string;                   // UUID del acceso
+  accesoId?: string;             // UUID del acceso (alias que envía el backend)
   ordenMenu: number;             // Orden del menú
   showApp: boolean;              // Si se muestra en la app móvil
   showWeb: boolean;              // Si se muestra en la web
@@ -85,6 +86,7 @@ export interface IAcceso {
 
 export interface ISubmenu {
   id?: string;                   // UUID del acceso
+  accesoId?: string;             // UUID del acceso (alias que envía el backend)
   ordenMenu: number;             // Orden del menú
   showApp: boolean;              // Si se muestra en la app móvil
   showWeb: boolean;              // Si se muestra en la web

@@ -5,7 +5,8 @@ import { RolService } from '../../../../services/auth/rol.service';
 import { MenuService } from '../../../../services/auth/menu.service';
 import { AccesoService } from '../../../../services/auth/acceso.service';
 import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
-import { IAcceso, IMenu, IRol } from '../../../../interfaces/auth';
+import { AuthService } from '../../../../services/auth/auth.service';
+import { IAcceso, IMenu, IRol, ISubmenu } from '../../../../interfaces/auth';
 import UpsertAccesoComponent from '../../components/upsert-acceso/upsert-acceso';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
@@ -22,6 +23,7 @@ export default class AccesoPageComponent {
   private rolService = inject(RolService);
   private menuService = inject(MenuService);
   private accesoService = inject(AccesoService);
+  private authService = inject(AuthService);
   autorizacionService = inject(AutorizacionService);
 
   roles = signal<IRol[]>([]);
@@ -34,6 +36,7 @@ export default class AccesoPageComponent {
   showUpsert = signal<boolean>(false);
   upsertMenu = signal<IMenu | null>(null);
   guardando = signal(false);
+  reordenando = signal(false);
 
   // Filtro para submenús
   filterSubmenus = signal<string>('');
@@ -63,7 +66,6 @@ export default class AccesoPageComponent {
     if (!rolId) { this.accesos.set([]); return; }
     const res = await this.accesoService.getAccesosByRol(rolId);
     if (res?.success) this.accesos.set(res.data || []);
-  // debug log removed
   }
 
   get principalMenus(): IMenu[] {
@@ -103,14 +105,14 @@ export default class AccesoPageComponent {
     const assignedIds = this.assignedIdsSet();
     const filter = this.filterSubmenus().toLowerCase().trim();
     let subs = (this.menus() || []).filter(m => !m.principal && !assignedIds.has(m.id || ''));
-    
+
     if (filter) {
-      subs = subs.filter(m => 
+      subs = subs.filter(m =>
         (m.label || '').toLowerCase().includes(filter) ||
         (m.descripcion || '').toLowerCase().includes(filter)
       );
     }
-    
+
     return subs;
   }
 
@@ -135,15 +137,17 @@ export default class AccesoPageComponent {
       return;
     }
     const ok = confirm('¿Eliminar este acceso?');
-    if (!ok || !acceso.id) return;
+    if (!ok) return;
+    const accesoKey = this.resolveAccesoId(acceso);
+    if (!accesoKey) return;
     try {
-      await this.accesoService.deleteAcceso(acceso.id);
+      await this.accesoService.deleteAcceso(accesoKey);
       await this.refreshAccesos();
     } catch (error: any) {
       this.autorizacionService.handleError428(error, {
         endpoint: 'auth/accesos',
         metodoHttp: 'DELETE',
-        params: { id: acceso.id },
+        params: { id: this.resolveAccesoId(acceso) },
         onSuccess: () => this.refreshAccesos(),
       });
     }
@@ -183,26 +187,111 @@ export default class AccesoPageComponent {
   }
 
   // Reordenar (HTML5 drag & drop)
-  dragSubAcceso: IAcceso | null = null;
-  onDragOver(ev: DragEvent) { ev.preventDefault(); }
+  dragSubAcceso: IAcceso | ISubmenu | null = null;
 
-  onDragStartSub(item: IAcceso) { this.dragSubAcceso = item; }
+  onDragOver(ev: DragEvent) {
+    ev.preventDefault();
+    if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
+  }
 
-  // Reordenar submenús por mainMenuId
-  async onDropSub(targetIndex: number, mainMenuId: string) {
-    if (!this.dragSubAcceso) return;
-    // Validar target index
-    const parent = (this.accesos() || []).find(a => a.menu?.id === mainMenuId);
-    const count = parent?.subMenus?.length || 0;
-    if (targetIndex < 0 || targetIndex >= count) { this.dragSubAcceso = null; return; }
+  onDragStartSub(ev: DragEvent, item: IAcceso | ISubmenu) {
+    this.dragSubAcceso = item;
+    ev.dataTransfer?.setData('text/plain', item.id || '');
+    if (ev.dataTransfer) ev.dataTransfer.effectAllowed = 'move';
+  }
 
-    const newOrden = (targetIndex + 1);
-    const moved = { ...this.dragSubAcceso, ordenMenu: newOrden } as IAcceso;
-    if (moved.id) {
-      await this.accesoService.updateAcceso(moved);
-    }
-    await this.refreshAccesos();
+  onDragEndSub() {
     this.dragSubAcceso = null;
+  }
+
+  async onDropSub(ev: DragEvent, targetIndex: number, mainMenuId: string) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const dragged = this.dragSubAcceso;
+    this.dragSubAcceso = null;
+    const draggedId = this.resolveAccesoId(dragged);
+    if (!draggedId || this.reordenando()) return;
+
+    const parent = (this.accesos() || []).find(a => a.menu?.id === mainMenuId || a.menuId === mainMenuId);
+    const hermanos = parent?.subMenus || [];
+    if (targetIndex < 0 || targetIndex >= hermanos.length) return;
+
+    const destino = hermanos[targetIndex];
+    const destinoId = this.resolveAccesoId(destino);
+    if (!destinoId || destinoId === draggedId) return;
+    if (!hermanos.some(s => this.resolveAccesoId(s) === draggedId)) return;
+
+    const nuevoOrden = destino.ordenMenu;
+    const payload = { id: draggedId, nuevoOrden };
+
+    this.reordenando.set(true);
+    try {
+      const resp = await this.accesoService.reorderAcceso(payload);
+      if (resp?.success) {
+        this.aplicarReordenLocal(mainMenuId, draggedId, nuevoOrden);
+        this.sincronizarSesionSiMismoRol();
+      }
+    } catch (error: any) {
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/accesos/reorder',
+        metodoHttp: 'PATCH',
+        body: payload,
+        onSuccess: () => {
+          this.aplicarReordenLocal(mainMenuId, draggedId, nuevoOrden);
+          this.sincronizarSesionSiMismoRol();
+        },
+      });
+    } finally {
+      this.reordenando.set(false);
+    }
+  }
+
+  private resolveAccesoId(item?: IAcceso | ISubmenu | null): string {
+    return item?.id || item?.accesoId || '';
+  }
+
+  /**
+   * A toma el ordenMenu del destino; los hermanos de la rama se desplazan.
+   */
+  private aplicarReordenLocal(mainMenuId: string, draggedId: string, nuevoOrden: number): void {
+    this.accesos.update(list =>
+      list.map(parent => {
+        if (parent.menu?.id !== mainMenuId && parent.menuId !== mainMenuId) return parent;
+        const subs = [...(parent.subMenus || [])];
+        const dragged = subs.find(s => this.resolveAccesoId(s) === draggedId);
+        if (!dragged) return parent;
+
+        const draggedOrden = dragged.ordenMenu;
+        if (draggedOrden === nuevoOrden) return parent;
+
+        const nextSubs = subs
+          .map(s => {
+            const copy = { ...s };
+            if (this.resolveAccesoId(copy) === draggedId) {
+              copy.ordenMenu = nuevoOrden;
+            } else if (draggedOrden < nuevoOrden) {
+              if (copy.ordenMenu > draggedOrden && copy.ordenMenu <= nuevoOrden) {
+                copy.ordenMenu -= 1;
+              }
+            } else if (copy.ordenMenu >= nuevoOrden && copy.ordenMenu < draggedOrden) {
+              copy.ordenMenu += 1;
+            }
+            return copy;
+          })
+          .sort((a, b) => a.ordenMenu - b.ordenMenu);
+
+        return { ...parent, subMenus: nextSubs };
+      })
+    );
+  }
+
+  /** Si el rol editado es el del usuario logueado, el menú lateral se reconstruye. */
+  private sincronizarSesionSiMismoRol(): void {
+    const user = this.authService.user();
+    const userRolId = user?.rolId || user?.rol?.id || '';
+    if (!userRolId || userRolId !== this.selectedRolId()) return;
+    this.authService.updateAccesos(this.accesos());
   }
 
   changeActive(acceso: IAcceso, checked: boolean) {
