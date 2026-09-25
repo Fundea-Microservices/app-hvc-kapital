@@ -164,3 +164,12 @@
         }
     </div>
 </div>
+
+<!-- MODAL AUTORIZACIÓN -->
+<app-modal-autorizacion
+    [permisoCodigo]="autorizacionService.datosAutorizacion()?.permisoCodigo || ''"
+    [permisoId]="autorizacionService.datosAutorizacion()?.permisoId || ''"
+    [isLoading]="autorizacionService.procesando()"
+    (confirm)="autorizacionService.confirmarAutorizacion($event)"
+    (cancel)="autorizacionService.cerrarModal()" />
+

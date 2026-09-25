@@ -99,7 +99,7 @@
               </tr>
             </thead>
             <tbody style="background-color: var(--table-row-bg)">
-              @for (item of accesos(); track item.id; let i = $index) {
+              @for (item of accesos(); track item.accesoId || item.id; let i = $index) {
               <tr class="acceso-table-row">
                 <td class="px-3 py-2 text-center align-middle border border-table-border"><b>{{ item.ordenMenu }}</b></td>
                 <td class="px-3 py-2 align-middle border border-table-border">
@@ -138,12 +138,13 @@
                 </td>
               </tr>
 
-              @for (subacceso of item.subMenus; track subacceso.id; let j = $index) {
+              @for (subacceso of item.subMenus; track subacceso.accesoId || subacceso.id; let j = $index) {
         <tr class="acceso-table-row-sub"
           draggable="true"
-          (dragstart)="onDragStartSub(subacceso)"
+          (dragstart)="onDragStartSub($event, subacceso)"
                   (dragover)="onDragOver($event)"
-                  (drop)="onDropSub(j, item.menu.id!)">
+                  (dragend)="onDragEndSub()"
+                  (drop)="onDropSub($event, j, item.menu.id!)">
                 <td class="pl-4 py-2 text-center align-middle border border-table-border">
               {{ item.ordenMenu + '.' + subacceso.ordenMenu }}
                 </td>
@@ -206,3 +207,12 @@
 
   </div>
 </div>
+
+<!-- Modal de Autorización -->
+<app-modal-autorizacion
+  [permisoId]="autorizacionService.datosAutorizacion()?.permisoId || ''"
+  [permisoCodigo]="autorizacionService.datosAutorizacion()?.permisoCodigo || ''"
+  [isLoading]="autorizacionService.procesando()"
+  (confirm)="autorizacionService.confirmarAutorizacion($event)"
+  (cancel)="autorizacionService.cerrarModal()"
+/>

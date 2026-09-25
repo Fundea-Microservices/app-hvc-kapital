@@ -4,7 +4,7 @@ import { HttpService } from '../HttpService';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
-import { IAcceso, ILogin, IUsuario } from '../../interfaces/auth';
+import { IAcceso, ILogin, IUsuario, MetodoAutenticacionEnum } from '../../interfaces/auth';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 
@@ -82,8 +82,10 @@ export class AuthService extends HttpService {
         activo: false,
         invitado: false,
         esAdmin: false,
+        porDefecto: false,
         created_at: new Date()
-      }
+      },
+      metodoAutenticacion: MetodoAutenticacionEnum.POR_DEFECTO,
     };
   }
 

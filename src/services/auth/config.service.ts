@@ -63,6 +63,7 @@ export class ConfigService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ ConfigService ~ createConfig ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al crear configuración', 'Error');
       return null;
@@ -79,6 +80,7 @@ export class ConfigService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ ConfigService ~ updateConfig ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al actualizar configuración', 'Error');
       return null;
@@ -94,6 +96,7 @@ export class ConfigService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ ConfigService ~ deleteConfig ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al eliminar configuración', 'Error');
       return null;

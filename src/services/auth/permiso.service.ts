@@ -78,6 +78,7 @@ export class PermisoService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PermisoService ~ createPermiso ~ error:", error);
       this.toastr.error(error?.error?.message || 'Error al crear permiso', 'Error');
       return null;
@@ -101,6 +102,7 @@ export class PermisoService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PermisoService ~ updatePermiso ~ error:", error);
       this.toastr.error(error?.error?.message || 'Error al actualizar permiso', 'Error');
       return null;
@@ -117,6 +119,7 @@ export class PermisoService extends HttpService {
 
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log("🚀 ~ PermisoService ~ deletePermiso ~ error:", error);
       this.toastr.error(error?.error?.message || 'Error al eliminar permiso', 'Error');
       return null;

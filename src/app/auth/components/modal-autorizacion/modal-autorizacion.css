@@ -58,11 +58,11 @@
 }
 
 /* ─── Input de código de autorización ───────────────────────────────────── */
-:host ::ng-deep input[type="text"][formcontrolname="auth_code"] {
+:host ::ng-deep input[type="password"][formcontrolname="auth_code"] {
   letter-spacing: 0.15em;
 }
 
-:host ::ng-deep input[type="text"][formcontrolname="auth_code"]:focus {
+:host ::ng-deep input[type="password"][formcontrolname="auth_code"]:focus {
   border-color: var(--hvc-accent-orange);
   box-shadow: 0 0 0 2px rgba(250, 154, 55, 0.25);
 }

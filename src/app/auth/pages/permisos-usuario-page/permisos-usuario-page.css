@@ -1,0 +1,56 @@
+/* ==========================================================================
+   Estilos para permisos-usuario-page — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Botón "Buscar" (naranja acento) */
+.permisos-usuario-btn-search {
+  background-color: var(--hvc-accent-orange);
+  color: #ffffff;
+}
+.permisos-usuario-btn-search:hover:not(:disabled) {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Inputs de búsqueda y filtros */
+.permisos-usuario-search-input {
+  border: 1px solid var(--hvc-primary-light);
+  --tw-ring-color: var(--hvc-primary);
+}
+.permisos-usuario-search-input:focus {
+  border-color: var(--hvc-primary);
+}
+
+/* Dropdown de autocomplete */
+.permisos-usuario-dropdown-item:hover {
+  background-color: var(--hvc-accent-peach);
+}
+
+/* Select tri-estado de excepción (Heredar / Permitir / Denegar) */
+.permisos-usuario-estado-select {
+  border: 1px solid var(--hvc-primary-light);
+  background-color: #ffffff;
+  --tw-ring-color: var(--hvc-primary);
+  cursor: pointer;
+}
+.permisos-usuario-estado-select:focus {
+  border-color: var(--hvc-primary);
+}
+.permisos-usuario-estado-select:disabled {
+  cursor: not-allowed;
+}
+
+/* Fila de tabla */
+.permisos-usuario-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.permisos-usuario-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.permisos-usuario-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}

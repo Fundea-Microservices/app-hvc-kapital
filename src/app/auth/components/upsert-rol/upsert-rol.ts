@@ -56,6 +56,7 @@ export class UpsertRolComponent {
       activo: [rol.activo],
       invitado: [rol.invitado],
       esAdmin: [rol.esAdmin],
+      porDefecto: [rol.porDefecto],
       created_at: [rol.created_at],
     });
 
@@ -65,6 +66,7 @@ export class UpsertRolComponent {
         activo: true,
         invitado: false,
         esAdmin: false,
+        porDefecto: false,
         created_at: new Date(),
       });
     }

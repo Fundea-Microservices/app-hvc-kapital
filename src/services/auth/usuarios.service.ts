@@ -6,6 +6,8 @@ import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
 import { IUsuario } from '../../interfaces/auth';
 import { StorageService, StorageUploadData } from '../storage.service';
+import { ConfigService } from './config.service';
+import { ROL_DEFAULT_CONFIG_KEY, ROL_POR_DEFECTO_SENTINEL } from '../../interfaces/auth';
 
 type UsuarioResponse = ApiResponse<IUsuario>;
 type UsuarioListResponse = ApiResponse<IUsuario[]>;
@@ -19,7 +21,7 @@ export class UsuariosService extends HttpService {
     porAuthCode: '/auth/usuarios/por-auth-code',
   };
 
-  constructor(http: HttpClient, private toastr: ToastrService, private storage: StorageService) {
+  constructor(http: HttpClient, private toastr: ToastrService, private storage: StorageService, private configService: ConfigService) {
     super(http);
   }
 
@@ -28,8 +30,27 @@ export class UsuariosService extends HttpService {
    * sin id). El API valida UUID, así que esos valores deben viajar como undefined.
    */
   private limpiarId(valor?: string | null): string | undefined {
-    if (!valor || valor === 'undefined' || valor === 'null') return undefined;
+    if (!valor || valor === 'undefined' || valor === 'null' || valor === 'Por Defecto' || valor === ROL_POR_DEFECTO_SENTINEL) {
+      return undefined;
+    }
     return valor;
+  }
+
+  /**
+   * El API exige UUID de rol. Si el formulario aún trae el sentinel / "Por Defecto",
+   * se resuelve contra la config ROL_DEFAULT_ID.
+   */
+  private async resolverRolId(rolId?: string | null): Promise<string | undefined> {
+    const valor = this.limpiarId(rolId);
+    if (valor) return valor;
+
+    const cfg = await this.configService.getConfigPorLlave(ROL_DEFAULT_CONFIG_KEY);
+    const uuid = cfg?.data?.valor?.trim();
+    if (!uuid) {
+      this.toastr.error('No está configurado el rol por defecto (ROL_DEFAULT_ID)', 'Error');
+      return undefined;
+    }
+    return uuid;
   }
 
   async getUsuarios({ page = 1, limit = 10, busqueda = '', all = false , puestoNombre = ''} = {}): Promise<UsuarioListResponse | null> {
@@ -95,8 +116,9 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
             .replace(/\s+/g, ' ')
             .trim();
 
-      // 2. Resolver IDs obligatorios y opcionales
-      const finalRolId = rolId ?? (usuario as any)?.rol?.id ?? (usuario as any)?.rol?.rolId;
+      // 2. Resolver IDs obligatorios y opcionales. rolId siempre debe ser UUID.
+      const finalRolId = await this.resolverRolId(rolId ?? (usuario as any)?.rol?.id ?? (usuario as any)?.rol?.rolId);
+      if (!finalRolId) return null;
       const finalSucursalId = sucursalId ?? sucursal_id;
       const finalPuestoId = puestoId && puestoId.trim() !== '' ? puestoId : undefined;
 
@@ -167,10 +189,13 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
         .replace(/\s+/g, ' ')
         .trim();
 
+      const finalRolId = await this.resolverRolId(rolId);
+      if (!finalRolId) return null;
+
       const payload: Record<string, any> = {
         nombreCompleto,
         nombre1, nombre2, nombre3, apellido1, apellido2, apellido3,
-        userName, correo, rolId,
+        userName, correo, rolId: finalRolId,
         puestoId: this.limpiarId(puestoId),
         sucursalId: this.limpiarId(sucursalId),
         activo,
@@ -219,6 +244,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ UsuariosService ~ cambiarClave ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al cambiar contraseña', 'Error');
       return null;
@@ -234,6 +260,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('🚀 ~ UsuariosService ~ resetClave ~ error:', error);
       this.toastr.error(error?.error?.message || 'Error al restablecer contraseña', 'Error');
       return null;

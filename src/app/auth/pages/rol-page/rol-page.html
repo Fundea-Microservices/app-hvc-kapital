@@ -75,7 +75,14 @@
                         <td class="px-2 py-2 text-center justify-center border border-table-border">
                             {{ (pagination().page - 1) * pagination().pageSize + i + 1 }}
                         </td>
-                        <td class="px-2 py-2 border border-table-border">{{ rol.nombre }}</td>
+                        <td class="px-2 py-2 border border-table-border">
+                            <div class="flex items-center gap-2">
+                                <span>{{ rol.nombre }}</span>
+                                @if (rol.porDefecto) {
+                                <span class="rol-tag-default">Por defecto</span>
+                                }
+                            </div>
+                        </td>
                         <td class="px-2 py-2 text-center border border-table-border">
                             <label [for]="'switch-' + rol.rolId" class="relative inline-block w-8 h-4 cursor-pointer">
                                 <input type="checkbox" [id]="'switch-' + rol.rolId" [checked]="rol.activo"

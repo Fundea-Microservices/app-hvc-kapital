@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject, sign
 import { RouterLink } from '@angular/router';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
-import { IConfig, TipoConfiguracion } from '../../../../interfaces/auth';
+import { IConfig, IRol, TipoConfiguracion, ROL_DEFAULT_CONFIG_KEY } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { ConfigService } from '../../../../services/auth/config.service';
+import { RolService } from '../../../../services/auth/rol.service';
 import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import { UpsertConfigComponent } from '../../components/upsert-config/upsert-config';
 import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
@@ -29,9 +30,11 @@ const emptyConfig: IConfig = {
 })
 export default class ConfiguracionesPageComponent {
   configService = inject(ConfigService);
+  rolService = inject(RolService);
   autorizacionService = inject(AutorizacionService);
 
   configs = signal<IConfig[]>([]);
+  roles = signal<IRol[]>([]);
   isLoading = signal(false);
   buscador = signal('');
   pagination = signal<IPagination>({ page: 1, pageSize: 10, totalItems: 0 });
@@ -46,7 +49,24 @@ export default class ConfiguracionesPageComponent {
   @ViewChild('deleteModal', { static: true }) deleteModal!: ElementRef<HTMLDivElement>;
 
   async ngOnInit() {
-    this.fetchData();
+    await Promise.all([this.fetchRoles(), this.fetchData()]);
+  }
+
+  private async fetchRoles() {
+    const resp = await this.rolService.getRoles({ all: true });
+    if (resp?.success) this.roles.set(resp.data || []);
+  }
+
+  /**
+   * Visualización de la columna Valor. No muta cfg.valor:
+   * para ROL_DEFAULT_ID muestra el nombre del rol cuyo UUID está guardado.
+   */
+  displayValor(cfg: IConfig): string {
+    if (cfg.llave !== ROL_DEFAULT_CONFIG_KEY) return cfg.valor;
+    const uuid = (cfg.valor || '').trim();
+    if (!uuid) return cfg.valor;
+    const rol = (this.roles() || []).find(r => r.id === uuid || r.rolId === uuid);
+    return rol?.nombre || cfg.valor;
   }
 
   ngAfterViewInit() {

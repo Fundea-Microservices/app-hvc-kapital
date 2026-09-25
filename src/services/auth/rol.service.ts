@@ -65,11 +65,12 @@ export class RolService extends HttpService {
   async updateRol(rolUpdate: IRol): Promise<RolResponse | null> {
     try {
       // Preparamos los datos para actualizar
-      const { id, nombre, activo, invitado } = rolUpdate;
+      const { id, nombre, activo, invitado, porDefecto } = rolUpdate;
       const resp = await firstValueFrom(this.put<RolResponse>(`${this.endpoints.empresa}/${id}`, {
         nombre,
         activo,
         invitado,
+        porDefecto,
       }));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
@@ -88,9 +89,10 @@ export class RolService extends HttpService {
   async createRol(createRol: Omit<IRol, 'id'>): Promise<RolResponse | null> {
     try {
       // Obtenemos solo lo necesario para crear el rol
-      const { nombre } = createRol;
+      const { nombre, porDefecto } = createRol;
       const resp = await firstValueFrom(this.post<RolResponse>(`${this.endpoints.empresa}`, {
-        nombre
+        nombre,
+        porDefecto,
       }));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');

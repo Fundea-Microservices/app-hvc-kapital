@@ -59,8 +59,8 @@
                             pagination().pageSize + i + 1 }}</td>
                         <td class="px-2 py-2 border border-table-border">{{ c.llave }}</td>
                         <td class="px-2 py-2 border border-table-border">{{ c.tipo }}</td>
-                        <td class="px-2 py-2 truncate max-w-[320px] border border-table-border" title="{{ c.valor }}">{{
-                            c.valor }}</td>
+                        <td class="px-2 py-2 truncate max-w-[320px] border border-table-border" [title]="c.valor">{{
+                            displayValor(c) }}</td>
                         <td class="px-2 py-2 text-center border border-table-border">
                             <label [for]="'switch-c-'+c.id" class="relative inline-block w-8 h-4 cursor-pointer">
                                 <input type="checkbox" [id]="'switch-c-'+c.id" [checked]="c.activo"

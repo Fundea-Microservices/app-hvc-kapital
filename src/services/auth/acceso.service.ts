@@ -38,6 +38,7 @@ export class AccesoService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('AccesoService.createAcceso error:', error);
       this.toastr.error(error?.error?.message || 'Error al crear acceso', 'Error');
       return null;
@@ -46,9 +47,10 @@ export class AccesoService extends HttpService {
 
   async updateAcceso(acceso: IAcceso): Promise<AccesoResponse | null> {
     try {
-      const { id, ordenMenu, showApp, showWeb, activo, mainMenuId, menuId, rolId } = acceso as IAcceso;
+      const { id, accesoId, ordenMenu, showApp, showWeb, activo, mainMenuId, menuId, rolId } = acceso as IAcceso;
+      const accesoKey = id || accesoId;
       const resp = await firstValueFrom(
-        this.put<AccesoResponse>(`${this.endpoints.base}/${id}`, { ordenMenu, showApp, showWeb, activo, mainMenuId, menuId, rolId })
+        this.put<AccesoResponse>(`${this.endpoints.base}/${accesoKey}`, { ordenMenu, showApp, showWeb, activo, mainMenuId, menuId, rolId })
       );
       if (resp.body?.success) {
         this.toastr.success(resp.body.message || 'Acceso actualizado', 'Éxito');
@@ -56,6 +58,7 @@ export class AccesoService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('AccesoService.updateAcceso error:', error);
       this.toastr.error(error?.error?.message || 'Error al actualizar acceso', 'Error');
       return null;
@@ -71,8 +74,31 @@ export class AccesoService extends HttpService {
       }
       return null;
     } catch (error: any) {
+      if (error.status === 428) throw error;
       console.log('AccesoService.deleteAcceso error:', error);
       this.toastr.error(error?.error?.message || 'Error al eliminar acceso', 'Error');
+      return null;
+    }
+  }
+
+  /**
+   * Reordena un acceso dentro de su rama.
+   * PATCH /auth/accesos/reorder
+   * El backend desplaza transaccionalmente a los hermanos.
+   */
+  async reorderAcceso(payload: { id: string; nuevoOrden: number }): Promise<AccesoResponse | null> {
+    try {
+      const resp = await firstValueFrom(
+        this.patch<AccesoResponse>(`${this.endpoints.base}/reorder`, payload)
+      );
+      if (resp.body?.success) {
+        return resp.body;
+      }
+      return null;
+    } catch (error: any) {
+      if (error.status === 428) throw error;
+      console.log('AccesoService.reorderAcceso error:', error);
+      this.toastr.error(error?.error?.message || 'Error al reordenar acceso', 'Error');
       return null;
     }
   }

@@ -67,6 +67,10 @@ export const routes: Routes = [
                         loadComponent: () => import('./auth/pages/permisos-rol-page/permisos-rol-page'),
                     },
                     {
+                        path: 'permisos-usuario',
+                        loadComponent: () => import('./auth/pages/permisos-usuario-page/permisos-usuario-page'),
+                    },
+                    {
                         path: 'sucursales',
                         loadComponent: () => import('./auth/pages/sucursal-page/sucursal-page'),
                     },

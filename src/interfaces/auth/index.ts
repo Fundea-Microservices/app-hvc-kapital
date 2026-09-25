@@ -16,6 +16,12 @@ export interface ISucursal {
   created_at?: Date;
 }
 
+export enum MetodoAutenticacionEnum {
+  POR_DEFECTO = 'Por Defecto',
+  LOCAL = 'Local',
+  ACTIVE_DIRECTORY = 'Active Directory'
+}
+
 export interface IUsuario {
   id?: string;                   // UUID del usuario
   nombreCompleto: string;        // Nombre completo concatenado
@@ -25,14 +31,18 @@ export interface IUsuario {
   apellido1: string;             // Primer apellido
   apellido2?: string | null;     // Segundo apellido
   apellido3?: string | null;     // Tercer apellido
+  documento?: string | null;     // Número de documento de identificación
+  tipoDocumento?: string | null; // Tipo de documento (ej. DPI)
   userName: string;              // Nombre de usuario (único)
   clave: string;                 // Contraseña (hash)
   correo: string;                // Correo electrónico (único)
+  telefono?: string | null;      // Número de teléfono del usuario
+  metodoAutenticacion: MetodoAutenticacionEnum;  // Método de autenticación: 'Local' | 'ActiveDirectory'
   fotoUrl?: string | null;       // URL de la foto
   lastPasswordUpdate: Date;      // Última actualización de contraseña
   huella?: string | null;        // Huella digital (en base64 u otro formato)
   activo: boolean;               // Estado del usuario (activo/inactivo)
-  rolId: string;                 // ID del rol asignado
+  rolId: string;                 // UUID del rol asignado (nunca el literal "Por Defecto")
   puestoId?: string | null;      // ID del puesto (si aplica)
   sucursalId?: string | null;    // ID de la sucursal (si aplica)
 
@@ -53,6 +63,7 @@ export interface IUsuario {
 
 export interface IAcceso {
   id?: string;                   // UUID del acceso
+  accesoId?: string;             // UUID del acceso (alias que envía el backend)
   ordenMenu: number;             // Orden del menú
   showApp: boolean;              // Si se muestra en la app móvil
   showWeb: boolean;              // Si se muestra en la web
@@ -75,6 +86,7 @@ export interface IAcceso {
 
 export interface ISubmenu {
   id?: string;                   // UUID del acceso
+  accesoId?: string;             // UUID del acceso (alias que envía el backend)
   ordenMenu: number;             // Orden del menú
   showApp: boolean;              // Si se muestra en la app móvil
   showWeb: boolean;              // Si se muestra en la web
@@ -101,6 +113,7 @@ export interface IRol {
     invitado: boolean;      // Indica si es rol invitado
     activo: boolean;        // Indica si está activo
     esAdmin: boolean;       // Indica si tiene privilegios de administrador
+    porDefecto: boolean;    // Indica si es el rol asignado por defecto a nuevos usuarios
 
     // Relaciones
     usuarios?: IUsuario[];  // Usuarios asociados al rol
@@ -162,6 +175,28 @@ export interface IPermisoUsuario {
   permitido: boolean;
   autoriza?: boolean;            // Si el usuario puede autorizar este permiso
   permiso?: IPermiso;            // Relación incluida en los listados
+  usuario?: IUsuario;           // Relación incluida en los listados
+}
+
+/**
+ * Estado de un permiso respecto a un usuario concreto:
+ * - `heredado`: no hay excepción directa, el permiso lo define el rol.
+ * - `permitido`: excepción directa que CONCEDE el permiso (aunque el rol no lo tenga).
+ * - `denegado`: excepción directa que NIEGA el permiso (aunque el rol lo tenga).
+ */
+export type EstadoPermisoUsuario = 'heredado' | 'permitido' | 'denegado';
+
+/**
+ * Fila de la matriz de permisos de un usuario (vista del módulo permisos-usuario).
+ * Se construye en frontend cruzando:
+ *  1. Catálogo de permisos (GET /auth/permisos),
+ *  2. Excepciones directas del usuario (GET /auth/permisos/usuario?usuarioId=),
+ *  3. Matriz del rol del usuario (GET /auth/permisos/rol/matriz?rolId=).
+ */
+export interface IPermisoMatrizUsuario extends IPermiso {
+  estado: EstadoPermisoUsuario;  // Excepción directa sobre el usuario
+  heredadoRol: boolean;          // Si el rol del usuario tiene el permiso
+  efectivo: boolean;             // Resultado efectivo tras aplicar la excepción
 }
 
 
@@ -208,3 +243,11 @@ export interface IConfig {
   updated_at?: Date | null;     // Fecha de última actualización
   deleted_at?: Date | null;     // Fecha de eliminación lógica
 }
+
+export const METODOS_AUTENTICACION = Object.values(MetodoAutenticacionEnum);
+
+/** Llave de configuración que guarda el UUID del rol asignado por defecto. */
+export const ROL_DEFAULT_CONFIG_KEY = 'ROL_DEFAULT_ID';
+
+/** Valor interno del <select> "Rol por Defecto". Se resuelve a UUID antes de enviar al API. */
+export const ROL_POR_DEFECTO_SENTINEL = '__ROL_DEFAULT__';

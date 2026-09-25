@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
 import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
-import { IUsuario, IRol, IPuesto } from '../../../../interfaces/auth';
+import { IUsuario, IRol, IPuesto, MetodoAutenticacionEnum } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { UpsertUsuarioComponent } from '../../components/upsert-usuario/upsert-usuario';
 import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
@@ -29,6 +29,7 @@ const emptyUsuario: IUsuario = {
   puestoId: '',
   sucursalId: '',
   created_at: new Date(),
+  metodoAutenticacion: MetodoAutenticacionEnum.POR_DEFECTO,
 };
 
 @Component({
@@ -272,7 +273,7 @@ export default class UsuariosPageComponent {
 
   // Helpers para el template (evitar arrow functions en expresiones)
   getRolName(rolId: string): string {
-    const r = (this.rolesList() || []).find(r => r.id === rolId);
+    const r = (this.rolesList() || []).find(r => r.id === rolId || r.rolId === rolId);
     return r?.nombre ?? '-';
   }
 
@@ -293,13 +294,28 @@ export default class UsuariosPageComponent {
     const clave = this.resetClaveValor();
     if (!u?.id || clave.length < 4 || this.guardandoReset()) return;
     this.guardandoReset.set(true);
-    const resp = await this.usuariosService.resetClave(u.id, clave);
-    if (resp?.success) {
-      this.modalResetClave.set(false);
-      this.resetClaveUsuario.set(null);
-      this.resetClaveValor.set('');
+    try {
+      const resp = await this.usuariosService.resetClave(u.id, clave);
+      if (resp?.success) {
+        this.modalResetClave.set(false);
+        this.resetClaveUsuario.set(null);
+        this.resetClaveValor.set('');
+      }
+    } catch (error: any) {
+      this.autorizacionService.handleError428(error, {
+        endpoint: 'auth/usuarios/reset-clave',
+        metodoHttp: 'POST',
+        body: { usuarioId: u.id, claveNueva: clave },
+        closeModal: () => this.modalResetClave.set(false),
+        onSuccess: () => {
+          this.modalResetClave.set(false);
+          this.resetClaveUsuario.set(null);
+          this.resetClaveValor.set('');
+        },
+      });
+    } finally {
+      this.guardandoReset.set(false);
     }
-    this.guardandoReset.set(false);
   }
 
   async toggleStatus(usuario: IUsuario, status: boolean) {

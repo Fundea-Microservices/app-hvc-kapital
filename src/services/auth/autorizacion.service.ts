@@ -87,7 +87,7 @@ export class AutorizacionService extends HttpService {
     } catch (error: any) {
       // Detectar 428 (requiere autorización) — no es error, es flujo normal
       if (error.status === 428) {        
-        this.abrirModal(error.error);
+        this.abrirModal(this.normalizarDatos428(error));
         return null;
       }
 
@@ -260,6 +260,66 @@ export class AutorizacionService extends HttpService {
   // ============================================================================
 
   /**
+   * Maneja un error HTTP 428 de forma estándar.
+   *
+   * Uso en páginas (reduce boilerplate de try/catch):
+   *
+   * ```ts
+   * catch (error: any) {
+   *   this.autorizacionService.handleError428(error, {
+   *     endpoint: 'auth/usuarios',
+   *     metodoHttp: 'POST',
+   *     body: payload,
+   *     params: { id: usuario.id! },
+   *     onSuccess: () => this.fetchData(),
+   *   });
+   * }
+   * ```
+   *
+   * Si el error NO es 428, no hace nada (el servicio CRUD ya muestra toastr).
+   * Si el error SÍ es 428, cierra el modal si se provee, guarda la petición
+   * pendiente y abre el modal de autorización.
+   */
+  handleError428(
+    error: any,
+    context: {
+      endpoint: string;
+      metodoHttp: string;
+      body?: any;
+      params?: Record<string, string>;
+      onSuccess?: (data: EjecutarConAutorizacionResponse) => void;
+      onError?: (error: any) => void;
+      closeModal?: () => void;
+    }
+  ): boolean {
+    if (!this.esError428(error)) return false;
+
+    // Cerrar el modal del componente si se provee
+    context.closeModal?.();
+
+    // Extraer datos del 428 (el backend puede devolver el body plano
+    // { permisoId, message } o el envelope documentado { requiresAuth, permisoId, permisoCodigo })
+    const datos428 = this.normalizarDatos428(error);
+
+    // Delegar al flujo estándar de ejecutarConCallbacks
+    this.ejecutarConCallbacks(
+      {
+        endpoint: context.endpoint,
+        metodoHttp: context.metodoHttp,
+        body: context.body,
+        params: context.params,
+      },
+      {
+        onSuccess: context.onSuccess,
+        onError: context.onError,
+      },
+      datos428
+    );
+
+    return true;
+  }
+
+  /**
    * Verifica si un error es un 428 (requiere autorización).
    * Útil para que los componentes puedan detectar el caso.
    */
@@ -273,8 +333,23 @@ export class AutorizacionService extends HttpService {
    */
   extraerDatosAutorizacion(error: any): RequiereAutorizacionResponse | null {
     if (this.esError428(error)) {
-      return error.error;
+      return this.normalizarDatos428(error);
     }
     return null;
+  }
+
+  /**
+   * Normaliza el body del 428 a RequiereAutorizacionResponse.
+   * Soporta el envelope documentado y el body plano del backend
+   * ({ success, statusCode, message, permisoId }).
+   */
+  private normalizarDatos428(error: any): RequiereAutorizacionResponse {
+    const body = error?.error ?? {};
+    const nested = body.error && typeof body.error === 'object' ? body.error : {};
+    return {
+      requiresAuth: true,
+      permisoId: body.permisoId || nested.permisoId || '',
+      permisoCodigo: body.permisoCodigo || nested.permisoCodigo || '',
+    };
   }
 }
