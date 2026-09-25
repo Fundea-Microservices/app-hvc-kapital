@@ -9,11 +9,13 @@ import {
   signal
 } from '@angular/core';
 
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
-import { IUsuario, IPuesto, IRol, ISucursal, MetodoAutenticacionEnum, METODOS_AUTENTICACION} from '../../../../interfaces/auth';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
+import { IUsuario, IPuesto, IRol, ISucursal, METODOS_AUTENTICACION, ROL_DEFAULT_CONFIG_KEY, ROL_POR_DEFECTO_SENTINEL } from '../../../../interfaces/auth';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
+import { ConfigService } from '../../../../services/auth/config.service';
+import { ToastrService } from 'ngx-toastr';
 import { from, of } from 'rxjs';
-import { first, map, switchMap } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-upsert-usuario',
@@ -26,7 +28,10 @@ import { first, map, switchMap } from 'rxjs/operators';
 export class UpsertUsuarioComponent {
   private fb = inject(FormBuilder);
   private usuariosService = inject(UsuariosService);
+  private configService = inject(ConfigService);
+  private toastr = inject(ToastrService);
   public metodosDisponibles = METODOS_AUTENTICACION;
+  readonly rolPorDefectoSentinel = ROL_POR_DEFECTO_SENTINEL;
 
   usuario = input.required<IUsuario>();
   roles = input<IRol[]>([]);
@@ -41,6 +46,7 @@ export class UpsertUsuarioComponent {
   @Output() cancel = new EventEmitter<void>();
 
   form = signal<FormGroup>(this.fb.group({}));
+  resolviendoRol = signal(false);
 
   constructor() {
     effect(() => {
@@ -61,7 +67,7 @@ export class UpsertUsuarioComponent {
         correo: [u?.correo ?? '', [Validators.required, Validators.email]],
         telefono: [u?.telefono ?? '', [Validators.maxLength(20)]],
         metodoAutenticacion: [u?.metodoAutenticacion ?? 'Por Defecto', [Validators.required]] as any,
-        rolId: [u?.rolId ?? 'Por Defecto', [Validators.required]],
+        rolId: [u?.rolId || ROL_POR_DEFECTO_SENTINEL, [Validators.required]],
         puestoId: [u?.puestoId ?? ''],
         sucursalId: [u?.sucursalId ?? ''],
         activo: [u?.activo ?? true],
@@ -92,7 +98,7 @@ export class UpsertUsuarioComponent {
           correo: '',
           telefono: '',
           metodoAutenticacion: 'Por Defecto',
-          rolId: 'Por Defecto',
+          rolId: ROL_POR_DEFECTO_SENTINEL,
           puestoId: '',
           sucursalId: '',
           activo: true,
@@ -115,22 +121,53 @@ export class UpsertUsuarioComponent {
     return v === true;
   }
 
-  onSubmit() {
-    if (this.form().valid) {
-      const raw = this.form().value;
-      const value: IUsuario = {
-        ...this.usuario(),
-        ...raw,
-        telefono: typeof raw.telefono === 'string' && raw.telefono.trim() !== '' ? raw.telefono.trim() : null,
-        metodoAutenticacion: raw.metodoAutenticacion || 'Local',
-        documento: typeof raw.documento === 'string' && raw.documento.trim() !== '' ? raw.documento.trim() : null,
-        tipoDocumento: typeof raw.tipoDocumento === 'string' && raw.tipoDocumento.trim() !== '' ? raw.tipoDocumento.trim() : null,
-        puestoId: raw.puestoId || undefined,
-        sucursalId: raw.sucursalId || undefined,
-        auth_code: typeof raw.auth_code === 'string' && raw.auth_code.trim() !== '' ? raw.auth_code.trim() : null,
-        autoriza: raw.autoriza ?? false,
-      } as IUsuario;
-      this.save.emit(value);
+  rolTrackId(rol: IRol): string {
+    return rol.id || rol.rolId || rol.nombre;
+  }
+
+  async onSubmit() {
+    if (this.form().invalid || this.resolviendoRol()) return;
+
+    const raw = this.form().value;
+    const rolId = await this.resolverRolIdSeleccionado(raw.rolId);
+    if (!rolId) return;
+
+    const value: IUsuario = {
+      ...this.usuario(),
+      ...raw,
+      rolId,
+      telefono: typeof raw.telefono === 'string' && raw.telefono.trim() !== '' ? raw.telefono.trim() : null,
+      metodoAutenticacion: raw.metodoAutenticacion || 'Local',
+      documento: typeof raw.documento === 'string' && raw.documento.trim() !== '' ? raw.documento.trim() : null,
+      tipoDocumento: typeof raw.tipoDocumento === 'string' && raw.tipoDocumento.trim() !== '' ? raw.tipoDocumento.trim() : null,
+      puestoId: raw.puestoId || undefined,
+      sucursalId: raw.sucursalId || undefined,
+      auth_code: typeof raw.auth_code === 'string' && raw.auth_code.trim() !== '' ? raw.auth_code.trim() : null,
+      autoriza: raw.autoriza ?? false,
+    } as IUsuario;
+    this.save.emit(value);
+  }
+
+  /**
+   * El API solo acepta UUID. "Rol por Defecto" se resuelve con ROL_DEFAULT_ID.
+   */
+  private async resolverRolIdSeleccionado(rolId?: string | null): Promise<string | null> {
+    const valor = (rolId || '').trim();
+    if (valor && valor !== 'Por Defecto' && valor !== ROL_POR_DEFECTO_SENTINEL) {
+      return valor;
+    }
+
+    this.resolviendoRol.set(true);
+    try {
+      const cfg = await this.configService.getConfigPorLlave(ROL_DEFAULT_CONFIG_KEY);
+      const uuid = cfg?.data?.valor?.trim() || '';
+      if (!uuid) {
+        this.toastr.error('No está configurado el rol por defecto (ROL_DEFAULT_ID)', 'Error');
+        return null;
+      }
+      return uuid;
+    } finally {
+      this.resolviendoRol.set(false);
     }
   }
 

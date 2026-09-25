@@ -42,7 +42,7 @@ export interface IUsuario {
   lastPasswordUpdate: Date;      // Última actualización de contraseña
   huella?: string | null;        // Huella digital (en base64 u otro formato)
   activo: boolean;               // Estado del usuario (activo/inactivo)
-  rolId: string;                 // ID del rol asignado
+  rolId: string;                 // UUID del rol asignado (nunca el literal "Por Defecto")
   puestoId?: string | null;      // ID del puesto (si aplica)
   sucursalId?: string | null;    // ID de la sucursal (si aplica)
 
@@ -245,3 +245,9 @@ export interface IConfig {
 }
 
 export const METODOS_AUTENTICACION = Object.values(MetodoAutenticacionEnum);
+
+/** Llave de configuración que guarda el UUID del rol asignado por defecto. */
+export const ROL_DEFAULT_CONFIG_KEY = 'ROL_DEFAULT_ID';
+
+/** Valor interno del <select> "Rol por Defecto". Se resuelve a UUID antes de enviar al API. */
+export const ROL_POR_DEFECTO_SENTINEL = '__ROL_DEFAULT__';

@@ -273,7 +273,7 @@ export default class UsuariosPageComponent {
 
   // Helpers para el template (evitar arrow functions en expresiones)
   getRolName(rolId: string): string {
-    const r = (this.rolesList() || []).find(r => r.id === rolId);
+    const r = (this.rolesList() || []).find(r => r.id === rolId || r.rolId === rolId);
     return r?.nombre ?? '-';
   }
 
