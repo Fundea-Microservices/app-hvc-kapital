@@ -44,7 +44,7 @@
                 <!-- Dropdown -->
                 @if (showRolDropdown() && filteredRoles().length > 0) {
                 <ul class="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto bg-white rounded-md shadow-lg border border-primary-light">
-                    @for (rol of filteredRoles(); track rol.rolId) {
+                    @for (rol of filteredRoles(); track rol.id) {
                     <li>
                         <button type="button" (mousedown)="selectRol(rol)"
                             class="permisos-rol-dropdown-item w-full text-left px-3 py-2 text-sm flex items-center justify-between">
