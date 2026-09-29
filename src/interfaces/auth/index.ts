@@ -251,3 +251,36 @@ export const ROL_DEFAULT_CONFIG_KEY = 'ROL_DEFAULT_ID';
 
 /** Valor interno del <select> "Rol por Defecto". Se resuelve a UUID antes de enviar al API. */
 export const ROL_POR_DEFECTO_SENTINEL = '__ROL_DEFAULT__';
+
+/**
+ * Opciones del filtro "Asignación" de la matriz de permisos × rol.
+ * Equivalen al query param `asignado` de GET /auth/permisos/rol/matriz:
+ * - TODOS         → parámetro omitido (matriz completa)
+ * - ASIGNADOS     → asignado=true
+ * - NO_ASIGNADOS  → asignado=false
+ */
+export enum AsignacionMatrizEnum {
+  TODOS = 'todos',
+  ASIGNADOS = 'asignados',
+  NO_ASIGNADOS = 'no_asignados',
+}
+
+/** Etiquetas visibles de cada opción del filtro de asignación (para pintar el <select> sin hardcodear texto en el HTML). */
+export const ASIGNACION_MATRIZ_LABELS: Record<AsignacionMatrizEnum, string> = {
+  [AsignacionMatrizEnum.TODOS]: 'Todos',
+  [AsignacionMatrizEnum.ASIGNADOS]: 'Asignados',
+  [AsignacionMatrizEnum.NO_ASIGNADOS]: 'No asignados',
+};
+
+/** Query params admitidos por GET /auth/permisos/rol/matriz. */
+export interface MatrizPermisosQueryParams {
+  rolId: string;          // UUID del rol (obligatorio)
+  codigo?: string;        // LIKE por código
+  modulo?: string;        // LIKE por módulo/descripción
+  accion?: string;        // LIKE por acción/descripción
+  /** true = solo asignados · false = solo no asignados · omitido = todos */
+  asignado?: boolean;
+  page?: number;
+  limit?: number;
+  all?: boolean;          // true → envía `todos` e ignora paginación
+}
