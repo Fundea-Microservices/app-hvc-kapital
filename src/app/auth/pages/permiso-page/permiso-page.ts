@@ -18,6 +18,7 @@ const emptyPermiso: IPermiso = {
   accion: '',
   descripcion: '',
   activo: true,
+  requires_auth: false,
   created_at: new Date(),
 };
 
@@ -116,6 +117,15 @@ export default class PermisoPageComponent {
     const updatedPermiso: IPermiso = {
       ...permiso,
       activo: status
+    };
+    this.updatePermiso(updatedPermiso);
+  }
+
+  /** Alterna el requisito de autorización previa (requires_auth) de un permiso */
+  async togglePermisoAuth(permiso: IPermiso, status: boolean) {
+    const updatedPermiso: IPermiso = {
+      ...permiso,
+      requires_auth: status
     };
     this.updatePermiso(updatedPermiso);
   }
