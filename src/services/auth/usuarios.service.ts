@@ -61,8 +61,7 @@ export class UsuariosService extends HttpService {
       const resp = await firstValueFrom(this.get<UsuarioListResponse>(`${this.endpoints.usuarios}`, params));
       if (resp.body?.success) return resp.body;
       return null;
-    } catch (error: any) {
-      console.log('🚀 ~ UsuariosService ~ getUsuarios ~ error:', error);
+    } catch (error: any) {      
       this.toastr.error(error?.error?.message || 'Error al obtener usuarios', 'Error');
       return null;
     }
@@ -73,8 +72,7 @@ export class UsuariosService extends HttpService {
       const resp = await firstValueFrom(this.get<UsuarioResponse>(`${this.endpoints.usuarios}/${usuarioId}`));
       if (resp.body?.success) return resp.body;
       return null;
-    } catch (error: any) {
-      console.log('🚀 ~ UsuariosService ~ getUsuario ~ error:', error);
+    } catch (error: any) {      
       this.toastr.error(error?.error?.message || 'Error al obtener usuario', 'Error');
       return null;
     }
@@ -150,9 +148,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       if (autoriza !== undefined && autoriza !== null) rawPayload['autoriza'] = autoriza;
 
       // NOTA: Si el backend ya tiene @Type(() => Date) en el DTO, puedes descomentar la siguiente línea:
-      // if (lastPasswordUpdate) rawPayload['lastPasswordUpdate'] = new Date(lastPasswordUpdate).toISOString();
-
-      console.log('📤 [createUsuario] Payload final enviado:', rawPayload);
+      //if (lastPasswordUpdate) rawPayload['lastPasswordUpdate'] = new Date(lastPasswordUpdate).toISOString();   
 
       const resp = await firstValueFrom(
         this.post<UsuarioResponse>(`${this.endpoints.usuarios}`, rawPayload)
@@ -212,8 +208,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ updateUsuario ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al actualizar usuario', 'Error');
       return null;
     }
@@ -228,8 +223,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ deleteUsuario ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al eliminar usuario', 'Error');
       return null;
     }
@@ -244,8 +238,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ cambiarClave ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al cambiar contraseña', 'Error');
       return null;
     }
@@ -260,8 +253,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ resetClave ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al restablecer contraseña', 'Error');
       return null;
     }
@@ -289,8 +281,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
     } catch (error: any) {
       // 400 con AUTH-19-02 significa que no existe usuario con ese auth_code
       // Esto es un resultado válido (no es error para nosotros)
-      if (error?.status === 400) return null;
-      console.log('🚀 ~ UsuariosService ~ getUsuarioByAuthCode ~ error:', error);
+      if (error?.status === 400) return null;      
       this.toastr.error(error?.error?.message || 'Error al buscar usuario por auth_code', 'Error');
       return null;
     }

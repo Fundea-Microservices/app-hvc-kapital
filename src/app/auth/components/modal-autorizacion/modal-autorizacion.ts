@@ -65,18 +65,14 @@ export class ModalAutorizacionComponent {
   constructor() {
     // Escuchar cambios del signal del servicio y sincronizar visibilidad.
     // Este effect es el que dispara la apertura del modal cuando el servicio
-    // detecta un 428 y establece modalAbierto=true.
-    console.log('🟢 [ModalAutorizacion] constructor: effect created');
+    // detecta un 428 y establece modalAbierto=true.    
     effect(() => {
-      const abierto = this.autorizacionService.modalAbierto();
-      console.log('🟢 [ModalAutorizacion] effect fired! modalAbierto =', abierto, '_visible was:', this._visible());
-      this._visible.set(abierto);
-      console.log('🟢 [ModalAutorizacion] _visible set to:', this._visible());
+      const abierto = this.autorizacionService.modalAbierto();      
+      this._visible.set(abierto);      
       if (!abierto) {
         this.form().reset({ auth_code: '' });
       }
-      this.cdr.markForCheck();
-      console.log('🟢 [ModalAutorizacion] markForCheck() called');
+      this.cdr.markForCheck();      
     });
   }
 
@@ -91,8 +87,7 @@ export class ModalAutorizacionComponent {
   }
 
   // ─── Acciones ─────────────────────────────────────────────────────────
-  onSubmit(): void {
-    console.log('🟡 [ModalAutorizacion] onSubmit called, form valid:', this.form().valid, 'visible:', this.visible());
+  onSubmit(): void {    
     if (this.form().invalid) {
       this.form().markAllAsTouched();
       return;
