@@ -197,8 +197,15 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
         activo,
       };
 
-      // Agregar auth_code y autoriza solo si tienen valor
-      if (typeof auth_code === 'string' && auth_code.trim() !== '') payload['auth_code'] = auth_code.trim();
+      // auth_code: viaja solo si tiene valor real. Si el usuario no autoriza
+      // (autoriza=false) y el código viene vacío/null, se envía null explícito
+      // para limpiarlo en BD: no puede existir auth_code sin autoriza.
+      const authCodeLimpio = typeof auth_code === 'string' ? auth_code.trim() : '';
+      if (authCodeLimpio !== '') {
+        payload['auth_code'] = authCodeLimpio;
+      } else if (autoriza === false) {
+        payload['auth_code'] = null;
+      }
       if (autoriza !== undefined && autoriza !== null) payload['autoriza'] = autoriza;
 
       const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, payload));

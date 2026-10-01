@@ -71,7 +71,7 @@ export class UpsertUsuarioComponent {
         puestoId: [u?.puestoId ?? ''],
         sucursalId: [u?.sucursalId ?? ''],
         activo: [u?.activo ?? true],
-        clave: [''], // solo requerido al crear
+        clave: [''], 
         auth_code: this.fb.control(
           u?.auth_code ?? '',
           {
@@ -108,6 +108,14 @@ export class UpsertUsuarioComponent {
         });
       }
 
+      // Reglas cruzadas autoriza ↔ auth_code.
+      const autorizaCtrl = newForm.get('autoriza');
+      const authCodeCtrl = newForm.get('auth_code');
+      if (autorizaCtrl && authCodeCtrl) {
+        autorizaCtrl.valueChanges.subscribe(valor => this.aplicarReglasAutoriza(valor, authCodeCtrl));
+        this.aplicarReglasAutoriza(autorizaCtrl.value, authCodeCtrl);
+      }
+
       this.form.set(newForm);
     });
   }
@@ -121,6 +129,18 @@ export class UpsertUsuarioComponent {
     return v === true;
   }
 
+  /**
+   * Indica si el campo `auth_code` es obligatorio en el estado actual:
+   *  - al CREAR un usuario con `autoriza = true`, siempre.
+   *  - al EDITAR, solo si el usuario NO era autorizador previamente
+   *    (transición autoriza false → true).
+   * Si el usuario ya era autorizador, vacío = conservar el código de BD.
+   */
+  get authCodeRequerido(): boolean {
+    if (this.autoEdit()) return false;
+    return this.nuevo() || this.usuario()?.autoriza !== true;
+  }
+
   rolTrackId(rol: IRol): string {
     return rol.id || rol.rolId || rol.nombre;
   }
@@ -129,8 +149,13 @@ export class UpsertUsuarioComponent {
     if (this.form().invalid || this.resolviendoRol()) return;
 
     const raw = this.form().value;
+    const autoriza = raw.autoriza === true;
     const rolId = await this.resolverRolIdSeleccionado(raw.rolId);
     if (!rolId) return;
+
+    const authCode = autoriza && typeof raw.auth_code === 'string' && raw.auth_code.trim() !== ''
+      ? raw.auth_code.trim()
+      : null;
 
     const value: IUsuario = {
       ...this.usuario(),
@@ -142,10 +167,42 @@ export class UpsertUsuarioComponent {
       tipoDocumento: typeof raw.tipoDocumento === 'string' && raw.tipoDocumento.trim() !== '' ? raw.tipoDocumento.trim() : null,
       puestoId: raw.puestoId || undefined,
       sucursalId: raw.sucursalId || undefined,
-      auth_code: typeof raw.auth_code === 'string' && raw.auth_code.trim() !== '' ? raw.auth_code.trim() : null,
-      autoriza: raw.autoriza ?? false,
+      auth_code: authCode,
+      autoriza,
     } as IUsuario;
     this.save.emit(value);
+  }
+
+  /**
+   * Reglas de negocio cruzadas entre los campos "autoriza" y "auth_code"
+   *
+   * @param valorAutoriza Valor actual del control "autoriza"
+   * @param authCodeControl Control "auth_code" sobre el que se aplican las reglas
+   */
+  private aplicarReglasAutoriza(valorAutoriza: unknown, authCodeControl: AbstractControl): void {
+    // En autoEdit esos campos no se muestran ni se editan (datos propios):
+    // se conserva el valor tal cual para no bloquear el guardado del perfil.
+    if (this.autoEdit()) return;
+
+    const autoriza = valorAutoriza === true;
+
+    // Se remueve y vuelve a agregar para no acumular el validador en cada toggle.
+    authCodeControl.removeValidators(Validators.required);
+
+    if (autoriza) {
+      // Regla 1: obligatorio al crear o al editar un NO autorizador
+      // (transición false → true). Si ya era autorizador, se permite vacío
+      // para conservar el auth_code registrado en BD.
+      if (this.authCodeRequerido) {
+        authCodeControl.addValidators(Validators.required);
+      }
+      authCodeControl.updateValueAndValidity({ emitEvent: false });
+      return;
+    }
+
+    // Reglas 2 y 3: sin autoriza no puede haber auth_code → se deja en null.
+    authCodeControl.setValue(null, { emitEvent: false });
+    authCodeControl.updateValueAndValidity({ emitEvent: false });
   }
 
   /**
