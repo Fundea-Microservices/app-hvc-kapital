@@ -4,10 +4,15 @@ import { HttpService } from '../HttpService';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
-import { IPermisoUsuario } from '../../interfaces/auth';
+import {
+  IPermisoMatrizUsuario,
+  IPermisoUsuario,
+  MatrizPermisoUsuarioQueryParams,
+} from '../../interfaces/auth';
 
 type PermisoUsuarioResponse = ApiResponse<IPermisoUsuario>;
 type PermisoUsuarioListResponse = ApiResponse<IPermisoUsuario[]>;
+type MatrizPermisoUsuarioListResponse = ApiResponse<IPermisoMatrizUsuario[]>;
 
 /**
  * PermisoUsuarioService — Excepciones de permisos POR USUARIO.
@@ -31,6 +36,7 @@ export class PermisoUsuarioService extends HttpService {
 
   private readonly endpoints = {
     permisosUsuario: '/auth/permisos/usuario',
+    matriz: '/auth/permisos/usuario/matriz',
     verificarAutorizacion: '/auth/permisos/verificar-autorizacion',
   };
 
@@ -41,6 +47,53 @@ export class PermisoUsuarioService extends HttpService {
   // ========================================================================
   // LECTURA
   // ========================================================================
+
+  /**
+   * Matriz de permisos del usuario: devuelve TODOS los permisos del catálogo
+   * marcando, para el usuario indicado, si son EFECTIVOS (`asignado`) y su
+   * ORIGEN (`origen`): 'ROL' (heredado) | 'USUARIO' (excepción directa) |
+   * 'NO_ASIGNADO'.
+   * GET /auth/permisos/usuario/matriz
+   *
+   * `asignado` (opcional): true → solo efectivos, false → solo no efectivos,
+   * omitido → matriz completa (Todos). Solo se agrega si tiene valor.
+   */
+  async getMatriz(paramsQuery: MatrizPermisoUsuarioQueryParams): Promise<MatrizPermisoUsuarioListResponse | null> {
+    try {
+      const {
+        usuarioId,
+        codigo = '',
+        modulo = '',
+        accion = '',
+        asignado,
+        tipoAsignacion,
+        page = 1,
+        limit = 10,
+        all = false,
+      } = paramsQuery;
+
+      let params: any = { usuarioId, page, limit };
+      if (codigo) params.codigo = codigo;
+      if (modulo) params.modulo = modulo;
+      if (accion) params.accion = accion;
+      // Estado "Todos": el parámetro se OMITE por completo (no enviar vacío ni null)
+      if (asignado !== undefined && asignado !== null) params.asignado = asignado;
+      if (tipoAsignacion) params.tipoAsignacion = tipoAsignacion;
+      if (all) params.todos = true;
+
+      const resp = await firstValueFrom(
+        this.get<MatrizPermisoUsuarioListResponse>(`${this.endpoints.matriz}`, params)
+      );
+      if (resp.body?.success) {
+        return resp.body;
+      }
+      return null;
+    } catch (error: any) {
+      console.log('🚀 ~ PermisoUsuarioService ~ getMatriz ~ error:', error);
+      this.toastr.error(error?.error?.message || 'Error al obtener la matriz de permisos del usuario', 'Error');
+      return null;
+    }
+  }
 
   /**
    * Lista las excepciones de permisos asignadas directamente a usuarios.

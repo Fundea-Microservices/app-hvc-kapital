@@ -179,24 +179,60 @@ export interface IPermisoUsuario {
 }
 
 /**
- * Estado de un permiso respecto a un usuario concreto:
- * - `heredado`: no hay excepción directa, el permiso lo define el rol.
- * - `permitido`: excepción directa que CONCEDE el permiso (aunque el rol no lo tenga).
- * - `denegado`: excepción directa que NIEGA el permiso (aunque el rol lo tenga).
+ * Origen de un permiso en la matriz del usuario (campo `origen` del backend).
+ * Precedencia usuario > rol, 3 estados excluyentes:
+ * - `ROL`:         heredado de Permiso_Rol y sin excepción directa.
+ * - `USUARIO`:     excepción directa en Permiso_Usuario (su `permitido` decide).
+ * - `NO_ASIGNADO`: ni por rol ni por usuario.
  */
-export type EstadoPermisoUsuario = 'heredado' | 'permitido' | 'denegado';
+export type OrigenPermisoUsuario = 'ROL' | 'USUARIO' | 'NO_ASIGNADO';
+
+/** Etiquetas visibles del tag de origen (para pintar el badge en la celda de código). */
+export const ORIGEN_PERMISO_USUARIO_LABELS: Record<OrigenPermisoUsuario, string> = {
+  ROL: 'Heredado del rol',
+  USUARIO: 'Asignación directa',
+  NO_ASIGNADO: 'No asignado',
+};
 
 /**
- * Fila de la matriz de permisos de un usuario (vista del módulo permisos-usuario).
- * Se construye en frontend cruzando:
- *  1. Catálogo de permisos (GET /auth/permisos),
- *  2. Excepciones directas del usuario (GET /auth/permisos/usuario?usuarioId=),
- *  3. Matriz del rol del usuario (GET /auth/permisos/rol/matriz?rolId=).
+ * Valor del select de filtro de ORIGEN de la matriz del usuario.
+ * `'todos'` → no filtra (matriz completa). Los demás valores coinciden con
+ * el campo `origen` de la fila y con el query param `tipoAsignacion` del backend.
+ */
+export type FiltroOrigenMatriz = OrigenPermisoUsuario | 'todos';
+
+/** Etiquetas visibles de cada opción del select de filtro de origen. */
+export const FILTRO_ORIGEN_MATRIZ_LABELS: Record<FiltroOrigenMatriz, string> = {
+  todos: 'Todos los permisos',
+  ROL: 'Asignados por rol',
+  USUARIO: 'Asignados por usuario',
+  NO_ASIGNADO: 'No asignados',
+};
+
+/**
+ * Fila de la matriz de permisos de un usuario.
+ * La devuelve directamente el backend:
+ * GET /auth/permisos/usuario/matriz?usuarioId=
  */
 export interface IPermisoMatrizUsuario extends IPermiso {
-  estado: EstadoPermisoUsuario;  // Excepción directa sobre el usuario
-  heredadoRol: boolean;          // Si el rol del usuario tiene el permiso
-  efectivo: boolean;             // Resultado efectivo tras aplicar la excepción
+  asignado: boolean;              // true si el permiso es EFECTIVO para el usuario
+  origen: OrigenPermisoUsuario;   // Origen para el tag visual (alias de tipoAsignacion)
+  tipoAsignacion?: OrigenPermisoUsuario; // Alias documentado de `origen`
+}
+
+/** Query params admitidos por GET /auth/permisos/usuario/matriz. */
+export interface MatrizPermisoUsuarioQueryParams {
+  usuarioId: string;          // UUID del usuario (obligatorio)
+  codigo?: string;            // LIKE por código
+  modulo?: string;            // LIKE por módulo/descripción
+  accion?: string;            // LIKE por acción/descripción
+  /** true = solo efectivos · false = solo no efectivos · omitido = todos */
+  asignado?: boolean;
+  /** Filtra por origen: ROL | USUARIO | NO_ASIGNADO · omitido = todos */
+  tipoAsignacion?: OrigenPermisoUsuario;
+  page?: number;
+  limit?: number;
+  all?: boolean;              // true → envía `todos` e ignora paginación
 }
 
 
