@@ -13,7 +13,7 @@
 <div class="shadow rounded-lg border border-primary-light">
     <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
         <h2 class="text-lg font-semibold text-primary-dark">Permisos por usuario</h2>
-        <span class="text-xs text-primary-light">Excepciones que sobrescriben los permisos del rol</span>
+        <span class="text-xs text-primary-light">Permisos directos del usuario (sus permisos de rol no se modifican aquí)</span>
     </div>
 
     <div class="p-4 space-y-4">
@@ -87,7 +87,7 @@
             <span class="text-primary-light">@{{ selectedUsuario()?.userName }}</span>
             <span class="text-primary-light">• Rol:</span>
             <span class="font-medium">{{ selectedUsuario()?.rol?.nombre || 'Sin rol' }}</span>
-            <span class="text-primary-light">— Las excepciones (Permitir/Denegar) sobrescriben los permisos heredados del rol.</span>
+            <span class="text-primary-light">— Los permisos marcados como "Heredado del rol" no se pueden asignar ni retirar desde aquí.</span>
         </div>
 
         <!-- Filtros de permisos -->
@@ -111,6 +111,16 @@
                     class="permisos-usuario-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2" />
             </div>
             <div>
+                <label for="fOrigen" class="block text-xs font-medium mb-1 text-gray">Origen</label>
+                <select id="fOrigen" [value]="fOrigen()"
+                    (change)="onOrigenChange($any($event.target).value)"
+                    class="permisos-usuario-search-input px-3 py-2 rounded-md focus:outline-none focus:ring-2 cursor-pointer">
+                    @for (op of opcionesOrigen; track op.valor) {
+                    <option [value]="op.valor">{{ op.etiqueta }}</option>
+                    }
+                </select>
+            </div>
+            <div>
                 <button type="submit" [disabled]="isLoading()"
                     class="permisos-usuario-btn-search px-4 py-2 text-sm rounded transition disabled:opacity-50">
                     @if (isLoading()) { Buscando... } @else { Buscar }
@@ -128,18 +138,17 @@
                         <th class="gc-th">Módulo</th>
                         <th class="gc-th">Acción</th>
                         <th class="gc-th">Descripción</th>
-                        <th class="gc-th">Rol</th>
-                        <th class="gc-th">Excepción (usuario)</th>
+                        <th class="gc-th">Asignado</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-primary-light">Cargando permisos ...</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-primary-light">Cargando permisos ...</td>
                     </tr>
                     } @else if (matrizPaginada().length === 0) {
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-primary-light">
+                        <td colspan="6" class="px-4 py-8 text-center text-primary-light">
                             <app-custom-icon name="shield-check" class="inline mr-2"></app-custom-icon>
                             No se encontraron permisos
                         </td>
@@ -150,38 +159,39 @@
                         <td class="px-2 py-2 text-center border border-table-border">
                             {{ (paginationVista().page - 1) * paginationVista().pageSize + i + 1 }}
                         </td>
-                        <td class="px-2 py-2 font-mono font-semibold border border-table-border">{{ permiso.codigo }}</td>
+                        <td class="px-2 py-2 border border-table-border">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono font-semibold">{{ permiso.codigo }}</span>
+                                @if (permiso.origen !== 'NO_ASIGNADO') {
+                                <span class="permisos-usuario-tag-origen"
+                                    [class.permisos-usuario-tag-origen--usuario]="permiso.origen === 'USUARIO'">
+                                    {{ permiso.origen === 'ROL' ? 'Heredado del rol' : 'Asignación directa' }}
+                                </span>
+                                }
+                            </div>
+                        </td>
                         <td class="px-2 py-2 border border-table-border">{{ permiso.modulo }}</td>
                         <td class="px-2 py-2 border border-table-border">{{ permiso.accion }}</td>
                         <td class="px-2 py-2 border border-table-border text-gray">{{ permiso.descripcion || '-' }}</td>
                         <td class="px-2 py-2 text-center border border-table-border">
-                            @if (permiso.heredadoRol) {
-                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary">
-                                Hereda
-                            </span>
-                            } @else {
-                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-gray/20 text-gray">
-                                No hereda
-                            </span>
+                            <label [for]="'permusu-' + permiso.id"
+                                class="relative inline-block w-8 h-4"
+                                [class.cursor-pointer]="permiso.origen !== 'ROL'"
+                                [class.cursor-not-allowed]="permiso.origen === 'ROL'"
+                                [title]="permiso.origen === 'ROL' ? 'Heredado del rol: no se puede asignar ni retirar desde el usuario' : ''">
+                                <input type="checkbox" [id]="'permusu-' + permiso.id" [checked]="permiso.asignado"
+                                    (change)="toggleAsignado(permiso, $any($event.target).checked)" class="peer sr-only"
+                                    [disabled]="permiso.origen === 'ROL' || isSaving(permiso.id!)">
+                                <span
+                                    class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+                                    [style.backgroundColor]="permiso.asignado ? 'var(--hvc-accent-gold)' : ''"></span>
+                                <span
+                                    class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
+                                    [style.transform]="permiso.asignado ? 'translateX(1.25rem)' : ''"></span>
+                            </label>
+                            @if (permiso.origen === 'ROL') {
+                            <span class="block mt-1 text-[0.65rem] text-primary-light">Heredado</span>
                             }
-                        </td>
-                        <td class="px-2 py-2 border border-table-border">
-                            <div class="space-y-1 min-w-40">
-                                <select [value]="permiso.estado"
-                                    (change)="onEstadoChange(permiso, $any($event.target).value)"
-                                    [disabled]="isSaving(permiso.id!)"
-                                    class="permisos-usuario-estado-select w-full px-2 py-1.5 text-sm rounded-md focus:outline-none focus:ring-2 disabled:opacity-50">
-                                    <option value="heredado">Heredar del rol</option>
-                                    <option value="permitido">Excepción: Permitir</option>
-                                    <option value="denegado">Excepción: Denegar</option>
-                                </select>
-                                <span class="block text-xs font-semibold"
-                                    [class.text-success]="permiso.efectivo"
-                                    [class.text-danger]="!permiso.efectivo">
-                                    Efectivo: {{ permiso.efectivo ? 'Permitido' : 'Denegado' }}
-                                    @if (permiso.estado === 'heredado') { (rol) }
-                                </span>
-                            </div>
                         </td>
                     </tr>
                     }

@@ -50,6 +50,7 @@
                         <th class="gc-th">Acción</th>
                         <th class="gc-th">Descripción</th>
                         <th class="gc-th">Activo</th>
+                        <th class="gc-th">Autorización</th>
                         <th class="gc-th">Creado</th>
                         <th class="gc-th">Acciones</th>
                     </tr>
@@ -57,13 +58,13 @@
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
+                        <td colspan="9" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             Cargando permisos ...
                         </td>
                     </tr>
                     } @else if (permisosList().length === 0) {
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
+                        <td colspan="9" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">
                             <app-custom-icon name="shield-check" class="inline mr-2"></app-custom-icon>
                             No se encontraron permisos
                         </td>
@@ -88,6 +89,18 @@
                                 <span
                                     class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
                                     [style.transform]="permiso.activo ? 'translateX(1.25rem)' : ''"></span>
+                            </label>
+                        </td>
+                        <td class="px-2 py-2 text-center border border-table-border">
+                            <label [for]="'switch-auth-' + permiso.id" class="relative inline-block w-8 h-4 cursor-pointer">
+                                <input type="checkbox" [id]="'switch-auth-' + permiso.id" [checked]="permiso.requires_auth"
+                                    (change)="togglePermisoAuth(permiso, $any($event.target).checked)" class="peer sr-only">
+                                <span
+                                    class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+                                    [style.backgroundColor]="permiso.requires_auth ? 'var(--hvc-accent-gold)' : ''"></span>
+                                <span
+                                    class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
+                                    [style.transform]="permiso.requires_auth ? 'translateX(1.25rem)' : ''"></span>
                             </label>
                         </td>
                         <td class="px-2 py-2 text-center border border-table-border">

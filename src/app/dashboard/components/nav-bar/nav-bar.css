@@ -3,7 +3,7 @@
 /* Botón del menú hamburguesa */
 .navbar-toggle {
   background-color: var(--navbar-border);
-  color: var(--navbar-text);
+  color: white;
   border: 1px solid var(--navbar-border);
   transition: background-color 0.2s ease, color 0.2s ease;
 }

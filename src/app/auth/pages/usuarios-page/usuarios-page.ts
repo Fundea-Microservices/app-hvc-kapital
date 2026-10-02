@@ -292,7 +292,7 @@ export default class UsuariosPageComponent {
   async confirmarResetClave() {
     const u = this.resetClaveUsuario();
     const clave = this.resetClaveValor();
-    if (!u?.id || clave.length < 4 || this.guardandoReset()) return;
+    if (!u?.id || clave.length < 6 || this.guardandoReset()) return;
     this.guardandoReset.set(true);
     try {
       const resp = await this.usuariosService.resetClave(u.id, clave);

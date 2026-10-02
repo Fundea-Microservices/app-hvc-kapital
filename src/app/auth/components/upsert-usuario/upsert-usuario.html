@@ -64,6 +64,7 @@
       <div class="text-xs mt-1 text-danger">Máximo 20 caracteres</div>
       }
     </div>
+    @if(!autoEdit()){
     <div>
       <label class="block text-sm font-medium mb-1 text-primary-dark">Método de autenticación</label>
       <select formControlName="metodoAutenticacion"
@@ -73,6 +74,7 @@
       }
       </select>
     </div>
+    }
   </div>
 
   <!-- Password (solo al crear) -->
@@ -126,15 +128,22 @@
   <!-- Auth Code -->
   @if(!autoEdit() && mostrarAuthCode){
   <div>
-    <label class="block text-sm font-medium mb-1 text-primary-dark">Código de Autorización <span class="font-normal text-gray-light">(opcional, único por usuario)</span></label>
+    <label class="block text-sm font-medium mb-1 text-primary-dark">Código de Autorización
+      @if (authCodeRequerido) {
+      <span class="font-normal text-gray-light">(obligatorio, único por usuario)</span>
+      } @else {
+      <span class="font-normal text-gray-light">(si lo deja vacío se conserva el actual · único por usuario)</span>
+      }
+    </label>
     <input type="text" formControlName="auth_code" placeholder="Ej. MAR123"
       class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
-    @if (form().get('auth_code')?.touched && form().get('auth_code')?.invalid) {
+    @if (form().get('auth_code')?.invalid && (form().get('auth_code')?.touched || form().get('auth_code')?.errors?.['required'])) {
     <div class="text-xs mt-1 text-danger">
+      @if (form().get('auth_code')?.errors?.['required']) { Requerido para poder autorizar acciones de otros usuarios }
       @if (form().get('auth_code')?.errors?.['minlength']) { Mínimo 3 caracteres }
       @if (form().get('auth_code')?.errors?.['maxlength']) { Máximo 20 caracteres }
       @if (form().get('auth_code')?.errors?.['authCodeDuplicado']) {
-        Este código ya está registrado en el usuario "{{ form().get('auth_code')?.errors?.['authCodeDuplicado'].usuarioExistente }}"
+        Este código ya está registrado para otro usuario
       }
     </div>
     }
@@ -142,7 +151,8 @@
   </div>
   }
 
-  <!-- Activo -->
+  <!-- Activo (solo edición administrativa; en Mi Perfil no es editable) -->
+  @if(!autoEdit()){
   <div class="flex items-center">
     <label class="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" formControlName="activo" class="sr-only peer" />
@@ -155,6 +165,7 @@
       <span class="ml-3 text-sm font-medium text-primary-dark">Activo</span>
     </label>
   </div>
+  }
 
   <!-- Autoriza -->
   @if(!autoEdit()){

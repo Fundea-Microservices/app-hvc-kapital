@@ -5,7 +5,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { RolService } from '../../../../services/auth/rol.service';
 import { PermisoRolService } from '../../../../services/auth/permiso-rol.service';
 import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
-import { IRol, IPermisoMatriz } from '../../../../interfaces/auth';
+import { IRol, IPermisoMatriz, AsignacionMatrizEnum, ASIGNACION_MATRIZ_LABELS } from '../../../../interfaces/auth';
 import { IPagination } from '../../../../interfaces/shared';
 import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 
@@ -44,6 +44,13 @@ export default class PermisosRolPageComponent {
   fCodigo = signal('');
   fModulo = signal('');
   fAccion = signal('');
+  // Filtro de asignación: enum (no texto hardcodeado en el HTML)
+  fAsignado = signal<AsignacionMatrizEnum>(AsignacionMatrizEnum.TODOS);
+  // Opciones pintadas en el <select> derivadas del enum + sus etiquetas
+  readonly opcionesAsignacion = (Object.values(AsignacionMatrizEnum) as AsignacionMatrizEnum[]).map(valor => ({
+    valor,
+    etiqueta: ASIGNACION_MATRIZ_LABELS[valor],
+  }));
 
   pagination = signal<IPagination>({
     page: 1,
@@ -76,11 +83,13 @@ export default class PermisosRolPageComponent {
     if (sel && sel.nombre !== value) {
       this.selectedRol.set(null);
       this.matriz.set([]);
+      this.pendienteFetch = false;
       this.pagination.update(p => ({ ...p, totalItems: 0 }));
     }
   }
 
   selectRol(rol: IRol) {
+    this.limpiarTimerBusqueda();
     this.selectedRol.set(rol);
     this.rolQuery.set(rol.nombre);
     this.showRolDropdown.set(false);
@@ -92,13 +101,20 @@ export default class PermisosRolPageComponent {
     this.selectedRol.set(null);
     this.rolQuery.set('');
     this.matriz.set([]);
+    this.pendienteFetch = false;
     this.pagination.update(p => ({ ...p, page: 1, totalItems: 0 }));
   }
 
   // ---------- Matriz ----------
   async fetchMatriz() {
     const rol = this.selectedRol();
-    if (!rol?.id || this.isLoading()) return;
+    if (!rol?.id) return;
+    // Si ya hay una consulta en vuelo, marca pendiente y relanza al terminar
+    // (evita que la última tecla escrita quede sin reflejar en la tabla)
+    if (this.isLoading()) {
+      this.pendienteFetch = true;
+      return;
+    }
 
     this.isLoading.set(true);
     const resp = await this.permisoRolService.getMatriz({
@@ -106,6 +122,7 @@ export default class PermisosRolPageComponent {
       codigo: this.fCodigo(),
       modulo: this.fModulo(),
       accion: this.fAccion(),
+      asignado: this.asignadoParam(),
       page: this.pagination().page,
       limit: this.pagination().pageSize,
     });
@@ -117,14 +134,78 @@ export default class PermisosRolPageComponent {
       }
     }
     this.isLoading.set(false);
+
+    if (this.pendienteFetch) {
+      this.pendienteFetch = false;
+      this.fetchMatriz();
+    }
   }
 
   onSearch() {
+    // Cancela cualquier búsqueda automática en espera y aplica de inmediato
+    this.limpiarTimerBusqueda();
     this.pagination.update(p => ({ ...p, page: 1 }));
     this.fetchMatriz();
   }
 
+  // --- Filtros de texto: recarga automática (debounce) al escribir ---
+  onCodigoInput(valor: string) {
+    this.fCodigo.set(valor);
+    this.buscarAutomatico();
+  }
+
+  onModuloInput(valor: string) {
+    this.fModulo.set(valor);
+    this.buscarAutomatico();
+  }
+
+  onAccionInput(valor: string) {
+    this.fAccion.set(valor);
+    this.buscarAutomatico();
+  }
+
+  /** Programa una recarga automática con debounce para no disparar una petición por tecla. */
+  private buscarAutomatico() {
+    this.limpiarTimerBusqueda();
+    this.timerBusqueda = setTimeout(() => {
+      this.timerBusqueda = null;
+      this.onSearch();
+    }, 200);
+  }
+
+  private limpiarTimerBusqueda() {
+    if (this.timerBusqueda !== null) {
+      clearTimeout(this.timerBusqueda);
+      this.timerBusqueda = null;
+    }
+  }
+
+  ngOnDestroy() {
+    this.limpiarTimerBusqueda();
+  }
+
+  /** Cambio del select "Asignación": actualiza el filtro y recarga inmediatamente (page → 1, respeta pageSize). */
+  onAsignadoChange(valor: AsignacionMatrizEnum) {
+    if (valor === this.fAsignado()) return;
+    this.fAsignado.set(valor);
+    this.onSearch();
+  }
+
+  // Timer de la búsqueda automática (debounce) y marca de fetch en vuelo
+  private timerBusqueda: ReturnType<typeof setTimeout> | null = null;
+  private pendienteFetch = false;
+
+  /** Mapea la opción del enum al query param `asignado`: true | false | undefined (undefined → se omite = Todos). */
+  private asignadoParam(): boolean | undefined {
+    const filtro = this.fAsignado();
+    if (filtro === AsignacionMatrizEnum.ASIGNADOS) return true;
+    if (filtro === AsignacionMatrizEnum.NO_ASIGNADOS) return false;
+    return undefined;
+  }
+
   onChangePage(newPagination: IPagination) {
+    // El cambio de página ya consulta con los filtros actuales: cancela el debounce pendiente
+    this.limpiarTimerBusqueda();
     this.matriz.set([]);
     this.pagination.set(newPagination);
     this.fetchMatriz();

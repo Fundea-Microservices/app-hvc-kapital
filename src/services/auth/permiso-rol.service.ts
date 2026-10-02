@@ -4,7 +4,7 @@ import { HttpService } from '../HttpService';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
-import { IPermisoMatriz, IPermisoRol } from '../../interfaces/auth';
+import { IPermisoMatriz, IPermisoRol, MatrizPermisosQueryParams } from '../../interfaces/auth';
 
 type MatrizListResponse = ApiResponse<IPermisoMatriz[]>;
 type PermisoRolResponse = ApiResponse<IPermisoRol>;
@@ -27,16 +27,20 @@ export class PermisoRolService extends HttpService {
    * Matriz de permisos del rol: trae todos los permisos (filtrados/paginados)
    * marcando cada uno con `asignado` según los tenga el rol.
    * GET /auth/permisos/rol/matriz
+   *
+   * `asignado` (opcional): true → solo asignados, false → solo no asignados,
+   * omitido → matriz completa (Todos). Solo se agrega al query string si tiene valor.
    */
-  async getMatriz(
-    { rolId, codigo = '', modulo = '', accion = '', page = 1, limit = 10, all = false }:
-      { rolId: string; codigo?: string; modulo?: string; accion?: string; page?: number; limit?: number; all?: boolean }
-  ): Promise<MatrizListResponse | null> {
+  async getMatriz(paramsQuery: MatrizPermisosQueryParams): Promise<MatrizListResponse | null> {
     try {
+      const { rolId, codigo = '', modulo = '', accion = '', asignado, page = 1, limit = 10, all = false } = paramsQuery;
+
       let params: any = { rolId, page, limit };
       if (codigo) params.codigo = codigo;
       if (modulo) params.modulo = modulo;
       if (accion) params.accion = accion;
+      // Estado "Todos": el parámetro se OMITE por completo (no enviar vacío ni null)
+      if (asignado !== undefined && asignado !== null) params.asignado = asignado;
       if (all) params.todos = true;
 
       const resp = await firstValueFrom(this.get<MatrizListResponse>(`${this.endpoints.matriz}`, params));

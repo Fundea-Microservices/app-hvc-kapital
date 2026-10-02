@@ -1,16 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination';
 import { ModalAutorizacionComponent } from '../../components/modal-autorizacion/modal-autorizacion';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
-import { PermisoService } from '../../../../services/auth/permiso.service';
-import { PermisoRolService } from '../../../../services/auth/permiso-rol.service';
 import { PermisoUsuarioService } from '../../../../services/auth/permiso-usuario.service';
 import { AutorizacionService } from '../../../../services/auth/autorizacion.service';
 import {
-  EstadoPermisoUsuario,
-  IPermiso,
+  FiltroOrigenMatriz,
+  FILTRO_ORIGEN_MATRIZ_LABELS,
   IPermisoMatrizUsuario,
   IUsuario,
 } from '../../../../interfaces/auth';
@@ -24,16 +23,18 @@ interface Contexto428 {
 }
 
 /**
- * PermisosUsuarioPage — Asignación de permisos a usuarios (excepciones).
+ * PermisosUsuarioPage — Asignación de permisos a usuarios.
  *
- * Mismo UX que permisos-rol-page, pero orientado a usuarios:
- *  - Autocomplete de usuario.
- *  - Matriz de permisos (catálogo) con 3 estados por fila:
- *      heredado  → sin excepción, manda el rol
- *      permitido → excepción que CONCEDE el permiso
- *      denegado  → excepción que NIEGA el permiso
- *  - Escritura vía POST/PUT/DELETE /auth/permisos/usuario con flujo 428
- *    (modal de auth_code del supervisor) para creación/edición/eliminación.
+ * La matriz la devuelve el backend (GET /auth/permisos/usuario/matriz):
+ *  - `asignado`: si el permiso es EFECTIVO para el usuario.
+ *  - `origen`:   'ROL' (heredado) | 'USUARIO' (excepción directa) | 'NO_ASIGNADO'.
+ *
+ * La fila con origen 'ROL' muestra el switch BLOQUEADO: un permiso heredado del
+ * rol no se puede asignar ni desasignar desde el usuario (el backend también lo
+ * rechaza con 400: AUT-100-02 al crear / AUT-104-02 al retirar).
+ *
+ * Escritura vía POST/PUT/DELETE /auth/permisos/usuario con flujo 428
+ * (modal de auth_code del supervisor) para creación/edición/eliminación.
  */
 @Component({
   selector: 'app-permisos-usuario-page',
@@ -44,9 +45,8 @@ interface Contexto428 {
 })
 export default class PermisosUsuarioPageComponent {
   private usuariosService = inject(UsuariosService);
-  private permisoService = inject(PermisoService);
-  private permisoRolService = inject(PermisoRolService);
   private permisoUsuarioService = inject(PermisoUsuarioService);
+  private toastr = inject(ToastrService);
   /** Público: el template del modal de autorización lee sus signals. */
   autorizacionService = inject(AutorizacionService);
 
@@ -66,17 +66,22 @@ export default class PermisosUsuarioPageComponent {
     );
   });
 
-  // --- Catálogo y matriz de permisos ---
-  catalogo = signal<IPermiso[]>([]);
+  // --- Matriz de permisos (la construye el backend) ---
   matriz = signal<IPermisoMatrizUsuario[]>([]);
   isLoading = signal(false);
-  // permisoIds que están guardando un cambio (para deshabilitar su control)
+  // permisoIds que están guardando un cambio (para deshabilitar su switch)
   saving = signal<Set<string>>(new Set());
 
   // --- Filtros (client-side sobre la matriz completa) ---
   fCodigo = signal('');
   fModulo = signal('');
   fAccion = signal('');
+  // Filtro de ORIGEN: enum (no texto hardcodeado en el HTML)
+  fOrigen = signal<FiltroOrigenMatriz>('todos');
+  // Opciones pintadas en el <select> derivadas del enum + sus etiquetas
+  readonly opcionesOrigen = (
+    Object.keys(FILTRO_ORIGEN_MATRIZ_LABELS) as FiltroOrigenMatriz[]
+  ).map(valor => ({ valor, etiqueta: FILTRO_ORIGEN_MATRIZ_LABELS[valor] }));
 
   pagination = signal<IPagination>({
     page: 1,
@@ -84,12 +89,15 @@ export default class PermisosUsuarioPageComponent {
     totalItems: 0,
   });
 
-  /** Filtrado local por código / módulo / acción. */
+  /** Filtrado local por origen / código / módulo / acción. */
   matrizFiltrada = computed(() => {
     const codigo = this.fCodigo().trim().toLowerCase();
     const modulo = this.fModulo().trim().toLowerCase();
     const accion = this.fAccion().trim().toLowerCase();
+    const origen = this.fOrigen();
     return this.matriz().filter(p =>
+      // Origen: 'todos' → sin filtro; ROL | USUARIO | NO_ASIGNADO → coincidencia exacta
+      (origen === 'todos' || p.origen === origen) &&
       (!codigo || (p.codigo || '').toLowerCase().includes(codigo)) &&
       (!modulo || (p.modulo || '').toLowerCase().includes(modulo)) &&
       (!accion || (p.accion || '').toLowerCase().includes(accion))
@@ -113,16 +121,9 @@ export default class PermisosUsuarioPageComponent {
   });
 
   async ngOnInit() {
-    const [usuariosResp, catalogoResp] = await Promise.all([
-      this.usuariosService.getUsuarios({ all: true, limit: 1000 }),
-      this.permisoService.getPermisos({ all: true }),
-    ]);
-
+    const usuariosResp = await this.usuariosService.getUsuarios({ all: true, limit: 1000 });
     if (usuariosResp?.success) {
       this.usuariosList.set(usuariosResp.data || []);
-    }
-    if (catalogoResp?.success) {
-      this.catalogo.set(catalogoResp.data || []);
     }
   }
 
@@ -179,63 +180,48 @@ export default class PermisosUsuarioPageComponent {
 
   // ---------- Matriz de permisos del usuario ----------
   /**
-   * Construye la matriz cruzando:
-   *  1. Catálogo de permisos (GET /auth/permisos)
-   *  2. Excepciones directas del usuario (GET /auth/permisos/usuario?usuarioId=)
-   *  3. Matriz del rol del usuario (GET /auth/permisos/rol/matriz?rolId=)
+   * Carga la matriz desde el backend (GET /auth/permisos/usuario/matriz),
+   * que devuelve cada permiso con `asignado` y `origen`.
+   *
+   * @param silencioso cuando es true no alterna el spinner (se usa para
+   * resincronizar tras un cambio exitoso sin parpadear la tabla).
    */
-  async fetchMatriz() {
+  async fetchMatriz(silencioso = false) {
     const usuario = this.selectedUsuario();
-    if (!usuario?.id || this.isLoading()) return;
+    if (!usuario?.id) return;
+    if (!silencioso && this.isLoading()) return;
 
-    this.isLoading.set(true);
+    if (!silencioso) this.isLoading.set(true);
 
-    // El catálogo se carga una sola vez; si aún no está, lo trae ahora.
-    if (this.catalogo().length === 0) {
-      const catResp = await this.permisoService.getPermisos({ all: true });
-      if (catResp?.success) {
-        this.catalogo.set(catResp.data || []);
-      }
+    const resp = await this.permisoUsuarioService.getMatriz({
+      usuarioId: usuario.id,
+      all: true,
+    });
+
+    if (resp?.success) {
+      const data = resp.data || [];
+      this.matriz.set(data);
+      // El refetch silencioso (tras un toggle) conserva la página actual para
+      // no sacar al usuario de donde estaba; una carga normal resetea a la 1.
+      this.pagination.update(p => ({
+        ...p,
+        page: silencioso ? p.page : 1,
+        totalItems: data.length,
+      }));
     }
 
-    const [asigResp, rolResp] = await Promise.all([
-      this.permisoUsuarioService.getPermisosUsuario({ usuarioId: usuario.id, all: true }),
-      usuario.rolId
-        ? this.permisoRolService.getMatriz({ rolId: usuario.rolId, all: true })
-        : Promise.resolve(null),
-    ]);
-
-    const excepciones = new Map(
-      (asigResp?.data || []).filter(a => a.permisoId).map(a => [a.permisoId, a])
-    );
-    const delRol = new Map(
-      (rolResp?.data || []).filter(p => p.id).map(p => [p.id!, p.asignado])
-    );
-
-    this.matriz.set(
-      this.catalogo().map(p => {
-        const excepcion = p.id ? excepciones.get(p.id) : undefined;
-        const estado: EstadoPermisoUsuario = !excepcion
-          ? 'heredado'
-          : excepcion.permitido === false
-            ? 'denegado'
-            : 'permitido';
-        const heredadoRol = (p.id ? delRol.get(p.id) : undefined) ?? false;
-
-        return {
-          ...p,
-          estado,
-          heredadoRol,
-          efectivo: estado === 'heredado' ? heredadoRol : estado === 'permitido',
-        };
-      })
-    );
-
-    this.isLoading.set(false);
+    if (!silencioso) this.isLoading.set(false);
   }
 
   onSearch() {
     this.pagination.update(p => ({ ...p, page: 1 }));
+  }
+
+  /** Cambio del select "Origen": actualiza el filtro y vuelve a la página 1. */
+  onOrigenChange(valor: FiltroOrigenMatriz) {
+    if (valor === this.fOrigen()) return;
+    this.fOrigen.set(valor);
+    this.onSearch();
   }
 
   onChangePage(newPagination: IPagination) {
@@ -257,58 +243,63 @@ export default class PermisosUsuarioPageComponent {
   }
 
   /**
-   * Cambia el estado de excepción de un permiso para el usuario seleccionado:
-   *  - heredado → permitido/denegado : POST  (crear excepción)
-   *  - permitido/denegado → heredado : DELETE (revocar, vuelve a heredar del rol)
-   *  - permitido ↔ denegado          : PUT   (actualizar excepción)
+   * Asigna o retira un permiso según el nuevo estado del switch.
    *
-   * Actualización optimista con revert; si el backend responde 428 se abre el
-   * modal de autorización (PIN del supervisor) y, al confirmar, se resincroniza.
+   *  origen 'ROL'         → BLOQUEADO (heredado del rol: ni asignable ni retirable).
+   *  origen 'USUARIO'     → ya existe fila directa: encender = PUT (permitido=true),
+   *                          apagar = DELETE (retira la excepción).
+   *  origen 'NO_ASIGNADO' → encender = POST (crea la excepción).
+   *
+   * Actualización optimista con revert + resincronización silenciosa; si el
+   * backend responde 428 se abre el modal de autorización (PIN del supervisor).
    */
-  async onEstadoChange(
-    permiso: IPermisoMatrizUsuario,
-    nuevoEstado: EstadoPermisoUsuario
-  ) {
+  async toggleAsignado(permiso: IPermisoMatrizUsuario, asignar: boolean) {
     const usuario = this.selectedUsuario();
     const permisoId = permiso.id;
     if (!usuario?.id || !permisoId) return;
-    if (permiso.estado === nuevoEstado || this.isSaving(permisoId)) return;
+    if (permiso.asignado === asignar || this.isSaving(permisoId)) return;
 
-    const anterior = permiso.estado;
+    // BLINDAJE (defensa en profundidad): el switch está deshabilitado en la UI,
+    // pero si llegase a dispararse, el backend lo rechazaría igualmente.
+    if (permiso.origen === 'ROL') {
+      this.toastr.error(
+        'El usuario ya tiene asignado este permiso a través de su rol',
+        'No permitido'
+      );
+      return;
+    }
+
     const usuarioId = usuario.id;
-    const permitido = nuevoEstado === 'permitido';
+    const existeFilaDirecta = permiso.origen === 'USUARIO';
 
-    const esCreacion = anterior === 'heredado' && nuevoEstado !== 'heredado';
-    const esRevocacion = anterior !== 'heredado' && nuevoEstado === 'heredado';
-
-    const contexto: Contexto428 = esCreacion
-      ? { metodoHttp: 'POST', body: { usuarioId, permisoId, permitido, autoriza: false } }
-      : esRevocacion
-        ? { metodoHttp: 'DELETE', params: { usuarioId, permisoId } }
-        : {
-            metodoHttp: 'PUT',
-            body: { permitido, autoriza: false },
-            params: { usuarioId, permisoId },
-          };
+    const contexto: Contexto428 = asignar
+      ? existeFilaDirecta
+        ? { metodoHttp: 'PUT', body: { permitido: true, autoriza: false }, params: { usuarioId, permisoId } }
+        : { metodoHttp: 'POST', body: { usuarioId, permisoId, permitido: true, autoriza: false } }
+      : { metodoHttp: 'DELETE', params: { usuarioId, permisoId } };
 
     // Actualización optimista
-    this.updateRow(permisoId, nuevoEstado);
+    this.updateRow(permisoId, asignar, asignar ? 'USUARIO' : 'NO_ASIGNADO');
     this.setSaving(permisoId, true);
 
     try {
-      const resp = esCreacion
-        ? await this.permisoUsuarioService.asignar(usuarioId, permisoId, permitido)
-        : esRevocacion
-          ? await this.permisoUsuarioService.revocar(usuarioId, permisoId)
-          : await this.permisoUsuarioService.actualizar(usuarioId, permisoId, permitido);
+      const resp = asignar
+        ? existeFilaDirecta
+          ? await this.permisoUsuarioService.actualizar(usuarioId, permisoId, true)
+          : await this.permisoUsuarioService.asignar(usuarioId, permisoId, true)
+        : await this.permisoUsuarioService.revocar(usuarioId, permisoId);
 
-      if (!resp?.success) {
+      if (resp?.success) {
+        // El `origen` puede haber cambiado (p. ej. al retirar una fila legada
+        // redundante el permiso vuelve a 'ROL'): resincroniza sin spinner.
+        await this.fetchMatriz(true);
+      } else {
         // Error no-428 (el service ya lo notificó por toastr): revertir.
-        this.updateRow(permisoId, anterior);
+        this.updateRow(permisoId, !asignar, permiso.origen);
       }
     } catch (error: any) {
       // La acción NO se ejecutó (428 u otro error lanzado): revertir siempre.
-      this.updateRow(permisoId, anterior);
+      this.updateRow(permisoId, !asignar, permiso.origen);
 
       // FLUJO 428: abrir modal de autorización para pedir el PIN del supervisor.
       if (this.autorizacionService.esError428(error)) {
@@ -357,17 +348,15 @@ export default class PermisosUsuarioPageComponent {
     );
   }
 
-  /** Revierte/aplica el estado de la fila y su resultado efectivo. */
-  private updateRow(permisoId: string, estado: EstadoPermisoUsuario) {
+  /** Revierte/aplica el estado de la fila de forma optimista. */
+  private updateRow(
+    permisoId: string,
+    asignado: boolean,
+    origen: IPermisoMatrizUsuario['origen']
+  ) {
     this.matriz.update(rows =>
       rows.map(r =>
-        r.id === permisoId
-          ? {
-              ...r,
-              estado,
-              efectivo: estado === 'heredado' ? r.heredadoRol : estado === 'permitido',
-            }
-          : r
+        r.id === permisoId ? { ...r, asignado, origen } : r
       )
     );
   }

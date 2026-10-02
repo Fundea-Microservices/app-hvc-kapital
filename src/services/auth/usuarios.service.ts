@@ -4,7 +4,7 @@ import { HttpService } from '../HttpService';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
-import { IUsuario } from '../../interfaces/auth';
+import { IUsuario, IUpdateMiPerfil } from '../../interfaces/auth';
 import { StorageService, StorageUploadData } from '../storage.service';
 import { ConfigService } from './config.service';
 import { ROL_DEFAULT_CONFIG_KEY, ROL_POR_DEFECTO_SENTINEL } from '../../interfaces/auth';
@@ -16,6 +16,7 @@ type UsuarioListResponse = ApiResponse<IUsuario[]>;
 export class UsuariosService extends HttpService {
   private readonly endpoints = {
     usuarios: '/auth/usuarios',
+    miPerfil: '/auth/usuarios/mi-perfil',
     cambiarClave: '/auth/usuarios/cambiar-clave',
     resetClave: '/auth/usuarios/reset-clave',
     porAuthCode: '/auth/usuarios/por-auth-code',
@@ -61,8 +62,7 @@ export class UsuariosService extends HttpService {
       const resp = await firstValueFrom(this.get<UsuarioListResponse>(`${this.endpoints.usuarios}`, params));
       if (resp.body?.success) return resp.body;
       return null;
-    } catch (error: any) {
-      console.log('🚀 ~ UsuariosService ~ getUsuarios ~ error:', error);
+    } catch (error: any) {      
       this.toastr.error(error?.error?.message || 'Error al obtener usuarios', 'Error');
       return null;
     }
@@ -73,8 +73,7 @@ export class UsuariosService extends HttpService {
       const resp = await firstValueFrom(this.get<UsuarioResponse>(`${this.endpoints.usuarios}/${usuarioId}`));
       if (resp.body?.success) return resp.body;
       return null;
-    } catch (error: any) {
-      console.log('🚀 ~ UsuariosService ~ getUsuario ~ error:', error);
+    } catch (error: any) {      
       this.toastr.error(error?.error?.message || 'Error al obtener usuario', 'Error');
       return null;
     }
@@ -150,9 +149,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       if (autoriza !== undefined && autoriza !== null) rawPayload['autoriza'] = autoriza;
 
       // NOTA: Si el backend ya tiene @Type(() => Date) en el DTO, puedes descomentar la siguiente línea:
-      // if (lastPasswordUpdate) rawPayload['lastPasswordUpdate'] = new Date(lastPasswordUpdate).toISOString();
-
-      console.log('📤 [createUsuario] Payload final enviado:', rawPayload);
+      //if (lastPasswordUpdate) rawPayload['lastPasswordUpdate'] = new Date(lastPasswordUpdate).toISOString();   
 
       const resp = await firstValueFrom(
         this.post<UsuarioResponse>(`${this.endpoints.usuarios}`, rawPayload)
@@ -201,8 +198,15 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
         activo,
       };
 
-      // Agregar auth_code y autoriza solo si tienen valor
-      if (typeof auth_code === 'string' && auth_code.trim() !== '') payload['auth_code'] = auth_code.trim();
+      // auth_code: viaja solo si tiene valor real. Si el usuario no autoriza
+      // (autoriza=false) y el código viene vacío/null, se envía null explícito
+      // para limpiarlo en BD: no puede existir auth_code sin autoriza.
+      const authCodeLimpio = typeof auth_code === 'string' ? auth_code.trim() : '';
+      if (authCodeLimpio !== '') {
+        payload['auth_code'] = authCodeLimpio;
+      } else if (autoriza === false) {
+        payload['auth_code'] = null;
+      }
       if (autoriza !== undefined && autoriza !== null) payload['autoriza'] = autoriza;
 
       const resp = await firstValueFrom(this.put<UsuarioResponse>(`${this.endpoints.usuarios}/${id}`, payload));
@@ -212,8 +216,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ updateUsuario ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al actualizar usuario', 'Error');
       return null;
     }
@@ -228,9 +231,38 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ deleteUsuario ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al eliminar usuario', 'Error');
+      return null;
+    }
+  }
+
+  /**
+   * Actualiza los datos básicos del perfil del usuario AUTENTICADO (Mi Perfil).
+   * PATCH /auth/usuarios/mi-perfil
+   *
+   * A diferencia de `updateUsuario` (PUT /auth/usuarios/:id):
+   *  - El usuarioId lo toma el backend del token JWT (no viaja en URL ni body).
+   *  - No requiere ser admin, permisos USR_EDITAR ni auth_code → sin flujo 428.
+   *  - Solo acepta los campos de `IUpdateMiPerfil` (anti mass-assignment): el
+   *    backend responde 400 si llega cualquier otro campo.
+   *
+   * @returns la respuesta con el usuario actualizado, o null en error.
+   */
+  async updateMiPerfil(dto: IUpdateMiPerfil): Promise<UsuarioResponse | null> {
+    try {
+      const resp = await firstValueFrom(
+        this.patch<UsuarioResponse>(this.endpoints.miPerfil, dto)
+      );
+      if (resp.body?.success) {
+        this.toastr.success(resp.body.message || 'Mi perfil actualizado correctamente', 'Éxito');
+        return resp.body;
+      }
+      return null;
+    } catch (error: any) {
+      // Sin flujo 428: este endpoint no exige auth_code. Cualquier otro error
+      // (400 por campo no permitido / correo duplicado, 404, etc.) se notifica.
+      this.toastr.error(error?.error?.message || 'Error al actualizar mi perfil', 'Error');
       return null;
     }
   }
@@ -244,8 +276,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ cambiarClave ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al cambiar contraseña', 'Error');
       return null;
     }
@@ -260,8 +291,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
       }
       return null;
     } catch (error: any) {
-      if (error.status === 428) throw error;
-      console.log('🚀 ~ UsuariosService ~ resetClave ~ error:', error);
+      if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al restablecer contraseña', 'Error');
       return null;
     }
@@ -289,8 +319,7 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
     } catch (error: any) {
       // 400 con AUTH-19-02 significa que no existe usuario con ese auth_code
       // Esto es un resultado válido (no es error para nosotros)
-      if (error?.status === 400) return null;
-      console.log('🚀 ~ UsuariosService ~ getUsuarioByAuthCode ~ error:', error);
+      if (error?.status === 400) return null;      
       this.toastr.error(error?.error?.message || 'Error al buscar usuario por auth_code', 'Error');
       return null;
     }

@@ -7,7 +7,7 @@ import { TimezoneDatePipe } from '../../../shared/pipes/timezone-date.pipe';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
 import { RolService } from '../../../../services/auth/rol.service';
 import { PuestoService } from '../../../../services/auth/puesto.service';
-import { IRol, IPuesto } from '../../../../interfaces/auth';
+import { IRol, IPuesto, IUpdateMiPerfil } from '../../../../interfaces/auth';
 
 @Component({
   selector: 'app-mi-perfil-page',
@@ -124,12 +124,39 @@ export default class MiPerfilPageComponent {
     }
   }
 
+  /**
+   * Guarda los datos básicos del perfil con PATCH /auth/usuarios/mi-perfil.
+   *
+   * Sustituye al PUT /auth/usuarios/:id: el usuarioId lo toma el backend del
+   * token JWT, no requiere admin/permisos/auth_code (sin flujo 428) y solo
+   * acepta los campos de UpdateMiPerfilDto.
+   *
+   * Por eso el payload se RECONSTRUYE aquí con únicamente esos 8 campos:
+   * el form emite además userName, rolId, puestoId, sucursalId, activo,
+   * metodoAutenticacion, documento, auth_code, autoriza... y enviarlos
+   * provocaría 400 por forbidNonWhitelisted (anti mass-assignment).
+   */
   async onSaveUsuario(u: any) {
     this.guardando.set(true);
     try {
-      const resp = await this.usuariosService.updateUsuario({ ...this.user(), ...u });
+      const dto: IUpdateMiPerfil = {
+        nombre1: (u.nombre1 ?? '').toString().trim(),
+        nombre2: (u.nombre2 ?? '').toString().trim(),
+        nombre3: (u.nombre3 ?? '').toString().trim(),
+        apellido1: (u.apellido1 ?? '').toString().trim(),
+        apellido2: (u.apellido2 ?? '').toString().trim(),
+        apellido3: (u.apellido3 ?? '').toString().trim(),
+        correo: (u.correo ?? '').toString().trim(),
+        // El form emite null si se vacía el campo: el DTO exige string,
+        // así que se normaliza a '' para que el backend lo guarde limpio.
+        telefono: (u.telefono ?? '').toString().trim(),
+      };
+
+      const resp = await this.usuariosService.updateMiPerfil(dto);
       if (resp?.success && resp.data) {
         const updated = { ...resp.data } as any;
+        // PATCH no cambia rol/puesto: se rehidratan desde los catálogos ya
+        // cargados para no perder los objetos anidados que pinta la vista.
         if (!updated.rol && updated.rolId) {
           const r = (this.roles() || []).find(x => x.id === updated.rolId);
           if (r) updated.rol = r;

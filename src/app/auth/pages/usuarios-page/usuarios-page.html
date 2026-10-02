@@ -150,7 +150,7 @@
             <label class="block text-sm font-medium mb-1 text-primary-dark">Nueva contraseña</label>
             <input type="password" [ngModel]="resetClaveValor()" (ngModelChange)="resetClaveValor.set($event)"
                 class="usuarios-reset-input w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2"
-                placeholder="Mínimo 4 caracteres"
+                placeholder="Mínimo 6 caracteres"
                 (keydown.enter)="confirmarResetClave()" />
         </div>
 

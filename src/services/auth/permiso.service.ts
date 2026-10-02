@@ -63,13 +63,14 @@ export class PermisoService extends HttpService {
 
   async createPermiso(createPermiso: Omit<IPermiso, 'id'>): Promise<PermisoResponse | null> {
     try {
-      const { codigo, modulo, accion, descripcion, activo } = createPermiso;
+      const { codigo, modulo, accion, descripcion, activo, requires_auth } = createPermiso;
       const resp = await firstValueFrom(this.post<PermisoResponse>(`${this.endpoints.permisos}`, {
         codigo,
         modulo,
         accion,
         descripcion,
         activo,
+        requires_auth: requires_auth ?? false,
       }));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
@@ -87,13 +88,14 @@ export class PermisoService extends HttpService {
 
   async updatePermiso(updatePermiso: IPermiso): Promise<PermisoResponse | null> {
     try {
-      const { id, codigo, modulo, accion, descripcion, activo } = updatePermiso;
+      const { id, codigo, modulo, accion, descripcion, activo, requires_auth } = updatePermiso;
       const resp = await firstValueFrom(this.put<PermisoResponse>(`${this.endpoints.permisos}/${id}`, {
         codigo,
         modulo,
         accion,
         descripcion,
         activo,
+        requires_auth: requires_auth ?? false,
       }));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
