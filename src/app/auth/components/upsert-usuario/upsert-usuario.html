@@ -64,6 +64,7 @@
       <div class="text-xs mt-1 text-danger">Máximo 20 caracteres</div>
       }
     </div>
+    @if(!autoEdit()){
     <div>
       <label class="block text-sm font-medium mb-1 text-primary-dark">Método de autenticación</label>
       <select formControlName="metodoAutenticacion"
@@ -73,6 +74,7 @@
       }
       </select>
     </div>
+    }
   </div>
 
   <!-- Password (solo al crear) -->
@@ -149,7 +151,8 @@
   </div>
   }
 
-  <!-- Activo -->
+  <!-- Activo (solo edición administrativa; en Mi Perfil no es editable) -->
+  @if(!autoEdit()){
   <div class="flex items-center">
     <label class="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" formControlName="activo" class="sr-only peer" />
@@ -162,6 +165,7 @@
       <span class="ml-3 text-sm font-medium text-primary-dark">Activo</span>
     </label>
   </div>
+  }
 
   <!-- Autoriza -->
   @if(!autoEdit()){

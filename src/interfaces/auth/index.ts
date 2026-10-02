@@ -105,6 +105,25 @@ export interface ISubmenu {
   deleted_at?: Date | null;
 }
 
+/**
+ * Body de PATCH /auth/usuarios/mi-perfil (espejo del UpdateMiPerfilDto del backend).
+ *
+ * Anti mass-assignment: el backend SOLO acepta estos campos. Cualquier otro
+ * (rolId, userName, activo, metodoAutenticacion, documento, auth_code, ...)
+ * provoca un 400 por `forbidNonWhitelisted`. Todos son opcionales (PATCH):
+ * solo se sobrescriben los que se envían.
+ */
+export interface IUpdateMiPerfil {
+  nombre1?: string;
+  nombre2?: string;
+  nombre3?: string;
+  apellido1?: string;
+  apellido2?: string;
+  apellido3?: string;
+  correo?: string;
+  telefono?: string;
+}
+
 
 export interface IRol {
     id?: string;            // UUID

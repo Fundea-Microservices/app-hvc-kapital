@@ -4,7 +4,7 @@ import { HttpService } from '../HttpService';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
-import { IUsuario } from '../../interfaces/auth';
+import { IUsuario, IUpdateMiPerfil } from '../../interfaces/auth';
 import { StorageService, StorageUploadData } from '../storage.service';
 import { ConfigService } from './config.service';
 import { ROL_DEFAULT_CONFIG_KEY, ROL_POR_DEFECTO_SENTINEL } from '../../interfaces/auth';
@@ -16,6 +16,7 @@ type UsuarioListResponse = ApiResponse<IUsuario[]>;
 export class UsuariosService extends HttpService {
   private readonly endpoints = {
     usuarios: '/auth/usuarios',
+    miPerfil: '/auth/usuarios/mi-perfil',
     cambiarClave: '/auth/usuarios/cambiar-clave',
     resetClave: '/auth/usuarios/reset-clave',
     porAuthCode: '/auth/usuarios/por-auth-code',
@@ -232,6 +233,36 @@ async createUsuario(usuario: Omit<IUsuario, 'usuarioId' | 'created_at' | 'update
     } catch (error: any) {
       if (error.status === 428) throw error;      
       this.toastr.error(error?.error?.message || 'Error al eliminar usuario', 'Error');
+      return null;
+    }
+  }
+
+  /**
+   * Actualiza los datos básicos del perfil del usuario AUTENTICADO (Mi Perfil).
+   * PATCH /auth/usuarios/mi-perfil
+   *
+   * A diferencia de `updateUsuario` (PUT /auth/usuarios/:id):
+   *  - El usuarioId lo toma el backend del token JWT (no viaja en URL ni body).
+   *  - No requiere ser admin, permisos USR_EDITAR ni auth_code → sin flujo 428.
+   *  - Solo acepta los campos de `IUpdateMiPerfil` (anti mass-assignment): el
+   *    backend responde 400 si llega cualquier otro campo.
+   *
+   * @returns la respuesta con el usuario actualizado, o null en error.
+   */
+  async updateMiPerfil(dto: IUpdateMiPerfil): Promise<UsuarioResponse | null> {
+    try {
+      const resp = await firstValueFrom(
+        this.patch<UsuarioResponse>(this.endpoints.miPerfil, dto)
+      );
+      if (resp.body?.success) {
+        this.toastr.success(resp.body.message || 'Mi perfil actualizado correctamente', 'Éxito');
+        return resp.body;
+      }
+      return null;
+    } catch (error: any) {
+      // Sin flujo 428: este endpoint no exige auth_code. Cualquier otro error
+      // (400 por campo no permitido / correo duplicado, 404, etc.) se notifica.
+      this.toastr.error(error?.error?.message || 'Error al actualizar mi perfil', 'Error');
       return null;
     }
   }
