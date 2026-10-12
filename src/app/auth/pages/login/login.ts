@@ -20,6 +20,9 @@ export default class LoginComponent {
   userName = signal('');
   password = signal('');
 
+  /** Visibilidad del campo "Contraseña" (toggle ojo: oculto → password, visible → text) */
+  showPassword = signal(false);
+
   errorObj = signal<{ message: string; code: number, isError: boolean }>({
     message: '',
     code: 0,

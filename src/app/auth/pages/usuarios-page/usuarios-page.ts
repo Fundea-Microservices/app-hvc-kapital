@@ -70,6 +70,9 @@ export default class UsuariosPageComponent {
   resetClaveValor = signal('');
   guardandoReset = signal(false);
 
+  /** Visibilidad de la nueva contraseña del modal "Restablecer contraseña" */
+  showResetClave = signal(false);
+
   @ViewChild('upsertModal', { static: true }) upsertModal!: ElementRef<HTMLDivElement>;
   @ViewChild('deleteModal', { static: true }) deleteModal!: ElementRef<HTMLDivElement>;
 
@@ -286,6 +289,8 @@ export default class UsuariosPageComponent {
   openResetClaveModal(u: IUsuario) {
     this.resetClaveUsuario.set(u);
     this.resetClaveValor.set('');
+    // Al reabrir el modal la contraseña vuelve a ocultarse (privacidad)
+    this.showResetClave.set(false);
     this.modalResetClave.set(true);
   }
 

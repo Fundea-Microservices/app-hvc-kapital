@@ -48,6 +48,9 @@ export class ModalAutorizacionComponent {
   private _visible = signal(false);
   public visible = this._visible.asReadonly();
 
+  /** Visibilidad del código de autorización (toggle ojo: oculto → password, visible → text) */
+  showAuthCode = signal(false);
+
   form = signal<FormGroup>(
     this.fb.group({
       auth_code: [
@@ -71,6 +74,8 @@ export class ModalAutorizacionComponent {
       this._visible.set(abierto);      
       if (!abierto) {
         this.form().reset({ auth_code: '' });
+        // Al cerrarse, el código vuelve a ocultarse (privacidad)
+        this.showAuthCode.set(false);
       }
       this.cdr.markForCheck();      
     });
@@ -101,6 +106,7 @@ export class ModalAutorizacionComponent {
 
   onCancel(): void {
     this.form().reset({ auth_code: '' });
+    this.showAuthCode.set(false);
     this.cancel.emit();
   }
 
