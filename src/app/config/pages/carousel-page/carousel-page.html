@@ -1,0 +1,323 @@
+<nav class="mb-4" aria-label="breadcrumb">
+    <ol class="flex flex-wrap text-sm text-primary-dark">
+        <li class="flex items-center">
+            <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
+            <span class="mx-2">></span>
+        </li>
+        <li class="flex items-center">
+            <a routerLink="/dashboard/config" class="hover:underline text-primary">Configuración</a>
+            <span class="mx-2">></span>
+        </li>
+        <li class="flex items-center text-primary-light">Carrusel</li>
+    </ol>
+</nav>
+
+<!-- Switch reutilizable (activo / visible web / visible app) -->
+<ng-template #switchTpl let-item let-campo="campo" let-titulo="titulo">
+    <label [for]="'sw-' + campo + '-' + item.carouselId" [title]="titulo"
+        class="relative inline-block w-8 h-4 cursor-pointer align-middle"
+        [class.opacity-50]="guardandoSwitch().has(claveSwitch(item, campo))">
+        <input type="checkbox" class="peer sr-only" [id]="'sw-' + campo + '-' + item.carouselId"
+            [checked]="item[campo]" [disabled]="guardandoSwitch().has(claveSwitch(item, campo))"
+            (change)="toggle(item, campo, $any($event.target).checked)">
+        <span class="absolute inset-0 rounded-full transition-colors bg-gray-200"
+            [style.backgroundColor]="item[campo] ? 'var(--hvc-accent-gold)' : ''"></span>
+        <span class="absolute top-0 left-0.5 size-4 bg-white rounded-full shadow transition-transform"
+            [style.transform]="item[campo] ? 'translateX(1.25rem)' : ''"></span>
+    </label>
+</ng-template>
+
+<div class="shadow rounded-lg border border-primary-light">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-primary-light">
+        <h2 class="text-lg font-semibold text-primary-dark">Carrusel</h2>
+        <div class="flex gap-2">
+            <button type="button" (click)="abrirPreview()"
+                class="carousel-btn-preview inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded">
+                <app-custom-icon [name]="'eye'" [color]="'var(--hvc-primary)'" [size]="16" />
+                Vista previa
+            </button>
+            <button type="button" (click)="irANuevo()"
+                class="btn-hvc-primary inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded">
+                <app-custom-icon [name]="'plus'" [color]="'#ffffff'" [size]="16" />
+                Nuevo elemento
+            </button>
+        </div>
+    </div>
+
+    <div class="p-4">
+        <!-- Filtros -->
+        <form class="flex flex-wrap items-center gap-3 mb-4" (submit)="$event.preventDefault(); buscar()">
+            <div>
+                <label for="searchCarousel" class="sr-only">Buscar</label>
+                <input id="searchCarousel" type="text" placeholder="Título, subtítulo o código..."
+                    [value]="buscador()" (input)="buscador.set($any($event.target).value)"
+                    class="px-3 py-2 rounded-md focus:outline-none focus:ring-2 border border-primary-light ring-primary" />
+            </div>
+            <div>
+                <label for="filtroEstado" class="sr-only">Estado</label>
+                <select id="filtroEstado" [value]="filtroEstado()" (change)="onFiltroEstado($any($event.target).value)"
+                    class="px-3 py-2 rounded-md focus:outline-none focus:ring-2 border border-primary-light ring-primary bg-white">
+                    <option value="todos">Todos los estados</option>
+                    <option value="activos">Solo activos</option>
+                    <option value="inactivos">Solo inactivos</option>
+                </select>
+            </div>
+            <label class="inline-flex items-center gap-2 text-sm text-primary-dark cursor-pointer">
+                <input type="checkbox" class="size-4 accent-[var(--hvc-primary)]" [checked]="soloVigentes()"
+                    (change)="onSoloVigentes($any($event.target).checked)" />
+                Solo vigentes hoy
+            </label>
+            <button type="submit" [disabled]="isLoading()"
+                class="btn-hvc-primary px-4 py-2 text-sm rounded disabled:opacity-50">
+                @if (isLoading()) { Buscando... } @else { Buscar }
+            </button>
+        </form>
+
+        <!-- ═══ VERSIÓN DESKTOP ═══ -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="gc-table min-w-full text-left">
+                <thead>
+                    <tr>
+                        <th class="gc-th">#</th>
+                        <th class="gc-th">Imagen</th>
+                        <th class="gc-th">Elemento</th>
+                        <th class="gc-th">Orden</th>
+                        <th class="gc-th">Web</th>
+                        <th class="gc-th">App</th>
+                        <th class="gc-th">Activo</th>
+                        <th class="gc-th">Vigencia</th>
+                        <th class="gc-th">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading()) {
+                    <tr>
+                        <td colspan="9" class="px-4 py-8 text-center text-primary-light">Cargando elementos...</td>
+                    </tr>
+                    } @else if (lista().length === 0) {
+                    <tr>
+                        <td colspan="9" class="px-4 py-8 text-center text-primary-light">No se encontraron elementos del
+                            carrusel</td>
+                    </tr>
+                    } @else {
+                    @for (item of lista(); track item.carouselId; let i = $index) {
+                    <tr class="carousel-table-row">
+                        <td class="px-2 py-2 text-center border border-table-border">{{ numero(i) }}</td>
+                        <td class="px-2 py-2 border border-table-border">
+                            <app-carousel-imagen class="w-28 aspect-[16/9] rounded border border-table-border"
+                                [fotoUrl]="item.fotoUrl" [alt]="item.titulo" [iconSize]="18" />
+                        </td>
+                        <td class="px-2 py-2 border border-table-border max-w-[320px]">
+                            <div class="font-semibold truncate" [title]="item.titulo">{{ item.titulo }}</div>
+                            @if (item.subtitulo) {
+                            <div class="text-xs text-gray truncate" [title]="item.subtitulo">{{ item.subtitulo }}</div>
+                            }
+                            <div class="flex flex-wrap items-center gap-1 mt-1">
+                                @if (item.codigo) {
+                                <span class="text-[0.7rem] px-1.5 py-0.5 rounded bg-hover text-primary">{{ item.codigo
+                                    }}</span>
+                                }
+                                @if (cantidadUsuarios(item) > 0) {
+                                <span class="inline-flex items-center gap-1 text-[0.7rem] px-1.5 py-0.5 rounded bg-accent-peach/50 text-primary-dark"
+                                    [title]="item.usuarios">
+                                    <app-custom-icon [name]="'users'" [size]="11" />{{ cantidadUsuarios(item) }}
+                                    usuario(s)
+                                </span>
+                                }
+                                @if (item.redireccionUrl) {
+                                <span class="inline-flex items-center gap-1 text-[0.7rem] px-1.5 py-0.5 rounded bg-hover text-primary"
+                                    [title]="item.redireccionUrl">
+                                    <app-custom-icon [name]="item.esExterno ? 'external-link' : 'link'" [size]="11" />
+                                    {{ item.esExterno ? 'Externo' : 'Interno' }}
+                                </span>
+                                }
+                            </div>
+                        </td>
+                        <td class="px-2 py-2 text-center border border-table-border">{{ item.orden }}</td>
+                        <td class="px-2 py-2 text-center border border-table-border">
+                            <ng-container
+                                *ngTemplateOutlet="switchTpl; context: { $implicit: item, campo: 'visibleWeb', titulo: 'Visible en la web' }" />
+                        </td>
+                        <td class="px-2 py-2 text-center border border-table-border">
+                            <ng-container
+                                *ngTemplateOutlet="switchTpl; context: { $implicit: item, campo: 'visibleApp', titulo: 'Visible en la app' }" />
+                        </td>
+                        <td class="px-2 py-2 text-center border border-table-border">
+                            <ng-container
+                                *ngTemplateOutlet="switchTpl; context: { $implicit: item, campo: 'activo', titulo: 'Activo' }" />
+                        </td>
+                        <td class="px-2 py-2 text-center border border-table-border text-xs whitespace-nowrap">
+                            <span class="inline-block px-2 py-0.5 rounded-full border text-[0.7rem] font-semibold"
+                                [class]="vigencia(item).clases">{{ vigencia(item).texto }}</span>
+                            @if (item.fechaInicio || item.fechaFin) {
+                            <div class="mt-1 text-gray">
+                                {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                                &mdash;
+                                {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                            </div>
+                            }
+                        </td>
+                        <td class="px-3 py-1.5 text-center space-x-2 border border-table-border whitespace-nowrap">
+                            <button type="button" (click)="irAEditar(item)" title="Editar"
+                                class="carousel-btn-edit px-2 py-1 text-white rounded text-xs transition">
+                                <app-custom-icon [name]="'square-pen'" [color]="'#ffffff'" [size]="18" />
+                            </button>
+                            <button type="button" (click)="openDeleteModal(item)" title="Eliminar"
+                                class="carousel-btn-delete px-2 py-1 text-white rounded text-xs transition">
+                                <app-custom-icon [name]="'trash-2'" [color]="'#ffffff'" [size]="18" />
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ═══ VERSIÓN MÓVIL ═══ -->
+        <div class="md:hidden space-y-4">
+            @if (isLoading()) {
+            <div class="py-8 text-center text-primary-light">Cargando elementos...</div>
+            } @else if (lista().length === 0) {
+            <div class="py-8 text-center text-primary-light">No se encontraron elementos del carrusel</div>
+            } @else {
+            @for (item of lista(); track item.carouselId; let i = $index) {
+            <div class="bg-white rounded-lg border border-primary-light shadow-sm overflow-hidden">
+                <div class="relative">
+                    <app-carousel-imagen class="w-full aspect-[16/7]" [fotoUrl]="item.fotoUrl" [alt]="item.titulo"
+                        [iconSize]="28" />
+                    <span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded bg-white/90 text-primary">
+                        #{{ numero(i) }} · Orden {{ item.orden }}
+                    </span>
+                    <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full border text-[0.7rem] font-semibold"
+                        [class]="vigencia(item).clases">{{ vigencia(item).texto }}</span>
+                </div>
+
+                <div class="p-4">
+                    <h3 class="font-semibold text-primary-dark">{{ item.titulo }}</h3>
+                    @if (item.subtitulo) {
+                    <p class="text-sm text-gray">{{ item.subtitulo }}</p>
+                    }
+                    @if (item.fechaInicio || item.fechaFin) {
+                    <p class="mt-1 text-xs text-gray">
+                        {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy HH:mm') : '…' }} &mdash;
+                        {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                    </p>
+                    }
+
+                    <div class="grid grid-cols-3 gap-2 mt-3 text-xs text-primary-dark">
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="font-medium">Web</span>
+                            <ng-container
+                                *ngTemplateOutlet="switchTpl; context: { $implicit: item, campo: 'visibleWeb', titulo: 'Visible en la web' }" />
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="font-medium">App</span>
+                            <ng-container
+                                *ngTemplateOutlet="switchTpl; context: { $implicit: item, campo: 'visibleApp', titulo: 'Visible en la app' }" />
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="font-medium">Activo</span>
+                            <ng-container
+                                *ngTemplateOutlet="switchTpl; context: { $implicit: item, campo: 'activo', titulo: 'Activo' }" />
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-3 mt-3 border-t border-table-border">
+                        <button type="button" (click)="irAEditar(item)"
+                            class="carousel-btn-edit flex-1 inline-flex items-center justify-center gap-2 py-2 rounded text-sm text-white">
+                            <app-custom-icon [name]="'square-pen'" [color]="'#ffffff'" [size]="16" /> Editar
+                        </button>
+                        <button type="button" (click)="openDeleteModal(item)"
+                            class="carousel-btn-delete flex-1 inline-flex items-center justify-center gap-2 py-2 rounded text-sm text-white">
+                            <app-custom-icon [name]="'trash-2'" [color]="'#ffffff'" [size]="16" /> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            }
+            }
+        </div>
+
+        @if (pagination().totalItems > 0) {
+        <div class="mt-4 flex justify-center items-center">
+            <app-pagination [paginationObj]="pagination()" (changePage)="onChangePage($event)" [showText]="true" />
+        </div>
+        }
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div #deleteModal id="hs-delete-carousel"
+    class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+    role="dialog" tabindex="-1" aria-labelledby="hs-delete-carousel-label">
+    <div
+        class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
+        <div
+            class="flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+            <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+                <h3 id="hs-delete-carousel-label" class="font-bold text-primary-dark">Eliminar elemento</h3>
+                <button type="button" (click)="cerrar(deleteModal)"
+                    class="size-8 inline-flex justify-center items-center rounded-full bg-hover">✕</button>
+            </div>
+            <div class="p-4 space-y-3">
+                @if (seleccionado(); as s) {
+                <app-carousel-imagen class="w-full aspect-[16/6] rounded border border-table-border"
+                    [fotoUrl]="s.fotoUrl" [alt]="s.titulo" />
+                <div class="text-sm rounded-lg p-4 bg-danger/10 text-primary-dark" role="alert">
+                    ¿Está seguro de eliminar "<strong>{{ s.titulo }}</strong>"? Dejará de mostrarse en la web y en la app.
+                </div>
+                }
+            </div>
+            <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-primary-light">
+                <button type="button" (click)="cerrar(deleteModal)"
+                    class="py-2 px-3 text-sm rounded-lg bg-white border border-primary-light">Cerrar</button>
+                <button type="button" (click)="eliminar()" [disabled]="eliminando()"
+                    class="py-2 px-3 text-sm rounded-lg text-white bg-danger disabled:opacity-50">
+                    @if (eliminando()) { Eliminando... } @else { Eliminar }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VISTA PREVIA -->
+<div #previewModal id="hs-preview-carousel"
+    class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+    role="dialog" tabindex="-1" aria-labelledby="hs-preview-carousel-label">
+    <div
+        class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-3xl sm:w-full m-3 sm:mx-auto">
+        <div class="flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+            <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+                <div>
+                    <h3 id="hs-preview-carousel-label" class="font-bold text-primary-dark">Vista previa del carrusel</h3>
+                    <p class="text-xs text-gray">Elementos activos y vigentes hoy, en el orden en que se mostrarán.</p>
+                </div>
+                <button type="button" (click)="cerrar(previewModal)"
+                    class="size-8 inline-flex justify-center items-center rounded-full bg-hover">✕</button>
+            </div>
+            <div class="p-4">
+                <div class="inline-flex rounded-md border border-primary-light overflow-hidden mb-4 text-sm">
+                    <button type="button" (click)="previewCanal.set('web')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5"
+                        [class]="previewCanal() === 'web' ? 'bg-primary text-white' : 'bg-white text-primary-dark'">
+                        <app-custom-icon [name]="'monitor'" [size]="14"
+                            [color]="previewCanal() === 'web' ? '#ffffff' : 'var(--hvc-primary-dark)'" /> Web
+                    </button>
+                    <button type="button" (click)="previewCanal.set('app')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 border-l border-primary-light"
+                        [class]="previewCanal() === 'app' ? 'bg-primary text-white' : 'bg-white text-primary-dark'">
+                        <app-custom-icon [name]="'smartphone'" [size]="14"
+                            [color]="previewCanal() === 'app' ? '#ffffff' : 'var(--hvc-primary-dark)'" /> App
+                    </button>
+                </div>
+
+                @if (previewCargando()) {
+                <div class="py-10 text-center text-primary-light">Cargando vista previa...</div>
+                } @else {
+                <app-carousel-preview [slides]="previewSlides()" [canal]="previewCanal()" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
