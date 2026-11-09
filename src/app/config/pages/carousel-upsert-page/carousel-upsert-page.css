@@ -1,0 +1,39 @@
+/* ==========================================================================
+   carousel-upsert-page — Paleta HVC Kapital
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Botón "Cancelar" (mismo estilo que upsert-config) */
+.carousel-btn-cancel {
+  color: var(--hvc-primary-dark);
+  background-color: var(--hvc-primary-light);
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.carousel-btn-cancel:hover {
+  background-color: var(--hvc-gray);
+  color: #ffffff;
+}
+
+/* Zona para arrastrar la imagen */
+.carousel-dropzone {
+  border-color: var(--hvc-primary-light);
+  background-color: #ffffff;
+}
+.carousel-dropzone--activo {
+  border-color: var(--hvc-accent-orange);
+  background-color: color-mix(in srgb, var(--hvc-accent-peach) 35%, white);
+}
+
+/* Toggle switch — Naranja HVC cuando activo (mismo criterio que upsert-config) */
+.carousel-switch .peer:checked + div {
+  background-color: var(--hvc-accent-orange);
+}
+.carousel-switch .peer:focus-visible + div {
+  outline: 2px solid var(--hvc-primary);
+  outline-offset: 2px;
+}
