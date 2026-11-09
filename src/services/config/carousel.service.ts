@@ -23,13 +23,13 @@ export type CarouselResponse = ApiResponse<ICarousel>;
 export type CarouselListResponse = ApiResponse<ICarousel[]>;
 
 /**
- * CRUD de /config/carousel y manejo de sus imágenes.
- * Las imágenes se sirven por GET /storage/carousel/:fileName, que exige JWT,
+ * CRUD de /config/carrusel y manejo de sus imágenes.
+ * Las imágenes se sirven por GET /storage/carrusel/:fileName, que exige JWT,
  * por eso se descargan como Blob y se exponen como objectURL.
  */
 @Injectable({ providedIn: 'root' })
 export class CarouselService extends HttpService {
-  private readonly endpoint = '/config/carousel';
+  private readonly endpoint = '/config/carrusel';
   private readonly cliente = inject(HttpClient);
   private readonly toastr = inject(ToastrService);
 
@@ -114,7 +114,7 @@ export class CarouselService extends HttpService {
     }
   }
 
-  /** Carga o reemplaza la imagen: PUT /config/carousel/:id/imagen (multipart). */
+  /** Carga o reemplaza la imagen: PUT /config/carrusel/:id/imagen (multipart). */
   async cambiarImagen(carouselId: string, imagen: File): Promise<CarouselResponse | null> {
     try {
       const form = new FormData();
@@ -152,7 +152,7 @@ export class CarouselService extends HttpService {
   /**
    * Devuelve una URL usable en <img src> para una fotoUrl del API.
    * - URL absoluta (http/https/data/blob): se usa tal cual.
-   * - Ruta relativa (storage/carousel/x.jpg): se descarga con el token y se
+   * - Ruta relativa (storage/carrusel/x.jpg): se descarga con el token y se
    *   cachea como objectURL durante la sesión.
    */
   obtenerImagenUrl(fotoUrl?: string | null): Promise<string | null> {
