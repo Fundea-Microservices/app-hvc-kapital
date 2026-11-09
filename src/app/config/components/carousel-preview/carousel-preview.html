@@ -1,0 +1,91 @@
+<ng-template #diapositiva>
+    @if (actual(); as s) {
+    <div class="relative w-full h-full">
+        <app-carousel-imagen class="absolute inset-0" [fotoUrl]="s.fotoUrl" [src]="s.imagenSrc" [alt]="s.titulo"
+            [iconSize]="36" textoVacio="Sin imagen" />
+
+        <!-- Degradado para que el texto sea legible sobre cualquier imagen -->
+        <div class="absolute inset-0 preview-overlay pointer-events-none"></div>
+
+        <div class="absolute inset-x-0 bottom-0 p-4 sm:p-6 text-white"
+            [class]="canal() === 'web' ? 'sm:max-w-[65%]' : ''">
+            @if (s.subtitulo) {
+            <p class="text-[0.7rem] sm:text-xs font-semibold uppercase tracking-wide preview-subtitulo">{{ s.subtitulo }}
+            </p>
+            }
+            <h3 class="font-bold leading-tight line-clamp-2"
+                [class]="canal() === 'web' ? 'text-lg sm:text-2xl' : 'text-base'">
+                {{ s.titulo || 'Título del elemento' }}
+            </h3>
+            @if (s.descripcion && canal() === 'web') {
+            <p class="mt-1 text-sm text-white/85 line-clamp-2">{{ s.descripcion }}</p>
+            }
+            @if (s.textoBoton) {
+            <span class="inline-block mt-3 px-3 py-1.5 rounded text-xs font-semibold btn-hvc-accent">{{ s.textoBoton
+                }}</span>
+            }
+        </div>
+    </div>
+    }
+</ng-template>
+
+<ng-template #controles>
+    @if (total() > 1) {
+    <button type="button" (click)="anterior()" aria-label="Anterior"
+        class="preview-flecha absolute left-2 top-1/2 -translate-y-1/2 size-8 rounded-full inline-flex items-center justify-center">
+        <app-custom-icon [name]="'chevron-left'" [color]="'#ffffff'" [size]="18" />
+    </button>
+    <button type="button" (click)="siguiente()" aria-label="Siguiente"
+        class="preview-flecha absolute right-2 top-1/2 -translate-y-1/2 size-8 rounded-full inline-flex items-center justify-center">
+        <app-custom-icon [name]="'chevron-right'" [color]="'#ffffff'" [size]="18" />
+    </button>
+    <div class="absolute top-2 inset-x-0 flex justify-center gap-1.5">
+        @for (s of slides(); track $index; let i = $index) {
+        <button type="button" (click)="irA(i)" [attr.aria-label]="'Ir a ' + (i + 1)"
+            class="h-1.5 rounded-full transition-all"
+            [class]="i === indice() ? 'w-5 bg-accent-gold' : 'w-1.5 bg-white/60'"></button>
+        }
+    </div>
+    }
+</ng-template>
+
+@if (total() === 0) {
+<div class="flex flex-col items-center justify-center gap-2 py-10 rounded-lg border border-dashed border-primary-light text-primary-light">
+    <app-custom-icon [name]="'images'" [color]="'var(--hvc-primary-light)'" [size]="32" />
+    <span class="text-sm">No hay elementos para mostrar</span>
+</div>
+} @else if (canal() === 'web') {
+<div class="relative w-full aspect-[16/6] min-h-44 rounded-lg overflow-hidden shadow bg-primary-dark"
+    (mouseenter)="pausado.set(true)" (mouseleave)="pausado.set(false)">
+    <ng-container *ngTemplateOutlet="diapositiva" />
+    <ng-container *ngTemplateOutlet="controles" />
+</div>
+} @else {
+<!-- Marco de teléfono -->
+<div class="mx-auto w-[260px] rounded-[2rem] border-[6px] border-primary-dark bg-primary-dark shadow-lg">
+    <div class="rounded-[1.5rem] overflow-hidden bg-bg-auth">
+        <div class="flex items-center justify-between px-4 py-1.5 text-[0.6rem] text-primary-dark">
+            <span>9:41</span>
+            <span class="h-3 w-14 rounded-full bg-primary-dark"></span>
+            <span>100%</span>
+        </div>
+        <div class="px-3 pb-2">
+            <div class="h-2 w-24 rounded bg-primary-light/60 mb-2"></div>
+            <div class="relative w-full aspect-[16/10] rounded-xl overflow-hidden shadow bg-primary-dark"
+                (mouseenter)="pausado.set(true)" (mouseleave)="pausado.set(false)">
+                <ng-container *ngTemplateOutlet="diapositiva" />
+                <ng-container *ngTemplateOutlet="controles" />
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-3 mb-2">
+                <div class="h-12 rounded-lg bg-white"></div>
+                <div class="h-12 rounded-lg bg-white"></div>
+                <div class="h-12 rounded-lg bg-white"></div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@if (total() > 1) {
+<p class="mt-2 text-center text-xs text-primary-light">{{ indice() + 1 }} de {{ total() }}</p>
+}

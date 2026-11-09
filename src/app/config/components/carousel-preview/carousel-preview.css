@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+/* Degradado inferior en azul oscuro HVC para legibilidad del texto */
+.preview-overlay {
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--hvc-primary-dark) 85%, transparent) 0%,
+    color-mix(in srgb, var(--hvc-primary-dark) 35%, transparent) 45%,
+    transparent 75%
+  );
+}
+
+.preview-subtitulo {
+  color: var(--hvc-accent-gold);
+}
+
+.preview-flecha {
+  background-color: color-mix(in srgb, var(--hvc-primary-dark) 55%, transparent);
+  transition: background-color 0.2s ease;
+}
+.preview-flecha:hover {
+  background-color: var(--hvc-accent-orange);
+}
