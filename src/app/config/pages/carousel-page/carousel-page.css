@@ -1,0 +1,48 @@
+/* ==========================================================================
+   carousel-page — Paleta HVC Kapital (mismo criterio que configuraciones-page)
+   ========================================================================== */
+
+:host {
+  background-color: color-mix(in srgb, var(--color-bg-auth) var(--bg-auth-intensity, 100%), white);
+  display: block;
+}
+
+/* Botón "Editar" (naranja acento HVC) */
+.carousel-btn-edit {
+  background-color: var(--hvc-accent-orange);
+  transition: background-color 0.2s ease;
+}
+.carousel-btn-edit:hover {
+  background-color: var(--hvc-accent-gold);
+}
+
+/* Botón "Eliminar" (rojo peligro) */
+.carousel-btn-delete {
+  background-color: var(--hvc-danger);
+  transition: background-color 0.2s ease;
+}
+.carousel-btn-delete:hover {
+  background-color: color-mix(in srgb, var(--hvc-danger) 80%, black);
+}
+
+/* Botón "Vista previa" (contorno primario) */
+.carousel-btn-preview {
+  color: var(--hvc-primary);
+  background-color: #ffffff;
+  border: 1px solid var(--hvc-primary-light);
+  transition: background-color 0.2s ease;
+}
+.carousel-btn-preview:hover {
+  background-color: var(--color-hover);
+}
+
+/* Filas de la tabla */
+.carousel-table-row:nth-child(odd) {
+  background-color: var(--table-row-bg);
+}
+.carousel-table-row:nth-child(even) {
+  background-color: var(--table-row-alt-bg);
+}
+.carousel-table-row:hover {
+  background-color: var(--table-row-hover-bg);
+}
