@@ -48,6 +48,12 @@ export class UpsertUsuarioComponent {
   form = signal<FormGroup>(this.fb.group({}));
   resolviendoRol = signal(false);
 
+  /** Visibilidad del campo "Contraseña" (solo al crear) */
+  showClave = signal(false);
+
+  /** Visibilidad del campo "Código de Autorización" (auth_code) */
+  showAuthCode = signal(false);
+
   constructor() {
     effect(() => {
       const isNuevo = this.nuevo();

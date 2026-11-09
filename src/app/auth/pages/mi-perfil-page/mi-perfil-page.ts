@@ -35,6 +35,11 @@ export default class MiPerfilPageComponent {
   pwdNew = signal('');
   pwdConfirm = signal('');
   pwdLoading = signal(false);
+
+  /** Visibilidad independiente de cada campo sensible del modal de contraseña */
+  showPwdCurrent = signal(false);
+  showPwdNew = signal(false);
+  showPwdConfirm = signal(false);
   guardando = signal(false);
 
   @ViewChild('upsertModal', { static: true }) upsertModal!: ElementRef<HTMLDivElement>;
@@ -116,6 +121,10 @@ export default class MiPerfilPageComponent {
     this.pwdCurrent.set('');
     this.pwdNew.set('');
     this.pwdConfirm.set('');
+    // Al reabrir el modal los campos vuelven a ocultarse (privacidad)
+    this.showPwdCurrent.set(false);
+    this.showPwdNew.set(false);
+    this.showPwdConfirm.set(false);
     this.showPwdModal.set(true);
     const el = this.passwordModal?.nativeElement;
     if (el) {
