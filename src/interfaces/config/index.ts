@@ -8,7 +8,7 @@ export interface ICarousel {
   subtitulo?: string | null;
   codigo?: string | null;
   descripcion?: string | null;
-  /** Ruta relativa al API (storage/carousel/x.jpg) o URL absoluta. */
+  /** Ruta relativa al API (storage/carrusel/x.jpg) o URL absoluta. */
   fotoUrl: string;
   redireccionUrl?: string | null;
   orden: number;
@@ -27,7 +27,7 @@ export interface ICarousel {
   deleted_at?: string | null;
 }
 
-/** Campos editables que acepta el API en POST/PUT /config/carousel. */
+/** Campos editables que acepta el API en POST/PUT /config/carrusel. */
 export type ICarouselPayload = Omit<
   ICarousel,
   'carouselId' | 'created_at' | 'updated_at' | 'deleted_at' | 'fotoUrl'
