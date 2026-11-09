@@ -72,6 +72,17 @@ export class HttpService {
     });
   }
 
+  public putMultipart<T>(url: string, data: FormData): Observable<HttpResponse<T>> {
+    // Sin Content-Type: el navegador lo arma con el boundary del multipart.
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.getToken()}`,
+    });
+    return this.http.put<T>(this.baseUrl + url, data, {
+      headers,
+      observe: 'response'
+    });
+  }
+
   public patch<T>(url: string, data: any): Observable<HttpResponse<T>> {
     return this.http.patch<T>(this.baseUrl + url, data, {
       headers: this.setHeaders(),
