@@ -82,6 +82,18 @@ export const routes: Routes = [
                         path: 'bitacora',
                         loadComponent: () => import('./auth/pages/bitacora-page/bitacora-page'),
                     },
+                    {
+                        path: 'carousel',
+                        loadComponent: () => import('./config/pages/carousel-page/carousel-page'),
+                    },
+                    {
+                        path: 'carousel/nuevo',
+                        loadComponent: () => import('./config/pages/carousel-upsert-page/carousel-upsert-page'),
+                    },
+                    {
+                        path: 'carousel/editar/:id',
+                        loadComponent: () => import('./config/pages/carousel-upsert-page/carousel-upsert-page'),
+                    },
                 ]
             },
             //     children: [
