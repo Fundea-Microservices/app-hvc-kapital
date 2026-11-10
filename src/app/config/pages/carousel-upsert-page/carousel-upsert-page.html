@@ -1,0 +1,319 @@
+<nav class="mb-4" aria-label="breadcrumb">
+    <ol class="flex flex-wrap text-sm text-primary-dark">
+        <li class="flex items-center">
+            <a routerLink="/dashboard" class="hover:underline text-primary">Inicio</a>
+            <span class="mx-2">></span>
+        </li>
+        <li class="flex items-center">
+            <a routerLink="/dashboard/config" class="hover:underline text-primary">Configuración</a>
+            <span class="mx-2">></span>
+        </li>
+        <li class="flex items-center">
+            <a routerLink="/dashboard/config/carousel" class="hover:underline text-primary">Carrusel</a>
+            <span class="mx-2">></span>
+        </li>
+        <li class="flex items-center text-primary-light">{{ esNuevo() ? 'Nuevo' : 'Editar' }}</li>
+    </ol>
+</nav>
+
+@if (cargando()) {
+<div class="shadow rounded-lg border border-primary-light bg-white py-16 text-center text-primary-light">
+    Cargando elemento...
+</div>
+} @else {
+<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-1 xl:grid-cols-5 gap-4 items-start">
+
+    <!-- ═══ FORMULARIO ═══ -->
+    <div class="xl:col-span-3 shadow rounded-lg border border-primary-light bg-white">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
+            <h2 class="text-lg font-semibold text-primary-dark">
+                {{ esNuevo() ? 'Nuevo elemento del carrusel' : 'Editar elemento del carrusel' }}
+            </h2>
+            <span class="px-2 py-0.5 rounded-full border text-[0.7rem] font-semibold" [class]="vigencia().clases">
+                {{ vigencia().texto }}
+            </span>
+        </div>
+
+        <div class="p-4 space-y-6">
+
+            <!-- Imagen -->
+            <section>
+                <h3 class="text-sm font-semibold text-primary mb-2">Imagen <span class="text-danger">*</span></h3>
+
+                <div class="carousel-dropzone rounded-lg border-2 border-dashed p-3 transition-colors"
+                    [class.carousel-dropzone--activo]="arrastrando()" [class.border-danger]="!!imagenError()"
+                    (dragover)="onDragOver($event)" (dragleave)="arrastrando.set(false)" (drop)="onDrop($event)">
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
+                        <app-carousel-imagen class="w-full sm:w-56 shrink-0 aspect-[16/9] rounded-md border border-table-border"
+                            [fotoUrl]="fotoUrlActual()" [src]="archivoUrl()" [iconSize]="32" textoVacio="Sin imagen" />
+
+                        <div class="flex-1 text-center sm:text-left space-y-2">
+                            @if (archivo(); as f) {
+                            <p class="text-sm text-primary-dark font-medium break-all">{{ f.name }}</p>
+                            <p class="text-xs text-gray">{{ tamanoLegible(f.size) }} · se subirá al guardar</p>
+                            } @else if (fotoUrlActual()) {
+                            <p class="text-sm text-primary-dark">Imagen actual</p>
+                            <p class="text-xs text-gray">Elija otra para reemplazarla.</p>
+                            } @else {
+                            <p class="text-sm text-primary-dark">Arrastre una imagen aquí o selecciónela</p>
+                            }
+                            <p class="text-xs text-gray">JPG, PNG, WEBP o GIF · máx. 5MB · recomendado 1600×600 px</p>
+
+                            <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+                                <button type="button" (click)="inputImagen.click()"
+                                    class="btn-hvc-primary inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded">
+                                    <app-custom-icon [name]="'upload'" [color]="'#ffffff'" [size]="15" />
+                                    {{ tieneImagen() ? 'Cambiar imagen' : 'Seleccionar imagen' }}
+                                </button>
+                                @if (archivo()) {
+                                <button type="button" (click)="quitarArchivo()"
+                                    class="carousel-btn-cancel inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded">
+                                    <app-custom-icon [name]="'undo-2'" [size]="15" />
+                                    {{ fotoUrlActual() ? 'Mantener la actual' : 'Quitar' }}
+                                </button>
+                                }
+                            </div>
+                            <input #inputImagen type="file" class="hidden" [accept]="accept"
+                                (change)="onArchivoSeleccionado($event)" />
+                        </div>
+                    </div>
+                </div>
+                @if (imagenError()) {
+                <p class="mt-1 text-xs text-danger">{{ imagenError() }}</p>
+                }
+            </section>
+
+            <!-- Contenido -->
+            <section class="space-y-4">
+                <h3 class="text-sm font-semibold text-primary">Contenido</h3>
+
+                <div>
+                    <div class="flex justify-between">
+                        <label for="titulo" class="block text-sm font-medium mb-1 text-primary-dark">Título <span
+                                class="text-danger">*</span></label>
+                        <span class="text-xs text-gray">{{ largo('titulo') }}/200</span>
+                    </div>
+                    <input id="titulo" type="text" formControlName="titulo" maxlength="200"
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                    @if (invalido('titulo')) {
+                    <p class="mt-1 text-xs text-danger">El título es requerido.</p>
+                    }
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="sm:col-span-2">
+                        <div class="flex justify-between">
+                            <label for="subtitulo"
+                                class="block text-sm font-medium mb-1 text-primary-dark">Subtítulo</label>
+                            <span class="text-xs text-gray">{{ largo('subtitulo') }}/200</span>
+                        </div>
+                        <input id="subtitulo" type="text" formControlName="subtitulo" maxlength="200"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                    </div>
+                    <div>
+                        <div class="flex justify-between">
+                            <label for="codigo" class="block text-sm font-medium mb-1 text-primary-dark">Código</label>
+                            <span class="text-xs text-gray">{{ largo('codigo') }}/20</span>
+                        </div>
+                        <input id="codigo" type="text" formControlName="codigo" maxlength="20" placeholder="PROMO-NOV"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="descripcion" class="block text-sm font-medium mb-1 text-primary-dark">Descripción</label>
+                    <textarea id="descripcion" formControlName="descripcion" rows="3"
+                        class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary"></textarea>
+                </div>
+            </section>
+
+            <!-- Acción -->
+            <section class="space-y-4">
+                <h3 class="text-sm font-semibold text-primary">Acción al pulsar</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <div class="flex justify-between">
+                            <label for="textoBoton" class="block text-sm font-medium mb-1 text-primary-dark">Texto del
+                                botón</label>
+                            <span class="text-xs text-gray">{{ largo('textoBoton') }}/50</span>
+                        </div>
+                        <input id="textoBoton" type="text" formControlName="textoBoton" maxlength="50"
+                            placeholder="Ver más"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="redireccionUrl" class="block text-sm font-medium mb-1 text-primary-dark">
+                            {{ form.controls.esExterno.value ? 'URL externa' : 'Ruta interna' }}
+                        </label>
+                        <input id="redireccionUrl" type="text" formControlName="redireccionUrl"
+                            [placeholder]="form.controls.esExterno.value ? 'https://www.ejemplo.com/promocion' : '/creditos/personales'"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                    </div>
+                </div>
+                <label class="carousel-switch relative inline-flex items-center cursor-pointer gap-2">
+                    <input type="checkbox" formControlName="esExterno" class="sr-only peer" />
+                    <div class="w-11 h-6 rounded-full transition-colors bg-gray-light"></div>
+                    <div
+                        class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
+                    </div>
+                    <span class="ml-1 text-sm font-medium text-primary-dark">
+                        Enlace externo
+                        <span class="block text-xs text-gray">Se abre en el navegador en lugar de navegar dentro de
+                            la app.</span>
+                    </span>
+                </label>
+            </section>
+
+            <!-- Publicación -->
+            <section class="space-y-4">
+                <h3 class="text-sm font-semibold text-primary">Publicación</h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="orden" class="block text-sm font-medium mb-1 text-primary-dark">Orden</label>
+                        <input id="orden" type="number" min="0" step="1" formControlName="orden"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                        @if (invalido('orden')) {
+                        <p class="mt-1 text-xs text-danger">Ingrese un número mayor o igual a 0.</p>
+                        } @else {
+                        <p class="mt-1 text-xs text-gray">Menor número = se muestra primero.</p>
+                        }
+                    </div>
+                    <div>
+                        <label for="fechaInicio" class="block text-sm font-medium mb-1 text-primary-dark">Mostrar
+                            desde</label>
+                        <input id="fechaInicio" type="datetime-local" formControlName="fechaInicio"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
+                    </div>
+                    <div>
+                        <label for="fechaFin" class="block text-sm font-medium mb-1 text-primary-dark">Mostrar
+                            hasta</label>
+                        <input id="fechaFin" type="datetime-local" formControlName="fechaFin"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary"
+                            [class.border-danger]="form.hasError('rangoFechas')" />
+                    </div>
+                </div>
+                @if (form.hasError('rangoFechas')) {
+                <p class="-mt-2 text-xs text-danger">"Mostrar hasta" no puede ser anterior a "Mostrar desde".</p>
+                } @else {
+                <p class="-mt-2 text-xs text-gray">Hora de Guatemala. Deje las fechas vacías para mostrarlo siempre.</p>
+                }
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <label class="carousel-switch relative inline-flex items-center cursor-pointer gap-2">
+                        <input type="checkbox" formControlName="activo" class="sr-only peer" />
+                        <div class="w-11 h-6 rounded-full transition-colors bg-gray-light"></div>
+                        <div
+                            class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
+                        </div>
+                        <span class="ml-1 text-sm font-medium text-primary-dark">Activo</span>
+                    </label>
+                    <label class="carousel-switch relative inline-flex items-center cursor-pointer gap-2">
+                        <input type="checkbox" formControlName="visibleWeb" class="sr-only peer" />
+                        <div class="w-11 h-6 rounded-full transition-colors bg-gray-light"></div>
+                        <div
+                            class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
+                        </div>
+                        <span class="ml-1 text-sm font-medium text-primary-dark">Visible en web</span>
+                    </label>
+                    <label class="carousel-switch relative inline-flex items-center cursor-pointer gap-2">
+                        <input type="checkbox" formControlName="visibleApp" class="sr-only peer" />
+                        <div class="w-11 h-6 rounded-full transition-colors bg-gray-light"></div>
+                        <div
+                            class="absolute top-1/2 left-0.5 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5">
+                        </div>
+                        <span class="ml-1 text-sm font-medium text-primary-dark">Visible en app</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Audiencia -->
+            <section class="space-y-2">
+                <h3 class="text-sm font-semibold text-primary">Audiencia</h3>
+                <p class="text-xs text-gray">
+                    Deje la lista vacía para que lo vean todos los usuarios, o agregue los usuarios específicos que pueden
+                    verlo.
+                </p>
+                <div
+                    class="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border rounded-md border-primary-light bg-white focus-within:ring-2 ring-primary">
+                    @for (u of usuarios(); track u) {
+                    <span class="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded bg-hover text-sm text-primary-dark">
+                        {{ u }}
+                        <button type="button" (click)="quitarUsuario(u)" [attr.aria-label]="'Quitar ' + u"
+                            class="size-4 inline-flex items-center justify-center rounded hover:bg-primary-light/40">✕</button>
+                    </span>
+                    }
+                    <input #inputUsuario type="text" list="carousel-usuarios"
+                        [placeholder]="usuarios().length ? '' : 'Todos los usuarios — escriba un usuario y presione Enter'"
+                        (keydown)="onUsuarioKeydown($event, inputUsuario)" (blur)="agregarUsuario(inputUsuario)"
+                        class="flex-1 min-w-40 px-1 py-1 text-sm outline-none bg-transparent" />
+                    <datalist id="carousel-usuarios">
+                        @for (s of sugerenciasUsuarios(); track s) {
+                        <option [value]="s"></option>
+                        }
+                    </datalist>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-danger">{{ usuarioError() }}</span>
+                    <span class="text-gray">{{ usuariosTexto().length }}/300</span>
+                </div>
+            </section>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 px-4 py-3 border-t border-primary-light">
+            <button type="button" (click)="volver()" class="carousel-btn-cancel px-4 py-2 text-sm rounded">Cancelar</button>
+            <button type="submit" [disabled]="guardando()"
+                class="btn-hvc-primary px-4 py-2 text-sm rounded disabled:opacity-50 disabled:cursor-not-allowed">
+                @if (guardando()) { Guardando... } @else { {{ esNuevo() ? 'Crear elemento' : 'Guardar cambios' }} }
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══ VISTA PREVIA ═══ -->
+    <aside class="xl:col-span-2 xl:sticky xl:top-4 shadow rounded-lg border border-primary-light bg-white">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
+            <h3 class="font-semibold text-primary-dark">Vista previa</h3>
+            <div class="inline-flex rounded-md border border-primary-light overflow-hidden text-sm">
+                <button type="button" (click)="canalPreview.set('web')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1"
+                    [class]="canalPreview() === 'web' ? 'bg-primary text-white' : 'bg-white text-primary-dark'">
+                    <app-custom-icon [name]="'monitor'" [size]="14"
+                        [color]="canalPreview() === 'web' ? '#ffffff' : 'var(--hvc-primary-dark)'" /> Web
+                </button>
+                <button type="button" (click)="canalPreview.set('app')"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 border-l border-primary-light"
+                    [class]="canalPreview() === 'app' ? 'bg-primary text-white' : 'bg-white text-primary-dark'">
+                    <app-custom-icon [name]="'smartphone'" [size]="14"
+                        [color]="canalPreview() === 'app' ? '#ffffff' : 'var(--hvc-primary-dark)'" /> App
+                </button>
+            </div>
+        </div>
+        <div class="p-4 space-y-3">
+            <app-carousel-preview [slides]="slidePreview()" [canal]="canalPreview()" [autoplay]="false" />
+
+            @if (avisosPreview().length) {
+            <ul class="space-y-1">
+                @for (a of avisosPreview(); track a) {
+                <li class="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                    <app-custom-icon [name]="'triangle-alert'" [color]="'currentColor'" [size]="14" class="mt-px" />
+                    {{ a }}
+                </li>
+                }
+            </ul>
+            } @else {
+            <p class="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1">
+                <app-custom-icon [name]="'circle-check'" [color]="'currentColor'" [size]="14" />
+                Se mostrará a todos los usuarios en {{ canalPreview() === 'web' ? 'la web' : 'la app' }}.
+            </p>
+            }
+
+            @if (form.controls.redireccionUrl.value) {
+            <p class="flex items-center gap-1.5 text-xs text-gray break-all">
+                <app-custom-icon [name]="form.controls.esExterno.value ? 'external-link' : 'link'" [size]="13" />
+                {{ form.controls.redireccionUrl.value }}
+            </p>
+            }
+        </div>
+    </aside>
+</form>
+}
