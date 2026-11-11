@@ -339,3 +339,20 @@ export interface MatrizPermisosQueryParams {
   limit?: number;
   all?: boolean;          // true → envía `todos` e ignora paginación
 }
+
+/** Catálogo de tipos de usuario (tabla auth.TipoUsuario). */
+export interface ITipoUsuario {
+  id: string;
+  /** Código en mayúsculas (INVERSOR, EMPLEADO, ...). Es lo que se guarda en Carousel.tiposUsuario y usuario.TipoUsuario. */
+  codigo: string;
+  /** Nombre para mostrar. */
+  nombre: string;
+  descripcion?: string | null;
+  activo: boolean;
+  created_at?: string;
+  updated_at?: string | null;
+  deleted_at?: string | null;
+}
+
+/** Filtro de estado de GET /auth/tipos-usuario. */
+export type EstadoTipoUsuarioFiltro = 'todos' | 'activos' | 'inactivos';

@@ -7,7 +7,9 @@ import { CarouselImagenComponent } from '../../components/carousel-imagen/carous
 import { CanalPreview, CarouselPreviewComponent } from '../../components/carousel-preview/carousel-preview';
 import { CarouselService } from '../../../../services/config/carousel.service';
 import { UsuariosService } from '../../../../services/auth/usuarios.service';
+import { TipoUsuarioService } from '../../../../services/auth/tipo-usuario.service';
 import { ICarousel, ICarouselPayload, ICarouselSlide } from '../../../../interfaces/config';
+import { ITipoUsuario } from '../../../../interfaces/auth';
 import {
   CAROUSEL_ACCEPT,
   ETIQUETA_VIGENCIA,
@@ -29,6 +31,10 @@ function rangoFechasValido(group: AbstractControl): ValidationErrors | null {
 
 const MAX_USUARIOS = 300;
 
+/** Minúsculas y sin tildes, para buscar "empleado" y encontrar "Empleado". */
+const normalizar = (s: string) =>
+  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
 @Component({
   selector: 'app-carousel-upsert-page',
   standalone: true,
@@ -43,6 +49,7 @@ export default class CarouselUpsertPageComponent {
   private router = inject(Router);
   private carouselService = inject(CarouselService);
   private usuariosService = inject(UsuariosService);
+  private tipoUsuarioService = inject(TipoUsuarioService);
 
   readonly accept = CAROUSEL_ACCEPT;
 
@@ -88,6 +95,29 @@ export default class CarouselUpsertPageComponent {
   usuarioError = signal('');
   usuariosTexto = computed(() => usuariosATexto(this.usuarios()) ?? '');
 
+  // ─── Tipos de usuario (códigos de auth.TipoUsuario) ───────────────────────
+  /** Catálogo completo (activos e inactivos) para poder mostrar el nombre de lo ya asignado. */
+  catalogoTipos = signal<ITipoUsuario[]>([]);
+  tiposSeleccionados = signal<string[]>([]);
+  busquedaTipo = signal('');
+  mostrarTipos = signal(false);
+  /** Índice resaltado en la lista desplegable (teclado). */
+  tipoResaltado = signal(0);
+
+  /** Opciones del autocompletado: activos, no elegidos, que coinciden por nombre (o código). */
+  tiposFiltrados = computed(() => {
+    const q = normalizar(this.busquedaTipo());
+    const elegidos = new Set(this.tiposSeleccionados());
+    return this.catalogoTipos().filter(
+      (t) =>
+        t.activo &&
+        !elegidos.has(t.codigo) &&
+        (!q || normalizar(t.nombre).includes(q) || normalizar(t.codigo).includes(q)),
+    );
+  });
+
+  private tiposPorCodigo = computed(() => new Map(this.catalogoTipos().map((t) => [t.codigo, t])));
+
   // ─── Vista previa ─────────────────────────────────────────────────────────
   canalPreview = signal<CanalPreview>('web');
 
@@ -118,7 +148,17 @@ export default class CarouselUpsertPageComponent {
     });
     if (estado === 'programado') avisos.push('Aún no inicia su vigencia.');
     if (estado === 'vencido') avisos.push('Su vigencia ya terminó.');
-    if (this.usuarios().length) avisos.push(`Solo lo verán ${this.usuarios().length} usuario(s) específicos.`);
+    const tipos = this.tiposSeleccionados();
+    const usuarios = this.usuarios();
+    if (usuarios.length && tipos.length) {
+      avisos.push(
+        `Solo lo verán los usuarios de tipo ${this.nombresTipos(tipos)} y ${usuarios.length} usuario(s) específicos.`,
+      );
+    } else if (usuarios.length) {
+      avisos.push(`Solo lo verán ${usuarios.length} usuario(s) específicos.`);
+    } else if (tipos.length) {
+      avisos.push(`Solo lo verán los usuarios de tipo ${this.nombresTipos(tipos)}.`);
+    }
     return avisos;
   });
 
@@ -135,6 +175,7 @@ export default class CarouselUpsertPageComponent {
 
   async ngOnInit() {
     this.cargarSugerenciasUsuarios();
+    this.cargarTiposUsuario();
     const id = this.carouselId();
     if (id) await this.cargar(id);
   }
@@ -170,7 +211,15 @@ export default class CarouselUpsertPageComponent {
       fechaFin: isoAInputLocal(c.fechaFin),
     });
     this.usuarios.set(textoAUsuarios(c.usuarios));
+    this.tiposSeleccionados.set(textoAUsuarios(c.tiposUsuario).map((t) => t.toUpperCase()));
     this.fotoUrlActual.set(c.fotoUrl || null);
+  }
+
+  private async cargarTiposUsuario() {
+    // Todos (activos e inactivos): los inactivos solo sirven para mostrar el
+    // nombre de lo ya asignado; el autocompletado ofrece únicamente activos.
+    const resp = await this.tipoUsuarioService.getTiposUsuario({ all: true, estado: 'todos' });
+    if (resp?.success) this.catalogoTipos.set(resp.data || []);
   }
 
   private async cargarSugerenciasUsuarios() {
@@ -266,6 +315,71 @@ export default class CarouselUpsertPageComponent {
     }
   }
 
+  // ─── Tipos de usuario ─────────────────────────────────────────────────────
+
+  /** Tipo del catálogo para un código asignado (undefined si ya no existe). */
+  tipo(codigo: string): ITipoUsuario | undefined {
+    return this.tiposPorCodigo().get(codigo);
+  }
+
+  private nombresTipos(codigos: string[]): string {
+    return codigos.map((c) => this.tipo(c)?.nombre ?? c).join(', ');
+  }
+
+  onTipoInput(valor: string) {
+    this.busquedaTipo.set(valor);
+    this.tipoResaltado.set(0);
+    this.mostrarTipos.set(true);
+  }
+
+  onTipoBlur() {
+    this.mostrarTipos.set(false);
+  }
+
+  seleccionarTipo(t: ITipoUsuario, input: HTMLInputElement) {
+    if (!this.tiposSeleccionados().includes(t.codigo)) {
+      this.tiposSeleccionados.update((l) => [...l, t.codigo]);
+    }
+    input.value = '';
+    this.busquedaTipo.set('');
+    this.tipoResaltado.set(0);
+    // Se mantiene abierto para poder elegir varios seguidos.
+    this.mostrarTipos.set(true);
+  }
+
+  quitarTipo(codigo: string) {
+    this.tiposSeleccionados.update((l) => l.filter((c) => c !== codigo));
+  }
+
+  onTipoKeydown(ev: KeyboardEvent, input: HTMLInputElement) {
+    const opciones = this.tiposFiltrados();
+    switch (ev.key) {
+      case 'ArrowDown':
+        ev.preventDefault();
+        this.mostrarTipos.set(true);
+        this.tipoResaltado.update((i) => Math.min(i + 1, Math.max(opciones.length - 1, 0)));
+        break;
+      case 'ArrowUp':
+        ev.preventDefault();
+        this.tipoResaltado.update((i) => Math.max(i - 1, 0));
+        break;
+      case 'Enter': {
+        ev.preventDefault(); // no enviar el formulario
+        const t = opciones[this.tipoResaltado()];
+        if (this.mostrarTipos() && t) this.seleccionarTipo(t, input);
+        break;
+      }
+      case 'Escape':
+        this.mostrarTipos.set(false);
+        break;
+      case 'Backspace':
+        if (!input.value && this.tiposSeleccionados().length) {
+          this.tiposSeleccionados.update((l) => l.slice(0, -1));
+        }
+        break;
+    }
+  }
+
   // ─── Guardar ──────────────────────────────────────────────────────────────
 
   invalido(campo: string): boolean {
@@ -296,6 +410,7 @@ export default class CarouselUpsertPageComponent {
       fechaInicio: inputLocalAIso(v.fechaInicio),
       fechaFin: inputLocalAIso(v.fechaFin),
       usuarios: usuariosATexto(this.usuarios()),
+      tiposUsuario: usuariosATexto(this.tiposSeleccionados()),
     };
   }
 
