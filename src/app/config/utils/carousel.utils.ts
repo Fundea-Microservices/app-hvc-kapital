@@ -8,29 +8,42 @@ export const CAROUSEL_MAX_BYTES = 5 * 1024 * 1024;
 /** Guatemala es UTC−6 todo el año (sin horario de verano). */
 const OFFSET_GUATEMALA_MIN = -6 * 60;
 
-/**
- * ISO del API → valor para <input type="datetime-local"> en hora de Guatemala
- * ("YYYY-MM-DDTHH:mm"), sin depender de la zona horaria del navegador.
- */
-export function isoAInputLocal(iso?: string | null): string {
-  if (!iso) return '';
-  const fecha = new Date(iso);
-  if (Number.isNaN(fecha.getTime())) return '';
-  const enGuatemala = new Date(fecha.getTime() + OFFSET_GUATEMALA_MIN * 60_000);
-  return enGuatemala.toISOString().slice(0, 16);
+/** ISO del API → Date. Si viene sin zona (UTC sin "Z"), se interpreta como UTC. */
+function parsearIso(iso?: string | null): Date | null {
+  if (!iso) return null;
+  const conZona = /Z$|[+-]\d{2}:\d{2}$/.test(iso) ? iso : `${iso}Z`;
+  const fecha = new Date(conZona);
+  return Number.isNaN(fecha.getTime()) ? null : fecha;
 }
 
-/** Valor de <input type="datetime-local"> (hora de Guatemala) → ISO con offset para el API. */
-export function inputLocalAIso(valor?: string | null): string | null {
-  if (!valor) return null;
-  const conSegundos = valor.length === 16 ? `${valor}:00` : valor;
-  return `${conSegundos}-06:00`;
+/**
+ * ISO del API → valor para <input type="date"> ("YYYY-MM-DD") con el día
+ * de Guatemala, sin depender de la zona horaria del navegador.
+ */
+export function isoAFechaInput(iso?: string | null): string {
+  const fecha = parsearIso(iso);
+  if (!fecha) return '';
+  const enGuatemala = new Date(fecha.getTime() + OFFSET_GUATEMALA_MIN * 60_000);
+  return enGuatemala.toISOString().slice(0, 10);
+}
+
+/** Día "Mostrar desde" → inicio de ese día (00:00:00) en hora de Guatemala. */
+export function fechaInicioAIso(fecha?: string | null): string | null {
+  return fecha ? `${fecha}T00:00:00-06:00` : null;
+}
+
+/**
+ * Día "Mostrar hasta" → último segundo de ese día (23:59:59) en hora de Guatemala.
+ * Sin milisegundos: `datetime` de SQL Server redondea .999 al día siguiente.
+ */
+export function fechaFinAIso(fecha?: string | null): string | null {
+  return fecha ? `${fecha}T23:59:59-06:00` : null;
 }
 
 /** Calcula si el elemento se muestra hoy según su rango de fechas. */
 export function estadoVigencia(item: Pick<ICarousel, 'fechaInicio' | 'fechaFin'>, ahora = new Date()): EstadoVigencia {
-  const inicio = item.fechaInicio ? new Date(item.fechaInicio) : null;
-  const fin = item.fechaFin ? new Date(item.fechaFin) : null;
+  const inicio = parsearIso(item.fechaInicio);
+  const fin = parsearIso(item.fechaFin);
   if (!inicio && !fin) return 'siempre';
   if (inicio && inicio > ahora) return 'programado';
   if (fin && fin < ahora) return 'vencido';

@@ -157,9 +157,9 @@
                                 [class]="vigencia(item).clases">{{ vigencia(item).texto }}</span>
                             @if (item.fechaInicio || item.fechaFin) {
                             <div class="mt-1 text-gray">
-                                {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                                {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy') : '…' }}
                                 &mdash;
-                                {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                                {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy') : '…' }}
                             </div>
                             }
                         </td>
@@ -206,8 +206,8 @@
                     }
                     @if (item.fechaInicio || item.fechaFin) {
                     <p class="mt-1 text-xs text-gray">
-                        {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy HH:mm') : '…' }} &mdash;
-                        {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                        {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy') : '…' }} &mdash;
+                        {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy') : '…' }}
                     </p>
                     }
 

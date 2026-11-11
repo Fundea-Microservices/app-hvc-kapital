@@ -14,8 +14,9 @@ import {
   CAROUSEL_ACCEPT,
   ETIQUETA_VIGENCIA,
   estadoVigencia,
-  inputLocalAIso,
-  isoAInputLocal,
+  fechaFinAIso,
+  fechaInicioAIso,
+  isoAFechaInput,
   textoAUsuarios,
   usuariosATexto,
   validarImagen,
@@ -143,8 +144,8 @@ export default class CarouselUpsertPageComponent {
     if (this.canalPreview() === 'web' && !v.visibleWeb) avisos.push('No está marcado como visible en la web.');
     if (this.canalPreview() === 'app' && !v.visibleApp) avisos.push('No está marcado como visible en la app.');
     const estado = estadoVigencia({
-      fechaInicio: inputLocalAIso(v.fechaInicio),
-      fechaFin: inputLocalAIso(v.fechaFin),
+      fechaInicio: fechaInicioAIso(v.fechaInicio),
+      fechaFin: fechaFinAIso(v.fechaFin),
     });
     if (estado === 'programado') avisos.push('Aún no inicia su vigencia.');
     if (estado === 'vencido') avisos.push('Su vigencia ya terminó.');
@@ -165,7 +166,7 @@ export default class CarouselUpsertPageComponent {
   vigencia = computed(() => {
     const v = this.valores();
     return ETIQUETA_VIGENCIA[
-      estadoVigencia({ fechaInicio: inputLocalAIso(v.fechaInicio), fechaFin: inputLocalAIso(v.fechaFin) })
+      estadoVigencia({ fechaInicio: fechaInicioAIso(v.fechaInicio), fechaFin: fechaFinAIso(v.fechaFin) })
     ];
   });
 
@@ -207,8 +208,8 @@ export default class CarouselUpsertPageComponent {
       visibleWeb: !!c.visibleWeb,
       visibleApp: !!c.visibleApp,
       activo: !!c.activo,
-      fechaInicio: isoAInputLocal(c.fechaInicio),
-      fechaFin: isoAInputLocal(c.fechaFin),
+      fechaInicio: isoAFechaInput(c.fechaInicio),
+      fechaFin: isoAFechaInput(c.fechaFin),
     });
     this.usuarios.set(textoAUsuarios(c.usuarios));
     this.tiposSeleccionados.set(textoAUsuarios(c.tiposUsuario).map((t) => t.toUpperCase()));
@@ -407,8 +408,8 @@ export default class CarouselUpsertPageComponent {
       visibleWeb: v.visibleWeb,
       visibleApp: v.visibleApp,
       activo: v.activo,
-      fechaInicio: inputLocalAIso(v.fechaInicio),
-      fechaFin: inputLocalAIso(v.fechaFin),
+      fechaInicio: fechaInicioAIso(v.fechaInicio),
+      fechaFin: fechaFinAIso(v.fechaFin),
       usuarios: usuariosATexto(this.usuarios()),
       tiposUsuario: usuariosATexto(this.tiposSeleccionados()),
     };
