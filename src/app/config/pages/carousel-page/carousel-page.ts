@@ -153,6 +153,11 @@ export default class CarouselPageComponent {
     return textoAUsuarios(item.usuarios).length;
   }
 
+  /** Códigos de tipo de usuario del elemento, ej. "INVERSOR, EMPLEADO". */
+  tiposTexto(item: ICarousel): string {
+    return textoAUsuarios(item.tiposUsuario).join(', ');
+  }
+
   numero(i: number) {
     const { page, pageSize } = this.pagination();
     return (page - 1) * pageSize + i + 1;

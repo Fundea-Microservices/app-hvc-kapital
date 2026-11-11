@@ -16,6 +16,11 @@ export interface ICarousel {
   visibleApp: boolean;
   /** Códigos de usuario separados por coma. null = visible para todos. */
   usuarios?: string | null;
+  /**
+   * Códigos de auth.TipoUsuario separados por coma. null = sin filtro por tipo.
+   * Si se usan usuarios y tiposUsuario, basta con estar en cualquiera de las dos listas.
+   */
+  tiposUsuario?: string | null;
   textoBoton?: string | null;
   fechaInicio?: string | null;
   fechaFin?: string | null;

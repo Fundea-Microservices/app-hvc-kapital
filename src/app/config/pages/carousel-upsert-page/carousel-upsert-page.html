@@ -182,13 +182,13 @@
                     <div>
                         <label for="fechaInicio" class="block text-sm font-medium mb-1 text-primary-dark">Mostrar
                             desde</label>
-                        <input id="fechaInicio" type="datetime-local" formControlName="fechaInicio"
+                        <input id="fechaInicio" type="date" formControlName="fechaInicio"
                             class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary" />
                     </div>
                     <div>
                         <label for="fechaFin" class="block text-sm font-medium mb-1 text-primary-dark">Mostrar
                             hasta</label>
-                        <input id="fechaFin" type="datetime-local" formControlName="fechaFin"
+                        <input id="fechaFin" type="date" formControlName="fechaFin"
                             class="w-full px-3 py-2 border rounded-md focus:ring-2 border-primary-light ring-primary"
                             [class.border-danger]="form.hasError('rangoFechas')" />
                     </div>
@@ -196,7 +196,7 @@
                 @if (form.hasError('rangoFechas')) {
                 <p class="-mt-2 text-xs text-danger">"Mostrar hasta" no puede ser anterior a "Mostrar desde".</p>
                 } @else {
-                <p class="-mt-2 text-xs text-gray">Hora de Guatemala. Deje las fechas vacías para mostrarlo siempre.</p>
+                <p class="-mt-2 text-xs text-gray">Desde las 00:00 del primer día hasta las 23:59 del último (hora de Guatemala). Deje las fechas vacías para mostrarlo siempre.</p>
                 }
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -231,9 +231,65 @@
             <section class="space-y-2">
                 <h3 class="text-sm font-semibold text-primary">Audiencia</h3>
                 <p class="text-xs text-gray">
-                    Deje la lista vacía para que lo vean todos los usuarios, o agregue los usuarios específicos que pueden
-                    verlo.
+                    Deje ambas listas vacías para que lo vean todos los usuarios. Si llena alguna, lo verán los
+                    usuarios de los tipos indicados y también los usuarios agregados específicamente.
                 </p>
+
+                <!-- Tipos de usuario -->
+                <label for="carousel-tipos" class="block text-sm font-medium text-primary-dark">Tipos de usuario</label>
+                <div class="relative">
+                    <div
+                        class="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border rounded-md border-primary-light bg-white focus-within:ring-2 ring-primary">
+                        @for (codigo of tiposSeleccionados(); track codigo) {
+                        <span class="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded bg-accent-peach/50 text-sm text-primary-dark"
+                            [title]="codigo + (tipo(codigo) && !tipo(codigo)!.activo ? ' (inactivo)' : '')">
+                            {{ tipo(codigo)?.nombre ?? codigo }}
+                            @if (tipo(codigo) && !tipo(codigo)!.activo) {
+                            <span class="text-[0.65rem] text-gray">(inactivo)</span>
+                            }
+                            <button type="button" (click)="quitarTipo(codigo)"
+                                [attr.aria-label]="'Quitar ' + (tipo(codigo)?.nombre ?? codigo)"
+                                class="size-4 inline-flex items-center justify-center rounded hover:bg-primary-light/40">✕</button>
+                        </span>
+                        }
+                        <input #inputTipo id="carousel-tipos" type="text" autocomplete="off" role="combobox"
+                            aria-controls="carousel-tipos-lista" [attr.aria-expanded]="mostrarTipos()"
+                            [placeholder]="tiposSeleccionados().length ? '' : 'Todos los tipos — busque por nombre'"
+                            (input)="onTipoInput(inputTipo.value)" (focus)="mostrarTipos.set(true)"
+                            (blur)="onTipoBlur()" (keydown)="onTipoKeydown($event, inputTipo)"
+                            class="flex-1 min-w-40 px-1 py-1 text-sm outline-none bg-transparent" />
+                    </div>
+
+                    @if (mostrarTipos()) {
+                    <ul id="carousel-tipos-lista" role="listbox"
+                        class="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto bg-white rounded-md shadow-lg border border-primary-light">
+                        @for (t of tiposFiltrados(); track t.id; let i = $index) {
+                        <li role="option" [attr.aria-selected]="i === tipoResaltado()">
+                            <!-- mousedown: se ejecuta antes del blur del input -->
+                            <button type="button" (mousedown)="$event.preventDefault(); seleccionarTipo(t, inputTipo)"
+                                (mouseenter)="tipoResaltado.set(i)"
+                                class="w-full text-left px-3 py-2 text-sm flex items-center justify-between gap-2"
+                                [class.bg-hover]="i === tipoResaltado()">
+                                <span class="flex flex-col items-start">
+                                    <span class="text-primary-dark">{{ t.nombre }}</span>
+                                    @if (t.descripcion) {
+                                    <span class="text-xs text-gray">{{ t.descripcion }}</span>
+                                    }
+                                </span>
+                                <span class="text-[0.7rem] text-primary-light">{{ t.codigo }}</span>
+                            </button>
+                        </li>
+                        } @empty {
+                        <li class="px-3 py-2 text-sm text-gray">
+                            {{ catalogoTipos().length ? 'No hay más tipos de usuario que coincidan.' : 'No hay tipos de usuario registrados.' }}
+                        </li>
+                        }
+                    </ul>
+                    }
+                </div>
+
+                <!-- Usuarios específicos -->
+                <label class="block text-sm font-medium text-primary-dark pt-2">Usuarios específicos</label>
                 <div
                     class="flex flex-wrap items-center gap-1.5 px-2 py-1.5 border rounded-md border-primary-light bg-white focus-within:ring-2 ring-primary">
                     @for (u of usuarios(); track u) {

@@ -117,6 +117,12 @@
                                 <span class="text-[0.7rem] px-1.5 py-0.5 rounded bg-hover text-primary">{{ item.codigo
                                     }}</span>
                                 }
+                                @if (tiposTexto(item)) {
+                                <span class="inline-flex items-center gap-1 text-[0.7rem] px-1.5 py-0.5 rounded bg-accent-peach/50 text-primary-dark"
+                                    [title]="'Tipos de usuario: ' + tiposTexto(item)">
+                                    <app-custom-icon [name]="'user-check'" [size]="11" />{{ tiposTexto(item) }}
+                                </span>
+                                }
                                 @if (cantidadUsuarios(item) > 0) {
                                 <span class="inline-flex items-center gap-1 text-[0.7rem] px-1.5 py-0.5 rounded bg-accent-peach/50 text-primary-dark"
                                     [title]="item.usuarios">
@@ -151,9 +157,9 @@
                                 [class]="vigencia(item).clases">{{ vigencia(item).texto }}</span>
                             @if (item.fechaInicio || item.fechaFin) {
                             <div class="mt-1 text-gray">
-                                {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                                {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy') : '…' }}
                                 &mdash;
-                                {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                                {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy') : '…' }}
                             </div>
                             }
                         </td>
@@ -200,8 +206,8 @@
                     }
                     @if (item.fechaInicio || item.fechaFin) {
                     <p class="mt-1 text-xs text-gray">
-                        {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy HH:mm') : '…' }} &mdash;
-                        {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy HH:mm') : '…' }}
+                        {{ item.fechaInicio ? (item.fechaInicio | tzDate:'dd/MM/yy') : '…' }} &mdash;
+                        {{ item.fechaFin ? (item.fechaFin | tzDate:'dd/MM/yy') : '…' }}
                     </p>
                     }
 
