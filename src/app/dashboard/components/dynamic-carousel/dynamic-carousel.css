@@ -1,0 +1,78 @@
+/*
+ * Geometría del carrusel. Todo lo ajustable está aquí:
+ *
+ * --carrusel-ancho-max      ancho máximo del banner (100% = ocupa todo el contenido).
+ * --carrusel-margen-lateral espacio extra a cada lado respecto al borde del body.
+ * --carrusel-margen-vertical espacio extra arriba/abajo del carrusel.
+ * --carrusel-radio          radio de las esquinas de la tarjeta.
+ * --carrusel-alto-max       tope de altura para que no crezca sin fin en pantallas anchas.
+ * --carrusel-proporcion     proporción ancho/alto; cambia por breakpoint más abajo.
+ */
+:host {
+  display: block;
+  width: 100%;
+  padding-block: var(--carrusel-margen-vertical);
+
+  --carrusel-ancho-max: 100%;
+  --carrusel-margen-lateral: 0px;
+  --carrusel-margen-vertical: 20px;
+  --carrusel-radio: 0.5rem;
+  --carrusel-alto-max: 70vh;
+  --carrusel-proporcion: 4 / 3;
+}
+
+@media (min-width: 640px) {
+  :host {
+    --carrusel-proporcion: 16 / 9;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host {
+    --carrusel-proporcion: 16 / 6;
+  }
+}
+
+.carrusel-marco {
+  width: 100%;
+  max-width: var(--carrusel-ancho-max);
+  margin-inline: auto;
+  padding-inline: var(--carrusel-margen-lateral);
+}
+
+.carrusel-tarjeta {
+  aspect-ratio: var(--carrusel-proporcion);
+  max-height: var(--carrusel-alto-max);
+  border-radius: var(--carrusel-radio);
+}
+
+.carrusel-enlace {
+  border-radius: inherit;
+}
+
+/* Pista del carrusel: scroll-snap sin barra visible. */
+.pista-carrusel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.pista-carrusel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Degradado inferior en azul oscuro HVC para legibilidad del texto sobre la imagen. */
+.carrusel-overlay {
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--hvc-primary-dark) 85%, transparent) 0%,
+    color-mix(in srgb, var(--hvc-primary-dark) 35%, transparent) 45%,
+    transparent 75%
+  );
+}
+
+/* Desplazamiento instantáneo si el usuario pidió menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  .pista-carrusel {
+    scroll-behavior: auto;
+  }
+}

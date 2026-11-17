@@ -1,0 +1,120 @@
+@if (cargando()) {
+  <!-- Mismo contenedor que el carrusel para no romper el layout al terminar la carga -->
+  <div
+    class="carrusel-marco carrusel-tarjeta flex items-center justify-center bg-primary-dark"
+    role="status"
+    aria-live="polite">
+    <span class="sr-only">Cargando novedades…</span>
+    <svg class="h-8 w-8 animate-spin text-primary" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+  </div>
+} @else if (banners().length > 0) {
+  <section
+    class="carrusel-marco relative"
+    aria-roledescription="carrusel"
+    aria-label="Novedades y campañas"
+    (pointerenter)="pausar()"
+    (pointerleave)="reanudar()"
+    (focusin)="pausar()"
+    (focusout)="reanudar()">
+
+    @if (hayVarios()) {
+      <button
+        type="button"
+        (click)="anterior()"
+        class="absolute left-3 top-1/2 z-20 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-md ring-1 ring-gray-200 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-orange md:flex"
+        aria-label="Banner anterior">
+        <app-custom-icon name="chevron-left" [size]="20" color="var(--hvc-primary-dark)" />
+      </button>
+      <button
+        type="button"
+        (click)="siguiente()"
+        class="absolute right-3 top-1/2 z-20 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow-md ring-1 ring-gray-200 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-orange md:flex"
+        aria-label="Banner siguiente">
+        <app-custom-icon name="chevron-right" [size]="20" color="var(--hvc-primary-dark)" />
+      </button>
+    }
+
+    <!-- Pista: una tarjeta ocupa el ancho completo de la pista. -->
+    <div
+      #pista
+      class="pista-carrusel flex snap-x snap-mandatory overflow-x-auto"
+      role="group"
+      aria-label="Banners"
+      tabindex="0"
+      (scroll)="alDesplazar()"
+      (pointerdown)="pausar()"
+      (pointerup)="reanudar()"
+      (keydown.arrowleft)="anterior()"
+      (keydown.arrowright)="siguiente()">
+
+      @for (banner of banners(); track banner.carouselId; let i = $index) {
+        <article
+          class="carrusel-tarjeta group relative w-full shrink-0 snap-start overflow-hidden bg-primary-dark shadow-sm"
+          [class.cursor-pointer]="!!banner.destinoSeguro"
+          [attr.aria-label]="(i + 1) + ' de ' + banners().length">
+
+          @if (banner.imagenUrl && !imagenesFallidas().has(banner.carouselId)) {
+            <img
+              [src]="banner.imagenUrl"
+              [alt]="banner.titulo"
+              class="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              (error)="marcarImagenFallida(banner.carouselId)" />
+          } @else {
+            <div class="absolute inset-0 flex items-center justify-center text-primary-light">
+              <app-custom-icon name="images" [size]="40" color="var(--hvc-primary-light)" />
+              <span class="sr-only">Sin imagen</span>
+            </div>
+          }
+
+          <!-- Degradado inferior para que el texto sea legible sobre cualquier imagen -->
+          <div class="carrusel-overlay pointer-events-none absolute inset-0"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-4 text-white sm:max-w-[65%] sm:p-6">
+            @if (banner.subtitulo) {
+              <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-accent-gold sm:text-xs">
+                {{ banner.subtitulo }}
+              </p>
+            }
+            <h2 class="line-clamp-2 text-lg font-bold leading-tight sm:text-2xl">
+              {{ banner.titulo }}
+            </h2>
+            @if (banner.descripcion) {
+              <p class="mt-1 line-clamp-2 text-sm text-white/85">
+                {{ banner.descripcion }}
+              </p>
+            }
+          </div>
+
+          @if (banner.destinoSeguro) {
+            <a
+              [href]="banner.destinoSeguro"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="carrusel-enlace absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-orange"
+              [attr.aria-label]="'Abrir: ' + banner.titulo"></a>
+          }
+        </article>
+      }
+    </div>
+
+    @if (hayVarios()) {
+      <div class="mt-4 flex justify-center gap-2" role="group" aria-label="Seleccionar banner">
+        @for (banner of banners(); track banner.carouselId; let i = $index) {
+          <button
+            type="button"
+            (click)="irA(i)"
+            [attr.aria-label]="'Ir al banner ' + (i + 1)"
+            [attr.aria-current]="i === indice() ? 'true' : null"
+            class="size-2 rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-orange focus-visible:ring-offset-2"
+            [class.bg-accent-orange]="i === indice()"
+            [class.bg-gray-light]="i !== indice()"></button>
+        }
+      </div>
+    }
+  </section>
+}
