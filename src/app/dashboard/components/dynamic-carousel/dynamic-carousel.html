@@ -53,7 +53,7 @@
       @for (banner of banners(); track banner.carouselId; let i = $index) {
         <article
           class="carrusel-tarjeta group relative w-full shrink-0 snap-start overflow-hidden bg-primary-dark shadow-sm"
-          [class.cursor-pointer]="!!banner.destinoSeguro"
+          [class.cursor-pointer]="!!banner.urlExterna || !!banner.rutaInterna"
           [attr.aria-label]="(i + 1) + ' de ' + banners().length">
 
           @if (banner.imagenUrl && !imagenesFallidas().has(banner.carouselId)) {
@@ -71,7 +71,7 @@
             </div>
           }
 
-          <!-- Degradado inferior para que el texto sea legible sobre cualquier imagen -->
+          <!-- Sombra sobre el banner: el degradado se define en .carrusel-overlay (dynamic-carousel.css) -->
           <div class="carrusel-overlay pointer-events-none absolute inset-0"></div>
 
           <div class="absolute inset-x-0 bottom-0 p-4 text-white sm:max-w-[65%] sm:p-6">
@@ -90,13 +90,20 @@
             }
           </div>
 
-          @if (banner.destinoSeguro) {
+          @if (banner.urlExterna) {
+            <!-- Enlace externo: pestaña nueva. -->
             <a
-              [href]="banner.destinoSeguro"
+              [href]="banner.urlExterna"
               target="_blank"
               rel="noopener noreferrer"
               class="carrusel-enlace absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-orange"
               [attr.aria-label]="'Abrir: ' + banner.titulo"></a>
+          } @else if (banner.rutaInterna) {
+            <!-- Ruta de la propia app: navegación SPA, sin recargar. -->
+            <a
+              [routerLink]="banner.rutaInterna"
+              class="carrusel-enlace absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-orange"
+              [attr.aria-label]="'Ir a: ' + banner.titulo"></a>
           }
         </article>
       }

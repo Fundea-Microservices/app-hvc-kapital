@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { CustomIconComponent } from '../../../shared/components/custom-icon/custom-icon.component';
 import { CarouselBannersService } from './carousel-banners.service';
 import { BannerCarrusel } from './carousel.models';
@@ -25,7 +26,7 @@ const ESPERA_FIN_SCROLL_MS = 150;
 @Component({
   selector: 'app-dynamic-carousel',
   standalone: true,
-  imports: [CustomIconComponent],
+  imports: [CustomIconComponent, RouterModule],
   templateUrl: './dynamic-carousel.html',
   styleUrl: './dynamic-carousel.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

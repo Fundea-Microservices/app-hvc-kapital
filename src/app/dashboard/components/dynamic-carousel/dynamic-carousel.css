@@ -60,7 +60,11 @@
   display: none;
 }
 
-/* Degradado inferior en azul oscuro HVC para legibilidad del texto sobre la imagen. */
+/*
+ * SOMBRA SOBRE EL BANNER: este es el degradado oscuro que se pinta encima de
+ * la imagen. Para ajustarla, edita aquí los porcentajes de opacidad (85 %, 35 %)
+ * o los puntos de parada (0 %, 45 %, 75 %). El color base es --hvc-primary-dark.
+ */
 .carrusel-overlay {
   background: linear-gradient(
     to top,

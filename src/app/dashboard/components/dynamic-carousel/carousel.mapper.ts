@@ -4,17 +4,34 @@ import { BannerCarrusel } from './carousel.models';
 const esTexto = (valor: unknown): valor is string => typeof valor === 'string' && valor.trim().length > 0;
 const textoONull = (valor: unknown): string | null => (esTexto(valor) ? valor.trim() : null);
 
+/** Destino ya clasificado según su origen. */
+export interface DestinoBanner {
+  urlExterna: string | null;
+  rutaInterna: string | null;
+}
+
+const SIN_DESTINO: DestinoBanner = { urlExterna: null, rutaInterna: null };
+
 /**
  * Sólo http/https. En web un `javascript:` en redireccionUrl sería XSS;
  * cualquier otro esquema (mailto:, data:, file:) se descarta.
+ *
+ * Si el enlace apunta al mismo origen que la app se devuelve su ruta (para
+ * `routerLink`); si apunta a otro dominio, la URL absoluta (para abrir en
+ * pestaña nueva). Las rutas relativas (`dashboard/config/carousel`) se
+ * resuelven contra el origen actual, así que también son internas.
  */
-export function urlSegura(valor: unknown): string | null {
-  if (!esTexto(valor)) return null;
+export function resolverDestino(valor: unknown): DestinoBanner {
+  if (!esTexto(valor)) return SIN_DESTINO;
   try {
     const url = new URL(valor.trim(), window.location.origin);
-    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null;
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return SIN_DESTINO;
+    if (url.origin === window.location.origin) {
+      return { urlExterna: null, rutaInterna: url.pathname + url.search + url.hash };
+    }
+    return { urlExterna: url.href, rutaInterna: null };
   } catch {
-    return null;
+    return SIN_DESTINO;
   }
 }
 
@@ -50,6 +67,7 @@ export function mapearBanners(
     vistos.add(carouselId);
 
     const subtitulo = textoONull(item.subtitulo);
+    const destino = resolverDestino(item.redireccionUrl);
     ordenados.push({
       orden: ordenSeguro(item.orden),
       banner: {
@@ -57,7 +75,8 @@ export function mapearBanners(
         titulo: titulo.trim(),
         subtitulo,
         descripcion: textoONull(item.descripcion),
-        destinoSeguro: urlSegura(item.redireccionUrl),
+        urlExterna: destino.urlExterna,
+        rutaInterna: destino.rutaInterna,
         imagenUrl: resolverImagen(textoONull(item.fotoUrl)),
       },
     });
