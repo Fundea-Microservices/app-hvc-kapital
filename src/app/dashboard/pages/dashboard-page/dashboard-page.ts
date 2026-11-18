@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import SideMenuComponent from '../../components/side-menu/side-menu';
-import HomePageComponent from '../../../shared/pages/home-page/home-page';
 import { RouterOutlet } from '@angular/router';
 import { NavBar } from "../../components/nav-bar/nav-bar";
 
