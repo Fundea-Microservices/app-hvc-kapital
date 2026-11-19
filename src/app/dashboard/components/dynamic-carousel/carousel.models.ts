@@ -5,9 +5,13 @@
 export interface BannerCarrusel {
   carouselId: string;
   titulo: string;
-  /** Línea superior de la tarjeta; se pinta en dorado sobre la imagen. */
+  /** Línea superior de la tarjeta; se pinta en naranja de marca sobre la imagen. */
   subtitulo: string | null;
   descripcion: string | null;
+  /** Texto del CTA que envía el API; null si no viene (el botón usa "Ver más"). */
+  textoBoton: string | null;
+  /** Bandera del API: true = pestaña nueva, false = navegación interna. */
+  esExterno: boolean;
   /**
    * Destino absoluto hacia otro dominio (sólo http/https) o null. Se abre en
    * pestaña nueva con un `<a href>` normal.
