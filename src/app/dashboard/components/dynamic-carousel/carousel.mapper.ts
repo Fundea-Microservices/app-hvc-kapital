@@ -16,20 +16,23 @@ const SIN_DESTINO: DestinoBanner = { urlExterna: null, rutaInterna: null };
  * Sólo http/https. En web un `javascript:` en redireccionUrl sería XSS;
  * cualquier otro esquema (mailto:, data:, file:) se descarta.
  *
- * Si el enlace apunta al mismo origen que la app se devuelve su ruta (para
- * `routerLink`); si apunta a otro dominio, la URL absoluta (para abrir en
- * pestaña nueva). Las rutas relativas (`dashboard/config/carousel`) se
- * resuelven contra el origen actual, así que también son internas.
+ * `esExterno` (bandera del API) decide el modo de apertura:
+ * - true  → URL absoluta para abrir en pestaña nueva (`target="_blank"`).
+ * - false → ruta de este origen para navegar con `routerLink`.
+ *
+ * Excepción: si `esExterno` es false pero el enlace apunta a otro dominio, el
+ * Router no puede resolverlo; se devuelve como externo para no romper el
+ * destino. Las rutas relativas se resuelven contra el origen actual.
  */
-export function resolverDestino(valor: unknown): DestinoBanner {
+export function resolverDestino(valor: unknown, esExterno = false): DestinoBanner {
   if (!esTexto(valor)) return SIN_DESTINO;
   try {
     const url = new URL(valor.trim(), window.location.origin);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return SIN_DESTINO;
-    if (url.origin === window.location.origin) {
-      return { urlExterna: null, rutaInterna: url.pathname + url.search + url.hash };
+    if (esExterno || url.origin !== window.location.origin) {
+      return { urlExterna: url.href, rutaInterna: null };
     }
-    return { urlExterna: url.href, rutaInterna: null };
+    return { urlExterna: null, rutaInterna: url.pathname + url.search + url.hash };
   } catch {
     return SIN_DESTINO;
   }
@@ -67,7 +70,8 @@ export function mapearBanners(
     vistos.add(carouselId);
 
     const subtitulo = textoONull(item.subtitulo);
-    const destino = resolverDestino(item.redireccionUrl);
+    const esExterno = item.esExterno === true;
+    const destino = resolverDestino(item.redireccionUrl, esExterno);
     ordenados.push({
       orden: ordenSeguro(item.orden),
       banner: {
@@ -75,6 +79,8 @@ export function mapearBanners(
         titulo: titulo.trim(),
         subtitulo,
         descripcion: textoONull(item.descripcion),
+        textoBoton: textoONull(item.textoBoton),
+        esExterno,
         urlExterna: destino.urlExterna,
         rutaInterna: destino.rutaInterna,
         imagenUrl: resolverImagen(textoONull(item.fotoUrl)),
