@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, On
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IConfig, TipoConfiguracion } from '../../../../interfaces/auth';
+import { IConfigModulo, IConfigPolitica } from '../../../../interfaces/config';
 
 export interface basicObject {
     key: string;
@@ -26,6 +27,10 @@ export class UpsertConfigComponent implements OnDestroy {
     nuevo = input<boolean>(true);
     isLoading = input<boolean>(false);
     key = input<number>(0);
+    /** Módulos disponibles para elegir la política del parámetro. */
+    modulos = input<IConfigModulo[]>([]);
+    /** Políticas disponibles; se filtran por el módulo del formulario. */
+    politicas = input<IConfigPolitica[]>([]);
     arrayValues = signal<string[]>([]);
     objectValues = signal<basicObject[]>([]);
 
@@ -55,7 +60,15 @@ export class UpsertConfigComponent implements OnDestroy {
 
             const parsed = this.parseValorByTipo(cfg?.tipo || TipoConfiguracion.STRING, cfg?.valor ?? '');
 
+            const politicaId = cfg.politicaId || cfg.politica?.id || '';
+            const moduloId = cfg.politica?.moduloId
+                || this.politicas().find(p => p.id === politicaId)?.moduloId
+                || '';
+
             const form = this.fb.group({
+                // Solo filtra el select de políticas; no se envía al API.
+                moduloId: [moduloId, [Validators.required]],
+                politicaId: [politicaId, [Validators.required]],
                 llave: [cfg.llave || '', [Validators.required, Validators.minLength(2)]],
                 tipo: [cfg.tipo || TipoConfiguracion.STRING, [Validators.required]],
                 valorString: [parsed.valorString || ''],
@@ -99,6 +112,32 @@ export class UpsertConfigComponent implements OnDestroy {
         });
     }
 
+    /** Políticas del módulo elegido, ordenadas como en el catálogo. */
+    politicasDelModulo(moduloId: string): IConfigPolitica[] {
+        return this.politicas()
+            .filter(p => p.moduloId === moduloId)
+            .sort((a, b) => a.orden - b.orden || a.nombre.localeCompare(b.nombre));
+    }
+
+    /** Al cambiar de módulo se limpia la política si no pertenece al destino. */
+    onModuloChange(moduloId: string): void {
+        const politicaId = String(this.form().get('politicaId')?.value ?? '');
+        if (!politicaId) return;
+        const pertenece = this.politicas().some(p => p.id === politicaId && p.moduloId === moduloId);
+        if (!pertenece) this.form().get('politicaId')?.setValue('');
+    }
+
+    /** Módulo elegido en el formulario, si existe en el catálogo. */
+    moduloSeleccionado(): IConfigModulo | undefined {
+        const id = String(this.form().get('moduloId')?.value ?? '');
+        return this.modulos().find((m) => m.id === id);
+    }
+
+    /** El módulo elegido está desactivado y no admite parámetros nuevos. */
+    moduloInactivo(): boolean {
+        return this.moduloSeleccionado()?.activo === false;
+    }
+
     get btnText(): string {
         return this.nuevo() ? 'Crear Configuración' : 'Actualizar Configuración';
     }
@@ -106,6 +145,10 @@ export class UpsertConfigComponent implements OnDestroy {
     onSubmit() {
         const form = this.form();
         if (!form || form.invalid) return;
+
+        // Un módulo desactivado no admite parámetros nuevos: misma regla que
+        // aplica la API al validar la política asociada.
+        if (this.moduloInactivo()) return;
 
         // Serialize valor according to tipo
         const tipo: TipoConfiguracion = form.get('tipo')?.value;
@@ -119,6 +162,8 @@ export class UpsertConfigComponent implements OnDestroy {
         this.jsonError.set('');
         const cfg: IConfig = {
             ...this.config(),
+            politicaId: String(form.get('politicaId')?.value ?? ''),
+            politica: undefined,
             llave: form.get('llave')?.value,
             tipo,
             valor: serialize.valor!,

@@ -21,15 +21,76 @@
         </div>
     </div>
 
-    <div class="p-4">
-        <form class="flex flex-wrap items-center gap-3 mb-3">
-            <div>
-                <label for="searchCfg" class="sr-only">Buscar</label>
-                <input id="searchCfg" type="text" placeholder="Buscar..." [value]="buscador()"
-                    (input)="onSearch($any($event.target).value)"
-                    class="px-3 py-2 rounded-md focus:outline-none focus:ring-2 border border-primary-light ring-primary" />
+    <form class="border-b border-primary-light bg-[rgba(248,250,252,0.7)] px-4 py-4 sm:px-6"
+        (submit)="$event.preventDefault()">
+        <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-12">
+            <div class="sm:col-span-1 lg:col-span-3">
+                <label for="filtroModulo"
+                    class="mb-1 block text-xs font-medium text-primary-light">Módulo</label>
+                <select id="filtroModulo" (change)="onFiltroModulo($any($event.target).value)"
+                    class="h-10 w-full rounded-md border border-primary-light bg-white px-3 text-[13px] text-primary-dark transition focus:outline-none focus:ring-2 ring-primary">
+                    <option value="">Todos los módulos</option>
+                    @for (m of modulos(); track m.id) {
+                    <option [value]="m.id" [selected]="m.id === filtroModuloId()">{{ m.nombre }}</option>
+                    }
+                </select>
             </div>
-        </form>
+
+            <div class="sm:col-span-1 lg:col-span-3">
+                <label for="filtroPolitica"
+                    class="mb-1 block text-xs font-medium text-primary-light">Política</label>
+                <select id="filtroPolitica" (change)="onFiltroPolitica($any($event.target).value)"
+                    class="h-10 w-full rounded-md border border-primary-light bg-white px-3 text-[13px] text-primary-dark transition focus:outline-none focus:ring-2 ring-primary">
+                    <option value="">Todas las políticas</option>
+                    @for (p of politicasFiltro(); track p.id) {
+                    <option [value]="p.id" [selected]="p.id === filtroPoliticaId()">{{ p.nombre }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="sm:col-span-2 lg:col-span-4">
+                <label for="searchCfg"
+                    class="mb-1 block text-xs font-medium text-primary-light">Búsqueda</label>
+                <div class="relative">
+                    <svg class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-primary-light"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input id="searchCfg" type="text"
+                        placeholder="Buscar por llave, módulo, política o descripción..." [value]="buscador()"
+                        (input)="onSearch($any($event.target).value)"
+                        class="h-10 w-full rounded-md border border-primary-light bg-white pl-9 pr-3 text-[13px] text-primary-dark transition focus:outline-none focus:ring-2 ring-primary" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:col-span-2 lg:col-span-2">
+                <button type="button" (click)="onSearch(buscador())"
+                    class="btn-hvc-accent inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md px-4 text-sm transition">
+                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Buscar</span>
+                </button>
+                @if (buscador() || filtroModuloId() || filtroPoliticaId()) {
+                <button type="button" (click)="limpiarFiltros()" title="Limpiar filtros"
+                    aria-label="Limpiar filtros"
+                    class="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-primary-light bg-white text-primary-light transition hover:bg-[var(--color-hover)] hover:text-primary-dark">
+                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                </button>
+                }
+            </div>
+        </div>
+    </form>
+
+    <div class="p-4">
 
         <div class="overflow-x-auto">
             <table class="gc-table min-w-full text text-left">
@@ -37,6 +98,8 @@
                     <tr>
                         <th class="gc-th">#</th>
                         <th class="gc-th">Llave</th>
+                        <th class="gc-th">Módulo</th>
+                        <th class="gc-th">Política</th>
                         <th class="gc-th">Tipo</th>
                         <th class="gc-th">Valor</th>
                         <th class="gc-th">Activo</th>
@@ -46,11 +109,11 @@
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">Cargando configuraciones...</td>
+                        <td colspan="8" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">Cargando configuraciones...</td>
                     </tr>
                     } @else if (pagination().totalItems === 0) {
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">No hay configuraciones</td>
+                        <td colspan="8" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">No hay configuraciones</td>
                     </tr>
                     } @else {
                     @for (c of getPageSlice(); track c.id; let i = $index) {
@@ -58,6 +121,8 @@
                         <td class="px-2 py-2 text-center border border-table-border">{{ (pagination().page - 1) *
                             pagination().pageSize + i + 1 }}</td>
                         <td class="px-2 py-2 border border-table-border">{{ c.llave }}</td>
+                        <td class="px-2 py-2 border border-table-border">{{ nombreModulo(moduloDeConfig(c)) }}</td>
+                        <td class="px-2 py-2 border border-table-border">{{ nombrePolitica(politicaDeConfig(c)) }}</td>
                         <td class="px-2 py-2 border border-table-border">{{ c.tipo }}</td>
                         <td class="px-2 py-2 truncate max-w-[320px] border border-table-border" [title]="c.valor">{{
                             displayValor(c) }}</td>
@@ -116,6 +181,7 @@
             </div>
             <div class="p-4 overflow-y-auto">
                 <app-upsert-config [config]="configEdit()" [nuevo]="nuevoConfig()" [key]="formKey()"
+                    [modulos]="modulos()" [politicas]="politicas()"
                     [isLoading]="guardando()" (save)="upsertConfig($event)" (cancel)="closeModal()" />
             </div>
         </div>

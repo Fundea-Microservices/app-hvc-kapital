@@ -10,6 +10,11 @@ export interface GetConfigsParams {
   page?: number;
   limit?: number;
   busqueda?: string;
+  activo?: boolean;
+  /** Filtra por módulo de configuración (query param del backend). */
+  moduloId?: string;
+  /** Filtra por política de configuración (query param del backend). */
+  politicaId?: string;
   all?: boolean;
 }
 
@@ -27,10 +32,14 @@ export class ConfigService extends HttpService {
     super(http);
   }
 
-  async getConfigs({ page = 1, limit = 10, busqueda = '', all = false }: GetConfigsParams = {}): Promise<ConfigListResponse | null> {
+  async getConfigs({ page = 1, limit = 10, busqueda = '', activo, moduloId, politicaId, all = false }: GetConfigsParams = {}): Promise<ConfigListResponse | null> {
     try {
-      let params: any = { page, limit, busqueda };
-      if (all) params = { ...params, todos: all };
+      const params: any = { page, limit, busqueda };
+      if (all) params['todos'] = true;
+      if (activo !== undefined) params['activo'] = activo;
+      if (moduloId) params['moduloId'] = moduloId;
+      if (politicaId) params['politicaId'] = politicaId;
+
       const resp = await firstValueFrom(this.get<ConfigListResponse>(`${this.endpoints.configs}`, params));
       if (resp.body?.success) return resp.body;
       return null;
@@ -53,10 +62,12 @@ export class ConfigService extends HttpService {
     }
   }
 
+  /** POST /auth/config — `politicaId` es obligatorio y debe ser una política activa. */
   async createConfig(payload: Omit<IConfig, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>): Promise<ConfigResponse | null> {
     try {
-      const { llave, tipo, valor, descripcion, activo } = payload;
-      const resp = await firstValueFrom(this.post<ConfigResponse>(`${this.endpoints.configs}`, { llave, tipo, valor, descripcion, activo }));
+      const { llave, tipo, valor, descripcion, activo, politicaId } = payload;
+      const body = { llave, tipo, valor, descripcion, activo, politicaId };
+      const resp = await firstValueFrom(this.post<ConfigResponse>(`${this.endpoints.configs}`, body));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
         return resp.body;
@@ -70,10 +81,22 @@ export class ConfigService extends HttpService {
     }
   }
 
+  /**
+   * PATCH /auth/config/:id — edición parcial.
+   * `politicaId` se envía solo cuando la política cambia (el backend rechaza
+   * asignar una política inactiva).
+   */
   async updateConfig(configId: string, payload: Partial<Omit<IConfig, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>>): Promise<ConfigResponse | null> {
     try {
-      const { llave, tipo, valor, descripcion, activo } = payload;
-      const resp = await firstValueFrom(this.put<ConfigResponse>(`${this.endpoints.configs}/${configId}`, { llave, tipo, valor, descripcion, activo }));
+      const body: Record<string, any> = {};
+      const campos = ['llave', 'tipo', 'valor', 'descripcion', 'activo'] as const;
+      const origen = payload as Record<string, any>;
+      for (const campo of campos) {
+        if (origen[campo] !== undefined) body[campo] = origen[campo];
+      }
+      if (payload.politicaId) body['politicaId'] = payload.politicaId;
+
+      const resp = await firstValueFrom(this.patch<ConfigResponse>(`${this.endpoints.configs}/${configId}`, body));
       if (resp.body?.success) {
         this.toastr.success(resp.body.message, 'Éxito');
         return resp.body;
