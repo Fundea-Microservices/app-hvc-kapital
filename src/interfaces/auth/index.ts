@@ -1,3 +1,5 @@
+import type { IConfigPolitica } from '../config';
+
 export interface IPuesto {
     id?: string;        // UUID del puesto
     nombre: string;    // Nombre del puesto
@@ -292,6 +294,10 @@ export interface IConfig {
   tipo: TipoConfiguracion;      // Tipo de dato (string, number, boolean, array, object)
   descripcion?: string | null;  // Descripción opcional sobre el uso de la configuración
   activo: boolean;              // Indica si la configuración está activa
+  /** Política a la que pertenece. Obligatoria al crear (backend). */
+  politicaId?: string;
+  /** Relación incluida por el backend en listados y detalle. */
+  politica?: IConfigPolitica | null;
 
   // Metadatos de auditoría
   created_at: Date;             // Fecha de creación

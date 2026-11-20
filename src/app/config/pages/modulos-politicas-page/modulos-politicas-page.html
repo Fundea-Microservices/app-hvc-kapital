@@ -1,0 +1,390 @@
+<nav class="mb-4" aria-label="breadcrumb">
+  <ol class="flex flex-wrap text-sm text-primary-dark">
+    <li class="flex items-center">
+      <a routerLink="/dashboard" class="text-primary hover:underline">Inicio</a>
+      <span class="mx-2">></span>
+    </li>
+    <li class="flex items-center">
+      <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
+      <span class="mx-2">></span>
+    </li>
+    <li class="flex items-center text-primary-light">Módulos y Políticas</li>
+  </ol>
+</nav>
+
+<div class="shadow rounded-lg border border-primary-light">
+  <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-primary-light">
+    <div>
+      <h2 class="flex items-center gap-2 text-lg font-semibold text-primary-dark">
+        <app-custom-icon name="layers" [size]="20"></app-custom-icon>
+        Módulos y Políticas
+      </h2>
+      <p class="mt-0.5 text-xs text-primary-light">
+        Agrupación de los parámetros generales por módulo y política.
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" (click)="abrirModalCrearModulo()"
+        class="btn-hvc-primary px-4 py-2 text-sm rounded">
+        Nuevo módulo
+      </button>
+      <button type="button" (click)="abrirModalCrearPolitica()"
+        [disabled]="!moduloSeleccionadoId()"
+        class="btn-hvc-primary px-4 py-2 text-sm rounded disabled:opacity-50 disabled:cursor-not-allowed"
+        [title]="moduloSeleccionadoId() ? 'Crear política en el módulo seleccionado' : 'Cree un módulo primero'">
+        Nueva política
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-0">
+    <!-- Panel de módulos -->
+    <aside class="border-b lg:border-b-0 lg:border-r border-primary-light p-4">
+      <div class="mb-3">
+        <label for="buscarModulo" class="sr-only">Buscar módulo</label>
+        <input id="buscarModulo" type="text" placeholder="Buscar módulo..."
+          [value]="busquedaModulos()" (input)="onBuscarModulos($any($event.target).value)"
+          class="w-full px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 border border-primary-light ring-primary" />
+      </div>
+
+      @if (reorderModulosBloqueado()) {
+        <p class="mb-2 text-[0.7rem] text-primary-light">
+          Limpie la búsqueda para reordenar arrastrando.
+        </p>
+      }
+
+      @if (isLoadingModulos()) {
+        <p class="px-2 py-6 text-sm text-center text-primary-light">Cargando módulos...</p>
+      } @else if (modulosFiltrados().length === 0) {
+        <p class="px-2 py-6 text-sm text-center text-primary-light">
+          {{ modulos().length === 0 ? 'No hay módulos registrados.' : 'Ningún módulo coincide con la búsqueda.' }}
+        </p>
+      } @else {
+        <ul class="space-y-2" role="list">
+          @for (m of modulosFiltrados(); track m.id) {
+            <li class="mp-modulo"
+              [attr.draggable]="reorderModulosBloqueado() ? 'false' : 'true'"
+              (dragstart)="onModuloDragStart($event, m)"
+              (dragover)="onModuloDragOver($event, m)"
+              (dragleave)="onModuloDragLeave($event, m.id)"
+              (dragend)="onModuloDragEnd()"
+              (drop)="onModuloDrop($event, m)"
+              [class.mp-modulo--active]="m.id === moduloSeleccionadoId()"
+              [class.mp-modulo--off]="!m.activo"
+              [class.mp-modulo--drop]="moduloDropId() === m.id">
+              <span class="mp-drag" [class.mp-drag--off]="reorderModulosBloqueado()"
+                title="Arrastrar para reordenar" aria-hidden="true">⠿</span>
+              <button type="button" (click)="seleccionarModulo(m.id)"
+                class="mp-modulo-main min-w-0 flex-1 flex items-center gap-2 px-1.5 py-2 rounded-md text-left"
+                [attr.aria-current]="m.id === moduloSeleccionadoId() ? 'true' : null">
+                <span class="mp-order" aria-hidden="true">{{ m.orden }}</span>
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate text-sm font-semibold text-primary-dark">{{ m.nombre }}</span>
+                  <span class="block truncate text-[0.7rem] mp-code text-primary-light">{{ m.codigo }}</span>
+                </span>
+                <span class="mp-count" [title]="contarPoliticas(m.id) + ' políticas'">
+                  {{ contarPoliticas(m.id) }}
+                </span>
+                <span class="mp-status" [class.mp-status--off]="!m.activo"
+                  [title]="m.activo ? 'Activo' : 'Inactivo'"></span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </aside>
+
+    <!-- Panel de políticas -->
+    <section class="p-4 min-w-0">
+      @if (moduloSeleccionado(); as modulo) {
+        <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+          <div class="min-w-0">
+            <h3 class="text-base font-semibold text-primary-dark truncate">{{ modulo.nombre }}</h3>
+            <p class="text-xs mp-code text-primary-light">{{ modulo.codigo }}</p>
+            @if (modulo.descripcion) {
+              <p class="mt-1 text-xs text-primary-light">{{ modulo.descripcion }}</p>
+            }
+          </div>
+          <div class="flex flex-wrap items-center justify-end gap-2">
+            <div class="text-right mr-1">
+              <p class="text-sm font-semibold text-primary-dark">{{ politicasDelModulo().length }} políticas</p>
+              <p class="text-xs text-primary-light">{{ contarPoliticasActivas(modulo.id) }} activas</p>
+            </div>
+
+            <label class="relative inline-flex items-center cursor-pointer gap-2"
+              [title]="modulo.activo ? 'Módulo activo' : 'Módulo inactivo'">
+              <input type="checkbox" class="sr-only peer" [checked]="modulo.activo"
+                (change)="cambiarActivoModulo(modulo, $any($event.target).checked)"
+                [attr.aria-label]="'Activar módulo ' + modulo.nombre" />
+              <span class="w-10 h-5 rounded-full transition-colors bg-gray-light peer-checked:bg-accent-gold
+                peer-focus:outline-none peer-focus:ring-2 ring-primary"></span>
+              <span class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-md
+                transition-transform peer-checked:translate-x-5"></span>
+            </label>
+
+            <button type="button" (click)="abrirModalEditarModulo(modulo)"
+              class="p-2 rounded-md bg-primary text-white hover:opacity-90"
+              [attr.aria-label]="'Editar módulo ' + modulo.nombre" title="Editar módulo">
+              <app-custom-icon name="square-pen" color="#ffffff" [size]="16"></app-custom-icon>
+            </button>
+            <button type="button" (click)="abrirModalEliminarModulo(modulo)"
+              class="p-2 rounded-md bg-danger text-white hover:opacity-90"
+              [attr.aria-label]="'Eliminar módulo ' + modulo.nombre" title="Eliminar módulo">
+              <app-custom-icon name="trash-2" color="#ffffff" [size]="16"></app-custom-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="buscarPolitica" class="sr-only">Buscar política</label>
+          <input id="buscarPolitica" type="text" placeholder="Buscar política..."
+            [value]="busquedaPoliticas()" (input)="onBuscarPoliticas($any($event.target).value)"
+            class="w-full sm:w-80 px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 border border-primary-light ring-primary" />
+        </div>
+
+        @if (reorderPoliticasBloqueado()) {
+          <p class="mb-2 text-[0.7rem] text-primary-light">
+            Limpie la búsqueda para reordenar las políticas.
+          </p>
+        }
+
+        <div class="overflow-x-auto">
+          <table class="gc-table min-w-full text-left">
+            <thead>
+              <tr>
+                <th class="gc-th w-16">Orden</th>
+                <th class="gc-th">Código</th>
+                <th class="gc-th">Nombre</th>
+                <th class="gc-th w-28">Estado</th>
+                <th class="gc-th w-24 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (isLoadingPoliticas()) {
+                <tr>
+                  <td colspan="5" class="px-4 py-8 text-center text-primary-light">Cargando políticas...</td>
+                </tr>
+              } @else if (politicasFiltradas().length === 0) {
+                <tr>
+                  <td colspan="5" class="px-4 py-8 text-center text-primary-light">
+                    {{ politicasDelModulo().length === 0 ? 'Este módulo aún no tiene políticas.' : 'Ninguna política coincide con la búsqueda.' }}
+                  </td>
+                </tr>
+              } @else {
+                @for (p of politicasFiltradas(); track p.id) {
+                  <tr class="mp-row"
+                    [attr.draggable]="reorderPoliticasBloqueado() ? 'false' : 'true'"
+                    (dragstart)="onPoliticaDragStart($event, p)"
+                    (dragover)="onPoliticaDragOver($event, p)"
+                    (dragleave)="onPoliticaDragLeave($event, p.id)"
+                    (dragend)="onPoliticaDragEnd()"
+                    (drop)="onPoliticaDrop($event, p)"
+                    [class.mp-row--off]="!p.activo"
+                    [class.mp-row--drop]="politicaDropId() === p.id">
+                    <td class="px-2 py-2 text-center">
+                      <div class="inline-flex items-center gap-1.5">
+                        <span class="mp-drag" [class.mp-drag--off]="reorderPoliticasBloqueado()"
+                          title="Arrastrar para reordenar" aria-hidden="true">⠿</span>
+                        <span>{{ p.orden }}</span>
+                      </div>
+                    </td>
+                    <td class="px-2 py-2 mp-code text-xs">{{ p.codigo }}</td>
+                    <td class="px-2 py-2">
+                      <span class="block font-medium">{{ p.nombre }}</span>
+                      @if (p.descripcion) {
+                        <span class="block text-xs text-primary-light">{{ p.descripcion }}</span>
+                      }
+                    </td>
+                    <td class="px-2 py-2 text-center">
+                      <div class="inline-flex items-center justify-center gap-2">
+                        <label class="relative inline-flex items-center cursor-pointer"
+                          [title]="p.activo ? 'Política activa' : 'Política inactiva'">
+                          <input type="checkbox" class="sr-only peer" [checked]="p.activo"
+                            (change)="cambiarActivoPolitica(p, $any($event.target).checked)"
+                            [attr.aria-label]="'Activar política ' + p.nombre" />
+                          <span class="w-9 h-5 rounded-full transition-colors bg-gray-light peer-checked:bg-accent-gold
+                            peer-focus:outline-none peer-focus:ring-2 ring-primary"></span>
+                          <span class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-md
+                            transition-transform peer-checked:translate-x-4"></span>
+                        </label>
+                        <span class="mp-badge" [class.mp-badge--off]="!p.activo">
+                          {{ p.activo ? 'Activa' : 'Inactiva' }}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="px-2 py-2 text-center whitespace-nowrap">
+                      <div class="inline-flex items-center gap-1">
+                        <button type="button" (click)="abrirModalEditarPolitica(p)"
+                          class="p-1.5 rounded-md bg-primary text-white hover:opacity-90"
+                          [attr.aria-label]="'Editar política ' + p.nombre" title="Editar política">
+                          <app-custom-icon name="square-pen" color="#ffffff" [size]="14"></app-custom-icon>
+                        </button>
+                        <button type="button" (click)="abrirModalEliminarPolitica(p)"
+                          class="p-1.5 rounded-md bg-danger text-white hover:opacity-90"
+                          [attr.aria-label]="'Eliminar política ' + p.nombre" title="Eliminar política">
+                          <app-custom-icon name="trash-2" color="#ffffff" [size]="14"></app-custom-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="flex min-h-48 items-center justify-center text-sm text-primary-light">
+          Seleccione un módulo para ver sus políticas.
+        </div>
+      }
+    </section>
+  </div>
+
+  <div class="px-4 py-2 border-t border-primary-light bg-hover/40">
+    <p class="text-[0.7rem] text-primary-light">
+      Arrastre un módulo o una política para cambiar su orden.
+      Cada cambio se guarda con autorización por PIN y el listado se recarga.
+    </p>
+  </div>
+</div>
+
+<!-- MODAL UPSERT MÓDULO -->
+<div #upsertModuloModal id="hs-upsert-modulo"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+  role="dialog" tabindex="-1" aria-labelledby="hs-upsert-modulo-label">
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-xl sm:w-full m-3 sm:mx-auto">
+    <div class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+      <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+        <h3 id="hs-upsert-modulo-label" class="font-bold text-primary-dark">{{ tituloModalModulo() }}</h3>
+        <button type="button" (click)="cerrarModalesModulo()"
+          class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+          aria-label="Cerrar">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto">
+        <app-upsert-config-modulo
+          [modulo]="moduloEdit()"
+          [nuevo]="nuevoModulo()"
+          [isLoading]="guardandoModulo()"
+          [ordenSugerido]="ordenSugerido()"
+          [formKey]="formKeyModulo()"
+          (save)="guardarModulo($event)"
+          (cancel)="cerrarModalesModulo()" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ELIMINAR MÓDULO -->
+<div #deleteModuloModal id="hs-delete-modulo"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+  role="dialog" tabindex="-1" aria-labelledby="hs-delete-modulo-label">
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
+    <div class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+      <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+        <h3 id="hs-delete-modulo-label" class="font-bold text-primary-dark">Eliminar módulo</h3>
+        <button type="button" (click)="cerrarModalesModulo()"
+          class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+          aria-label="Cerrar">✕</button>
+      </div>
+      <div class="p-4">
+        <div class="text-sm rounded-lg p-4 bg-danger/10 text-primary-dark" role="alert">
+          ¿Está seguro de eliminar el módulo
+          <strong>{{ moduloEdit()?.nombre }}</strong>
+          (<span class="mp-code">{{ moduloEdit()?.codigo }}</span>)?
+          <p class="mt-2 text-xs text-primary-light">
+            Se desactiva y se oculta del catálogo. Si tiene políticas activas, el
+            sistema rechazará la eliminación.
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-primary-light">
+        <button type="button" (click)="cerrarModalesModulo()" [disabled]="guardandoModulo()"
+          class="py-2 px-3 text-sm rounded-lg bg-white border border-primary-light disabled:opacity-50">
+          Cancelar
+        </button>
+        <button type="button" (click)="eliminarModulo()" [disabled]="guardandoModulo()"
+          class="py-2 px-3 text-sm rounded-lg text-white bg-danger disabled:opacity-50">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UPSERT POLÍTICA -->
+<div #upsertPoliticaModal id="hs-upsert-politica"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+  role="dialog" tabindex="-1" aria-labelledby="hs-upsert-politica-label">
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-xl sm:w-full m-3 sm:mx-auto">
+    <div class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+      <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+        <h3 id="hs-upsert-politica-label" class="font-bold text-primary-dark">{{ tituloModalPolitica() }}</h3>
+        <button type="button" (click)="cerrarModalesPolitica()"
+          class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+          aria-label="Cerrar">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto">
+        <app-upsert-config-politica
+          [politica]="politicaEdit()"
+          [nuevo]="nuevaPolitica()"
+          [isLoading]="guardandoPolitica()"
+          [modulos]="modulos()"
+          [politicas]="politicas()"
+          [moduloIdInicial]="moduloSeleccionadoId()"
+          [formKey]="formKeyPolitica()"
+          (save)="guardarPolitica($event)"
+          (cancel)="cerrarModalesPolitica()" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ELIMINAR POLÍTICA -->
+<div #deletePoliticaModal id="hs-delete-politica"
+  class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+  role="dialog" tabindex="-1" aria-labelledby="hs-delete-politica-label">
+  <div
+    class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
+    <div class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
+      <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
+        <h3 id="hs-delete-politica-label" class="font-bold text-primary-dark">Eliminar política</h3>
+        <button type="button" (click)="cerrarModalesPolitica()"
+          class="size-8 inline-flex justify-center items-center rounded-full bg-hover"
+          aria-label="Cerrar">✕</button>
+      </div>
+      <div class="p-4">
+        <div class="text-sm rounded-lg p-4 bg-danger/10 text-primary-dark" role="alert">
+          ¿Está seguro de eliminar la política
+          <strong>{{ politicaEdit()?.nombre }}</strong>
+          (<span class="mp-code">{{ politicaEdit()?.codigo }}</span>)?
+          <p class="mt-2 text-xs text-primary-light">
+            Se desactiva y se oculta del catálogo. Si tiene parámetros activos, el
+            sistema rechazará la eliminación. Las políticas posteriores del módulo
+            bajan una posición.
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-primary-light">
+        <button type="button" (click)="cerrarModalesPolitica()" [disabled]="guardandoPolitica()"
+          class="py-2 px-3 text-sm rounded-lg bg-white border border-primary-light disabled:opacity-50">
+          Cancelar
+        </button>
+        <button type="button" (click)="eliminarPolitica()" [disabled]="guardandoPolitica()"
+          class="py-2 px-3 text-sm rounded-lg text-white bg-danger disabled:opacity-50">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AUTORIZACIÓN -->
+<app-modal-autorizacion
+  [permisoCodigo]="autorizacionService.datosAutorizacion()?.permisoCodigo || ''"
+  [permisoId]="autorizacionService.datosAutorizacion()?.permisoId || ''"
+  [isLoading]="autorizacionService.procesando()"
+  (confirm)="autorizacionService.confirmarAutorizacion($event)"
+  (cancel)="autorizacionService.cerrarModal()" />

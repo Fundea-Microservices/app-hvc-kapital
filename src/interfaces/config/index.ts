@@ -51,3 +51,77 @@ export interface ICarouselSlide {
   /** Fuente ya resuelta (ej. objectURL de un archivo local). Tiene prioridad sobre fotoUrl. */
   imagenSrc?: string | null;
 }
+
+// ============================================================================
+// MÓDULOS Y POLÍTICAS DE CONFIGURACIÓN (auth.ConfigModulo / auth.ConfigPolitica)
+// ============================================================================
+
+/** Módulo de primer nivel que agrupa políticas de configuración. */
+export interface IConfigModulo {
+  id: string;
+  /** Código natural en mayúsculas (ej. MOD_CREDITOS). */
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+  /** Orden global del listado (1-based en la práctica). */
+  orden: number;
+  /** UUID de Menu reservado; el backend no lo valida. */
+  menuId?: string | null;
+  activo: boolean;
+  created_at: string;
+  updated_at?: string | null;
+  deleted_at?: string | null;
+  /** Solo llega en GET /config/modulos/:id (políticas activas). */
+  politicas?: IConfigPolitica[];
+}
+
+/** Política de segundo nivel; pertenece a un único módulo. */
+export interface IConfigPolitica {
+  id: string;
+  moduloId: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+  /** Orden dentro de su módulo. */
+  orden: number;
+  activo: boolean;
+  /** Relación incluida por el backend en listados y detalle. */
+  modulo?: IConfigModulo;
+  created_at: string;
+  updated_at?: string | null;
+  deleted_at?: string | null;
+}
+
+/** Campos aceptados por POST /config/modulos (el backend normaliza el código). */
+export interface ConfigModuloPayload {
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+  orden?: number;
+  menuId?: string | null;
+  activo?: boolean;
+}
+
+/** Campos aceptados por POST /config/politicas. */
+export interface ConfigPoliticaPayload {
+  moduloId: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string | null;
+  orden?: number;
+  activo?: boolean;
+}
+
+/** Body de PATCH /config/modulos/reorder y /config/politicas/reorder. */
+export interface ReorderConfigDto {
+  id: string;
+  nuevoOrden: number;
+}
+
+/** Respuesta de GET /config/politicas/:politicaId/modulo. */
+export interface IConfigPoliticaModulo {
+  politicaId: string;
+  moduloId: string;
+  modulo: IConfigModulo;
+}
+
