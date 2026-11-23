@@ -3,20 +3,32 @@ name: "Deploy Frontend (Angular + nginx)"
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      runner-tag:
+        description: "Etiqueta específica del runner (ej. develop o production)"
+        required: true
+        type: string
+      deploy-dir:
+        description: "Ruta absoluta donde nginx sirve los archivos estáticos"
+        required: true
+        type: string
+      environment-name:
+        description: "Nombre del GitHub Environment (ej. development o production)"
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   deploy-frontend:
-    name: "Desplegar Frontend (Angular)"
-    runs-on: [self-hosted, Linux, X64]
+    name: "Desplegar Frontend (${{ inputs.environment-name }})"
+    # GitHub Actions exige que el runner tenga TODAS las etiquetas de la lista.
+    # Esto garantiza aislamiento total entre desarrollotrans y Fundea_pro.
+    runs-on: [self-hosted, Linux, X64, "${{ inputs.runner-tag }}"]
+    environment: ${{ inputs.environment-name }}
     env:
-      # Debe coincidir EXACTAMENTE con la directiva `root` de nginx:
-      #   root /var/www/ProyectosFundea/hvc-kapital/app/app-hvc-kapital/browser;
-      DEPLOY_DIR: /var/www/ProyectosFundea/hvc-kapital/app/app-hvc-kapital/browser
-      # Salida real del build de Angular 21 (@angular/build:application):
-      # los estáticos quedan en dist/<nombre-proyecto>/browser/.
+      DEPLOY_DIR: ${{ inputs.deploy-dir }}
       DIST_DIR: dist/app-hvc-kapital
     steps:
       # ──────────────────────────────────────────────────────
