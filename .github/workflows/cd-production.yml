@@ -1,0 +1,30 @@
+name: "CD Production - Pipeline (Frontend)"
+
+on:
+  push:
+    branches: [ "production" ]
+  # Permite lanzar el pipeline completo a mano desde la pestaña Actions
+  workflow_dispatch:
+
+# Evita dos despliegues simultáneos sobre el mismo directorio de nginx.
+# Los despliegues se encolan en lugar de pisarse.
+concurrency:
+  group: cd-production-frontend
+  cancel-in-progress: false
+
+jobs:
+  # 1. Mandar a llamar al flujo de seguridad
+  ejecutar-seguridad:
+    name: "Validaciones de Seguridad"
+    uses: ./.github/workflows/security-scan.yml
+
+  # 2. Si el escaneo es exitoso, proceder con el despliegue del Frontend
+  desplegar-frontend:
+    name: "Despliegue del Frontend"
+    needs: ejecutar-seguridad
+    uses: ./.github/workflows/deploy-frontend.yml
+    with:
+      runner-tag: "production"
+      deploy-dir: "/opt/fundea/app-hvc-kapital"
+      environment-name: "production"
+    
