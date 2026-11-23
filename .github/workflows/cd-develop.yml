@@ -24,7 +24,7 @@ jobs:
     needs: ejecutar-seguridad
     uses: ./.github/workflows/deploy-frontend.yml
     with:
-      runner-tag: "develop"
+      runner-tag: "development"
       deploy-dir: "/var/www/ProyectosFundea/hvc-kapital/app/app-hvc-kapital/browser"
       environment-name: "development"
     
