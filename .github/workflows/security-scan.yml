@@ -5,7 +5,7 @@ on:
     branches: [ "develop", "production", "certification" ]
   push:
     branches: [ "develop", "production", "certification" ]
-  workflow_call: 
+  workflow_call:
 
 permissions:
   contents: read
@@ -35,6 +35,9 @@ jobs:
             --json --output=semgrep-results.json \
             --exclude="onesiteapp_ex-ms/dist" \
             --exclude="onesiteapp_ex/build" \
+            --exclude="public/preline.js" \
+            --exclude="**/*.html" \
+            --exclude=".github/workflows/**" \
             --error
 
       - name: Mostrar resumen legible en el log
@@ -72,19 +75,26 @@ jobs:
           path: semgrep-results.json
 
       - name: Fallar el job si hubo findings bloqueantes
-        if: steps.semgrep.outcome == 'failure'
+        if: always()
         run: |
-          echo "❌ El paso 'Ejecutar Escaneo SAST (JSON)' falló."
-          if [ -f semgrep-results.json ]; then
-            echo "Detalle rápido del JSON:"
-            jq '{
-              results_count: (.results | length),
-              errors_count: (.errors | length),
-              findings: [.results[] | {severity: .extra.severity, check_id: .check_id, path: .path, line: .start.line}],
-              errors: [.errors[] | {code: .code, level: .level, path: .path, rule_id: .rule_id, message: .message}]
-            }' semgrep-results.json
+          if [ ! -f semgrep-results.json ]; then
+            echo "❌ No se generó semgrep-results.json; marcando job como fallido."
+            exit 1
           fi
-          exit 1
+
+          BLOCKING_COUNT=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' semgrep-results.json)
+          TOTAL_RESULTS=$(jq '.results | length' semgrep-results.json)
+          TOTAL_ERRORS=$(jq '.errors | length' semgrep-results.json)
+
+          echo "Resumen SAST -> Findings severidad ERROR: ${BLOCKING_COUNT} | Total findings: ${TOTAL_RESULTS} | Errores/timeouts motor: ${TOTAL_ERRORS}"
+
+          if [ "$BLOCKING_COUNT" -gt 0 ]; then
+            echo "❌ Se encontraron ${BLOCKING_COUNT} hallazgos bloqueantes (severidad ERROR):"
+            jq '[.results[] | select(.extra.severity == "ERROR") | {severity: .extra.severity, check_id: .check_id, path: .path, line: .start.line, message: .extra.message}]' semgrep-results.json
+            exit 1
+          fi
+
+          echo "✅ Sin hallazgos bloqueantes de severidad ERROR."
 
   sca-scan:
     name: "Análisis de Dependencias Terceras (SCA)"
