@@ -1,0 +1,18 @@
+/* Campos de Fechas y Cierre bloqueados: mismo tratamiento suave del prototipo
+   (docs/index.html → .field-input.date-locked). */
+.cg-date-locked {
+  border-color: #e2e8f0;
+  background-color: #f8fafc;
+  color: #334155;
+  cursor: not-allowed;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.cg-date-locked:hover {
+  background-color: rgba(241, 245, 249, 0.85);
+}
+
+.cg-date-locked:focus {
+  outline: none;
+  box-shadow: none;
+}

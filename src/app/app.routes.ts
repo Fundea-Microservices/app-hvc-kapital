@@ -51,6 +51,10 @@ export const routes: Routes = [
                         loadComponent: () => import('./auth/pages/configuraciones-page/configuraciones-page'),
                     },
                     {
+                        path: 'configuracion-general',
+                        loadComponent: () => import('./auth/pages/config-general-page/config-general-page'),
+                    },
+                    {
                         path: 'modulos-politicas',
                         loadComponent: () => import('./config/pages/modulos-politicas-page/modulos-politicas-page'),
                     },
