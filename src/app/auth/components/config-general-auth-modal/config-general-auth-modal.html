@@ -1,0 +1,122 @@
+@if (visible()) {
+  <div
+    class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cg-auth-title"
+    tabindex="-1"
+    (keydown)="onKeydown($event)"
+    (click)="onBackdropClick($event)">
+
+    <div
+      class="w-full max-w-[460px] bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="px-6 pt-5 pb-4 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-11 rounded-full bg-orange-50 text-accent-orange flex items-center justify-center shrink-0">
+            <app-custom-icon name="shield-check" [size]="24" />
+          </div>
+          <div>
+            <h2 id="cg-auth-title" class="text-[17px] font-bold text-primary-dark tracking-tight">
+              Autorización Requerida
+            </h2>
+            <p class="text-xs text-primary-light mt-0.5">Ingrese el código de autorización</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="size-8 rounded-full bg-hover text-primary-light hover:bg-slate-200 hover:text-primary flex items-center justify-center"
+          aria-label="Cerrar modal de autorización">
+          <app-custom-icon name="x" [size]="16" />
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="p-6 flex flex-col gap-4">
+          <div class="bg-orange-50/70 border border-orange-200/70 rounded-xl px-4 py-3.5">
+            <p class="text-[13px] font-medium text-primary leading-snug">
+              La acción requiere autorización de un usuario autorizado.
+            </p>
+            @if (permisoCodigo()) {
+              <div class="mt-2 flex items-center gap-2">
+                <span class="text-[11px] text-primary-light">Permiso:</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-accent-orange/15 text-accent-orange text-[11px] font-semibold">
+                  {{ permisoCodigo() }}
+                </span>
+              </div>
+            }
+          </div>
+
+          <div>
+            <label for="cg-auth-code" class="block text-[13px] font-semibold text-primary-dark mb-1.5">
+              Código de Autorización
+            </label>
+            <div class="relative">
+              <input
+                id="cg-auth-code"
+                [type]="showCode() ? 'text' : 'password'"
+                formControlName="auth_code"
+                placeholder="••••••"
+                autocomplete="new-password"
+                autocapitalize="off"
+                spellcheck="false"
+                class="w-full pl-4 pr-11 py-2.5 rounded-lg border text-sm tracking-wider font-mono text-primary-dark
+                       focus:outline-none focus:ring-2 focus:ring-accent-orange/50 focus:border-accent-orange"
+                [class.border-danger]="invalido || errorMessage()"
+                [class.border-slate-300]="!invalido && !errorMessage()"
+                [class.bg-danger-50]="invalido || errorMessage()" />
+              <button
+                type="button"
+                (click)="toggleCode()"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 text-primary-light hover:text-primary"
+                [attr.aria-label]="showCode() ? 'Ocultar código de autorización' : 'Mostrar código de autorización'">
+                <app-custom-icon [name]="showCode() ? 'eye-off' : 'eye'" [size]="18" />
+              </button>
+            </div>
+
+            @if (invalido) {
+              <div class="mt-1.5 text-[11px] text-danger space-y-0.5">
+                @if (control?.errors?.['required']) { <p>El código es requerido.</p> }
+                @if (control?.errors?.['minlength']) { <p>Mínimo 3 caracteres.</p> }
+                @if (control?.errors?.['maxlength']) { <p>Máximo 10 caracteres.</p> }
+                @if (control?.errors?.['pattern']) { <p>Solo se permiten caracteres alfanuméricos.</p> }
+              </div>
+            }
+
+            @if (errorMessage()) {
+              <p class="mt-1.5 text-[11px] font-medium text-danger">{{ errorMessage() }}</p>
+            }
+
+            <p class="mt-1.5 text-[11px] text-slate-400">
+              El código lo proporciona un supervisor autorizado. No se almacena en el navegador.
+            </p>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            (click)="onCancel()"
+            [disabled]="isLoading()"
+            class="px-4 py-2 text-[13px] font-medium rounded-md bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 disabled:opacity-40">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isLoading()"
+            class="px-5 py-2 text-[13px] font-medium rounded-lg bg-accent-peach text-white hover:bg-accent-orange inline-flex items-center gap-2 disabled:opacity-60">
+            @if (isLoading()) {
+              <span class="size-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin"></span>
+            } @else {
+              <app-custom-icon name="shield-check" [size]="16" color="#ffffff" />
+            }
+            Confirmar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

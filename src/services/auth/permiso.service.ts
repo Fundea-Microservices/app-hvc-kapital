@@ -5,10 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ApiResponse } from '../../interfaces/api-response';
 import { IPermiso } from '../../interfaces/auth';
+import { MisPermisosData } from '../../interfaces/config-general';
 
 // Tipos específicos para las respuestas del servicio
 type PermisoResponse = ApiResponse<IPermiso>;
 type PermisoListResponse = ApiResponse<IPermiso[]>;
+type MisPermisosResponse = ApiResponse<MisPermisosData>;
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +59,27 @@ export class PermisoService extends HttpService {
     } catch (error: any) {
       console.log("🚀 ~ PermisoService ~ getPermiso ~ error:", error);
       this.toastr.error(error?.error?.message || 'Error al obtener permiso', 'Error');
+      return null;
+    }
+  }
+
+  /**
+   * GET /auth/permisos/mis-permisos — permisos efectivos del usuario del token.
+   * No requiere @RequirePermissions: solo JWT válido.
+   */
+  async getMisPermisos(): Promise<MisPermisosData | null> {
+    try {
+      const resp = await firstValueFrom(
+        this.get<MisPermisosResponse>('/auth/permisos/mis-permisos')
+      );
+      if (resp.body?.success) return resp.body.data;
+      return null;
+    } catch (error: any) {
+      console.log('🚀 ~ PermisoService ~ getMisPermisos ~ error:', error);
+      this.toastr.error(
+        error?.error?.message || 'Error al obtener los permisos del usuario',
+        'Error'
+      );
       return null;
     }
   }

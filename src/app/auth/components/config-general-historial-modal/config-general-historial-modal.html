@@ -1,0 +1,224 @@
+@if (visible()) {
+  <div
+    class="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cg-history-title"
+    tabindex="-1"
+    (keydown)="onKeydown($event)"
+    (click)="onBackdropClick($event)">
+
+    <div
+      class="w-full max-w-5xl max-h-[92vh] bg-white rounded-xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between gap-4 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="size-10 rounded-lg bg-primary/5 border border-primary/10 text-primary flex items-center justify-center shrink-0">
+            <app-custom-icon name="history" [size]="20" />
+          </div>
+          <div>
+            <h2 id="cg-history-title" class="text-base font-semibold text-primary">Historial de Auditoría</h2>
+            <p class="text-[11px] text-primary-light mt-0.5">
+              Trazabilidad de cambios de la Configuración General
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="cerrar()"
+          class="text-primary-light hover:text-primary p-1"
+          aria-label="Cerrar historial">
+          <app-custom-icon name="x" [size]="20" />
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <form
+        [formGroup]="filtros"
+        (ngSubmit)="aplicar()"
+        class="px-6 py-4 bg-slate-50/60 border-b border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 shrink-0">
+
+        <div class="lg:col-span-2">
+          <label for="cg-h-busqueda" class="block text-[11px] font-medium text-slate-600 mb-1">Búsqueda</label>
+          <input
+            id="cg-h-busqueda"
+            type="text"
+            formControlName="busqueda"
+            placeholder="Usuario, justificación, IP..."
+            class="w-full text-xs rounded-md border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent" />
+        </div>
+
+        <div>
+          <label for="cg-h-accion" class="block text-[11px] font-medium text-slate-600 mb-1">Acción</label>
+          <select
+            id="cg-h-accion"
+            formControlName="accion"
+            class="w-full text-xs rounded-md border border-slate-300 px-2 py-2 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent">
+            <option value="">Todas</option>
+            @for (a of acciones; track a) {
+              <option [value]="a">{{ etiquetaAccion(a) }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="cg-h-origen" class="block text-[11px] font-medium text-slate-600 mb-1">Origen</label>
+          <select
+            id="cg-h-origen"
+            formControlName="origen"
+            class="w-full text-xs rounded-md border border-slate-300 px-2 py-2 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent">
+            <option value="">Todos</option>
+            @for (o of origenes; track o) {
+              <option [value]="o">{{ etiquetaOrigen(o) }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="cg-h-desde" class="block text-[11px] font-medium text-slate-600 mb-1">Desde</label>
+          <input
+            id="cg-h-desde"
+            type="date"
+            formControlName="fechaDesde"
+            class="w-full text-xs rounded-md border border-slate-300 px-2 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent" />
+        </div>
+
+        <div>
+          <label for="cg-h-hasta" class="block text-[11px] font-medium text-slate-600 mb-1">Hasta</label>
+          <input
+            id="cg-h-hasta"
+            type="date"
+            formControlName="fechaHasta"
+            class="w-full text-xs rounded-md border border-slate-300 px-2 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent" />
+        </div>
+
+        <div class="lg:col-span-2">
+          <label for="cg-h-campo" class="block text-[11px] font-medium text-slate-600 mb-1">Campo modificado</label>
+          <select
+            id="cg-h-campo"
+            formControlName="campoModificado"
+            class="w-full text-xs rounded-md border border-slate-300 px-2 py-2 text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-accent-orange focus:border-transparent">
+            <option value="">Todos los campos</option>
+            @for (c of campos; track c.campo) {
+              <option [value]="c.campo">{{ c.etiqueta }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="lg:col-span-4 flex items-end justify-end gap-2">
+          <button
+            type="button"
+            (click)="limpiar()"
+            [disabled]="loading()"
+            class="px-3 py-2 text-xs font-medium rounded-md bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 disabled:opacity-40">
+            Limpiar
+          </button>
+          <button
+            type="submit"
+            [disabled]="loading()"
+            class="px-3 py-2 text-xs font-medium rounded-md text-white bg-primary hover:bg-primary-dark inline-flex items-center gap-1.5 disabled:opacity-60">
+            <app-custom-icon name="search" [size]="14" color="#ffffff" />
+            Filtrar
+          </button>
+        </div>
+      </form>
+
+      <!-- Listado -->
+      <div class="flex-1 overflow-y-auto p-6 bg-slate-50/40 min-h-[220px]">
+
+        @if (loading()) {
+          <div class="h-full min-h-[220px] flex flex-col items-center justify-center gap-3 text-primary-light">
+            <span class="size-7 rounded-full border-2 border-slate-200 border-t-accent-orange animate-spin"></span>
+            <span class="text-xs">Cargando historial...</span>
+          </div>
+        } @else if (eventos().length === 0) {
+          <div class="h-full min-h-[220px] flex flex-col items-center justify-center gap-2 text-center">
+            <app-custom-icon name="inbox" [size]="36" color="#95A2BB" />
+            <p class="text-sm font-medium text-primary">Sin registros de auditoría</p>
+            <p class="text-xs text-primary-light">Ajuste los filtros o verifique más tarde.</p>
+          </div>
+        } @else {
+          <div class="flex flex-col gap-3">
+            @for (e of eventos(); track e.id) {
+              <article class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                <header class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-semibold uppercase tracking-wide" [class]="claseAccion(e.accion)">
+                      {{ etiquetaAccion(e.accion) }}
+                    </span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[10px] font-medium text-slate-600">
+                      {{ etiquetaOrigen(e.origen) }}
+                    </span>
+                    @if (e.bitacoraAutorizacionId) {
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-emerald-200 bg-emerald-50 text-[10px] font-medium text-emerald-700">
+                        <app-custom-icon name="shield-check" [size]="11" color="#047857" />
+                        Con autorización
+                      </span>
+                    }
+                  </div>
+                  <time class="text-[11px] text-slate-500 font-medium">
+                    {{ e.created_at | tzDate: 'dd/MM/yyyy HH:mm' }}
+                  </time>
+                </header>
+
+                <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600">
+                  <span class="inline-flex items-center gap-1">
+                    <app-custom-icon name="user" [size]="12" color="#64748b" />
+                    {{ e.usuario?.nombreCompleto || 'Sistema' }}
+                  </span>
+                  <span class="inline-flex items-center gap-1">
+                    <app-custom-icon name="monitor" [size]="12" color="#64748b" />
+                    IP: {{ e.estacionIp || '—' }}
+                  </span>
+                  @if (e.usuario?.userName) {
+                    <span class="text-slate-400">&#64;{{ e.usuario?.userName }}</span>
+                  }
+                </div>
+
+                @if (e.justificacion) {
+                  <p class="mt-2.5 text-[11px] text-slate-600 bg-slate-50 border-l-2 border-accent-orange/60 rounded-r px-3 py-2">
+                    <span class="font-semibold text-slate-700">Justificación: </span>{{ e.justificacion }}
+                  </p>
+                }
+
+                @if (diffsDe(e).length > 0) {
+                  <div class="mt-2.5 border border-slate-200 rounded-md overflow-hidden">
+                    @for (d of diffsDe(e); track d.campo) {
+                      <div class="px-3 py-1.5 flex items-center justify-between gap-3 text-[11px] border-b border-slate-100 last:border-b-0">
+                        <span class="font-medium text-slate-600 shrink-0">{{ d.etiqueta }}:</span>
+                        <span class="flex items-center gap-1.5 min-w-0 text-right">
+                          <span class="text-slate-400 line-through truncate max-w-[160px]" [title]="d.anterior">{{ d.anterior }}</span>
+                          <span class="text-slate-400">&rarr;</span>
+                          <span class="text-emerald-700 font-semibold truncate max-w-[180px]" [title]="d.nuevo">{{ d.nuevo }}</span>
+                        </span>
+                      </div>
+                    }
+                  </div>
+                } @else if (camposDe(e).length > 0) {
+                  <p class="mt-2 text-[11px] text-slate-500">
+                    Campos: {{ camposDe(e).length }} registrados sin snapshot disponible.
+                  </p>
+                } @else {
+                  <p class="mt-2 text-[11px] italic text-slate-400">Registro inicial sin cambios previos.</p>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-3 border-t border-slate-100 bg-white flex items-center justify-between gap-4 shrink-0">
+        <span class="text-[11px] text-slate-500">
+          {{ pagination().totalItems }} registro(s) · página {{ pagination().page }}
+        </span>
+        <app-pagination
+          [paginationObj]="pagination()"
+          [showText]="false"
+          (changePage)="onChangePage($event)" />
+      </div>
+    </div>
+  </div>
+}
