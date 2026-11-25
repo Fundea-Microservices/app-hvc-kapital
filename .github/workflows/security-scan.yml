@@ -41,8 +41,28 @@ jobs:
         if: always()
         run: |
           echo "## Hallazgos Semgrep" >> $GITHUB_STEP_SUMMARY
-          jq -r '.results[] | "- **\(.check_id)** en `\(.path):\(.start.line)` — \(.extra.message)"' \
-            semgrep-results.json >> $GITHUB_STEP_SUMMARY
+          if [ -f semgrep-results.json ]; then
+            RESULTS_COUNT=$(jq '.results | length' semgrep-results.json)
+            ERRORS_COUNT=$(jq '.errors | length' semgrep-results.json)
+
+            echo "📊 Resultados: ${RESULTS_COUNT} findings | ${ERRORS_COUNT} errores/timeouts en Semgrep"
+            echo "- Findings en \`.results\`: **${RESULTS_COUNT}**" >> $GITHUB_STEP_SUMMARY
+            echo "- Errores/timeouts en \`.errors\`: **${ERRORS_COUNT}**" >> $GITHUB_STEP_SUMMARY
+
+            if [ "$RESULTS_COUNT" -gt 0 ]; then
+              jq -r '.results[] | "- [\(.extra.severity)] **\(.check_id)** en `\(.path):\(.start.line)` — \(.extra.message)"' \
+                semgrep-results.json | tee -a $GITHUB_STEP_SUMMARY
+            fi
+
+            if [ "$ERRORS_COUNT" -gt 0 ]; then
+              echo "### Errores o timeouts de Semgrep" >> $GITHUB_STEP_SUMMARY
+              jq -r '.errors[] | "- [code \(.code) / \(.level)] en `\(.path // "general")` (\(.rule_id // "sin-regla")): \(.message)"' \
+                semgrep-results.json | tee -a $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ No se encontró semgrep-results.json"
+            echo "⚠️ No se generó semgrep-results.json." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Publicar resultados SAST (JSON)
         if: always()
@@ -53,7 +73,18 @@ jobs:
 
       - name: Fallar el job si hubo findings bloqueantes
         if: steps.semgrep.outcome == 'failure'
-        run: exit 1
+        run: |
+          echo "❌ El paso 'Ejecutar Escaneo SAST (JSON)' falló."
+          if [ -f semgrep-results.json ]; then
+            echo "Detalle rápido del JSON:"
+            jq '{
+              results_count: (.results | length),
+              errors_count: (.errors | length),
+              findings: [.results[] | {severity: .extra.severity, check_id: .check_id, path: .path, line: .start.line}],
+              errors: [.errors[] | {code: .code, level: .level, path: .path, rule_id: .rule_id, message: .message}]
+            }' semgrep-results.json
+          fi
+          exit 1
 
   sca-scan:
     name: "Análisis de Dependencias Terceras (SCA)"
