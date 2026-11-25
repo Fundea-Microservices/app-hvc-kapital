@@ -40,12 +40,12 @@ export class DominioService extends HttpService {
       if (resp.body?.success) return resp.body.data ?? [];
       return null;
     } catch (error: any) {
-      console.log(`🚀 ~ DominioService ~ getValoresPorCodigo(${codigo}) ~ error:`, error);
+      console.error('DominioService.getValoresPorCodigo error:', { codigo, error });
       this.toastr.error(
         error?.error?.message || `Error al obtener los valores del dominio ${codigo}`,
         'Error'
       );
       return null;
-    }
   }
+}
 }
