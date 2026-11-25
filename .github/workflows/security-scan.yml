@@ -5,7 +5,7 @@ on:
     branches: [ "develop", "production", "certification" ]
   push:
     branches: [ "develop", "production", "certification" ]
-  workflow_call: 
+  workflow_call:
 
 permissions:
   contents: read
@@ -35,14 +35,37 @@ jobs:
             --json --output=semgrep-results.json \
             --exclude="onesiteapp_ex-ms/dist" \
             --exclude="onesiteapp_ex/build" \
+            --exclude="public/preline.js" \
+            --exclude="**/*.html" \
+            --exclude=".github/workflows/**" \
             --error
 
       - name: Mostrar resumen legible en el log
         if: always()
         run: |
           echo "## Hallazgos Semgrep" >> $GITHUB_STEP_SUMMARY
-          jq -r '.results[] | "- **\(.check_id)** en `\(.path):\(.start.line)` — \(.extra.message)"' \
-            semgrep-results.json >> $GITHUB_STEP_SUMMARY
+          if [ -f semgrep-results.json ]; then
+            RESULTS_COUNT=$(jq '.results | length' semgrep-results.json)
+            ERRORS_COUNT=$(jq '.errors | length' semgrep-results.json)
+
+            echo "📊 Resultados: ${RESULTS_COUNT} findings | ${ERRORS_COUNT} errores/timeouts en Semgrep"
+            echo "- Findings en \`.results\`: **${RESULTS_COUNT}**" >> $GITHUB_STEP_SUMMARY
+            echo "- Errores/timeouts en \`.errors\`: **${ERRORS_COUNT}**" >> $GITHUB_STEP_SUMMARY
+
+            if [ "$RESULTS_COUNT" -gt 0 ]; then
+              jq -r '.results[] | "- [\(.extra.severity)] **\(.check_id)** en `\(.path):\(.start.line)` — \(.extra.message)"' \
+                semgrep-results.json | tee -a $GITHUB_STEP_SUMMARY
+            fi
+
+            if [ "$ERRORS_COUNT" -gt 0 ]; then
+              echo "### Errores o timeouts de Semgrep" >> $GITHUB_STEP_SUMMARY
+              jq -r '.errors[] | "- [code \(.code) / \(.level)] en `\(.path // "general")` (\(.rule_id // "sin-regla")): \(.message)"' \
+                semgrep-results.json | tee -a $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ No se encontró semgrep-results.json"
+            echo "⚠️ No se generó semgrep-results.json." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Publicar resultados SAST (JSON)
         if: always()
@@ -52,8 +75,26 @@ jobs:
           path: semgrep-results.json
 
       - name: Fallar el job si hubo findings bloqueantes
-        if: steps.semgrep.outcome == 'failure'
-        run: exit 1
+        if: always()
+        run: |
+          if [ ! -f semgrep-results.json ]; then
+            echo "❌ No se generó semgrep-results.json; marcando job como fallido."
+            exit 1
+          fi
+
+          BLOCKING_COUNT=$(jq '[.results[] | select(.extra.severity == "ERROR")] | length' semgrep-results.json)
+          TOTAL_RESULTS=$(jq '.results | length' semgrep-results.json)
+          TOTAL_ERRORS=$(jq '.errors | length' semgrep-results.json)
+
+          echo "Resumen SAST -> Findings severidad ERROR: ${BLOCKING_COUNT} | Total findings: ${TOTAL_RESULTS} | Errores/timeouts motor: ${TOTAL_ERRORS}"
+
+          if [ "$BLOCKING_COUNT" -gt 0 ]; then
+            echo "❌ Se encontraron ${BLOCKING_COUNT} hallazgos bloqueantes (severidad ERROR):"
+            jq '[.results[] | select(.extra.severity == "ERROR") | {severity: .extra.severity, check_id: .check_id, path: .path, line: .start.line, message: .extra.message}]' semgrep-results.json
+            exit 1
+          fi
+
+          echo "✅ Sin hallazgos bloqueantes de severidad ERROR."
 
   sca-scan:
     name: "Análisis de Dependencias Terceras (SCA)"

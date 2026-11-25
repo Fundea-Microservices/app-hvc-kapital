@@ -52,6 +52,23 @@ jobs:
       - name: Instalar dependencias
         run: npm ci --prefer-offline --no-audit
 
+      - name: Generar environment.prod.ts con Secrets de GitHub
+        run: |
+          mkdir -p src/environments
+          API_URL="${{ secrets.FUNDEA_DEV_API_URL }}"
+          API_PREFIX="${{ secrets.FUNDEA_DEV_PREFIX }}"
+
+          # Crea o sobrescribe el archivo de producción usando los secrets
+          cat <<EOF > src/environments/environment.prod.ts
+          export const environment = {
+              production: true,
+              path: '${API_URL}',
+              apiPath: '${API_URL}${API_PREFIX}',
+              tokenCheckInterval: 5, // minutos
+              diasAtrasMovimientos: 1,
+          };
+          EOF
+
       - name: Compilar Angular (build)
         run: npx ng build --configuration=production
 

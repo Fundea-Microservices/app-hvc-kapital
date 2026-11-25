@@ -1,0 +1,431 @@
+<nav class="mb-4" aria-label="breadcrumb">
+  <ol class="flex flex-wrap text-sm text-primary-dark">
+    <li class="flex items-center">
+      <a routerLink="/dashboard" class="text-primary hover:underline">Inicio</a>
+      <span class="mx-2">></span>
+    </li>
+    <li class="flex items-center">
+      <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
+      <span class="mx-2">></span>
+    </li>
+    <li class="flex items-center text-primary-light">Configuración General</li>
+  </ol>
+</nav>
+
+@if (loading()) {
+  <div class="shadow rounded-lg border border-primary-light bg-white p-10 flex flex-col items-center justify-center gap-3">
+    <span class="size-8 rounded-full border-2 border-primary-light/40 border-t-primary animate-spin"></span>
+    <p class="text-sm text-primary-light">Cargando configuración general...</p>
+  </div>
+} @else if (!puedeVer()) {
+  <div class="shadow rounded-lg border border-primary-light bg-white p-10 flex flex-col items-center justify-center gap-2 text-center">
+    <app-custom-icon name="shield-off" [size]="40" color="#95A2BB" />
+    <h2 class="text-base font-semibold text-primary-dark">Acceso restringido</h2>
+    <p class="text-sm text-primary-light max-w-md">
+      No cuenta con el permiso <span class="font-mono">CONFIG_GENERAL_LEER</span> para consultar
+      la configuración general.
+    </p>
+  </div>
+} @else if (loadError() || !config()) {
+  <div class="shadow rounded-lg border border-primary-light bg-white p-10 flex flex-col items-center justify-center gap-3 text-center">
+    <app-custom-icon name="circle-alert" [size]="36" color="#EF4444" />
+    <h2 class="text-base font-semibold text-primary-dark">No se pudo cargar la configuración</h2>
+    <p class="text-sm text-primary-light">Verifique su conexión e intente nuevamente.</p>
+    <button type="button" (click)="cargar()" class="btn-hvc-primary px-4 py-2 text-sm rounded">
+      Reintentar
+    </button>
+  </div>
+} @else {
+  <div class="shadow rounded-lg border border-primary-light bg-white">
+    <!-- Header de la tarjeta -->
+    <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-primary-light">
+      <div>
+        <h1 class="flex items-center gap-2 text-lg font-semibold text-primary-dark">
+          <app-custom-icon name="settings-2" [size]="20"></app-custom-icon>
+          Configuración General
+        </h1>
+        <p class="mt-0.5 text-xs text-primary-light">
+          Parámetros institucionales, regulatorios y operativos del registro único.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        @if (puedeBitacora()) {
+          <button type="button" (click)="abrirHistorial()"
+            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded border border-primary-light text-primary-dark hover:bg-hover">
+            <app-custom-icon name="history" [size]="16"></app-custom-icon>
+            Historial
+          </button>
+        }
+
+      </div>
+    </div>
+
+    <!-- Aviso de solo lectura -->
+    @if (!puedeEditar()) {
+      <div class="mx-4 mt-4 flex items-start gap-2 rounded-md border border-primary-light/60 bg-hover/60 px-3 py-2 text-xs text-primary-dark">
+        <app-custom-icon name="lock" [size]="14"></app-custom-icon>
+        <span>Modo solo lectura: su usuario no tiene el permiso <span class="font-mono">CONFIG_GENERAL_EDITAR</span> o no es administrador.</span>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="solicitarGuardado()" novalidate class="px-4 py-4">
+
+      <!-- ═══ 1. DATOS GENERALES ═══ -->
+      <section>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="size-2 rounded-full bg-accent-orange"></span>
+          <h2 class="text-sm font-semibold text-primary-dark">Datos Generales</h2>
+        </div>
+
+        <fieldset [disabled]="!puedeEditar()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
+          <div>
+            <label for="codigoInterno" class="block mb-1 text-xs font-medium text-primary-dark">
+              Código interno <span class="text-danger">*</span>
+            </label>
+            <input id="codigoInterno" type="text" formControlName="codigoInterno"
+              placeholder="Ej: HVC-CORP-001" class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('codigoInterno')" />
+            @if (invalido('codigoInterno')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El código interno es obligatorio (máx. 50).</p>
+            }
+          </div>
+
+          <div class="md:col-span-1 lg:col-span-2">
+            <label for="nombreComercial" class="block mb-1 text-xs font-medium text-primary-dark">
+              Nombre comercial / Razón social <span class="text-danger">*</span>
+            </label>
+            <input id="nombreComercial" type="text" formControlName="nombreComercial"
+              placeholder="Ej: HVC Kapital Sociedad Anónima" class="w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('nombreComercial')" />
+            @if (invalido('nombreComercial')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El nombre comercial es obligatorio (máx. 150).</p>
+            }
+          </div>
+
+          <div>
+            <label for="codigoCasaCentral" class="block mb-1 text-xs font-medium text-primary-dark">
+              Código Casa Central <span class="text-danger">*</span>
+            </label>
+            <select id="codigoCasaCentral" formControlName="codigoCasaCentral"
+              class="w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('codigoCasaCentral')">
+              <option value="">Seleccione una casa central</option>
+              @for (c of casasCentrales(); track c.id) {
+                <option [value]="c.id">{{ c.codigo }} - {{ c.nombre }}</option>
+              }
+            </select>
+            @if (invalido('codigoCasaCentral')) {
+              <p class="mt-1 text-[0.7rem] text-danger">Seleccione la casa central.</p>
+            }
+          </div>
+
+          <div>
+            <label for="pais" class="block mb-1 text-xs font-medium text-primary-dark">
+              País <span class="text-danger">*</span>
+            </label>
+            <select id="pais" formControlName="pais"
+              class="w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('pais')">
+              <option value="">Seleccione un país</option>
+              @for (p of paises(); track p.id) {
+                <option [value]="p.id">{{ p.codigo }} - {{ p.nombre }}</option>
+              }
+            </select>
+            @if (invalido('pais')) {
+              <p class="mt-1 text-[0.7rem] text-danger">Seleccione el país.</p>
+            }
+          </div>
+
+          <div>
+            <label for="monedaPrincipal" class="block mb-1 text-xs font-medium text-primary-dark">
+              Moneda principal <span class="text-danger">*</span>
+            </label>
+            <select id="monedaPrincipal" formControlName="monedaPrincipal"
+              class="w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('monedaPrincipal')">
+              <option value="">Seleccione una moneda</option>
+              @for (m of monedas(); track m.id) {
+                <option [value]="m.id">{{ m.codigo }} - {{ m.nombre }}</option>
+              }
+            </select>
+            @if (invalido('monedaPrincipal')) {
+              <p class="mt-1 text-[0.7rem] text-danger">Seleccione la moneda principal.</p>
+            }
+          </div>
+        </fieldset>
+      </section>
+
+      <hr class="my-4 border-primary-light/50" />
+
+      <!-- ═══ 2. FECHAS Y CIERRE ═══ -->
+      <section>
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="size-2 rounded-full"
+              [class.bg-success]="fechasDesbloqueadas()"
+              [class.bg-accent-orange]="!fechasDesbloqueadas()"></span>
+            <h2 class="text-sm font-semibold text-primary-dark">Fechas y Cierre</h2>
+            <span class="text-[0.7rem] text-primary-light">(campos protegidos)</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            @if (!puedeEditar()) {
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-hover text-[0.7rem] font-medium text-primary-light">
+                <app-custom-icon name="lock" [size]="12"></app-custom-icon>
+                Solo lectura
+              </span>
+            } @else if (fechasDesbloqueadas()) {
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success/10 border border-success/30 text-[0.7rem] font-semibold text-success">
+                <app-custom-icon name="lock-keyhole-open" [size]="13" color="#16a34a"></app-custom-icon>
+                Edición Autorizada
+              </span>
+              <button type="button" (click)="bloquearFechas()"
+                class="px-2.5 py-1 text-[0.7rem] font-medium rounded border border-primary-light text-primary-dark hover:bg-hover">
+                Bloquear
+              </button>
+            } @else {
+              <button type="button" (click)="abrirAutorizacion()"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-accent-orange/60 text-accent-orange hover:bg-accent-orange/10">
+                <app-custom-icon name="lock" [size]="13" color="#EA7B2E"></app-custom-icon>
+                Desbloquear Edición
+              </button>
+            }
+          </div>
+        </div>
+
+        <fieldset [disabled]="!puedeEditar()" class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
+          <div>
+            <label for="fechaCierre" class="block mb-1 text-xs font-medium text-primary-dark">
+              Fecha de Cierre <span class="text-danger">*</span>
+            </label>
+            <input id="fechaCierre" type="date" formControlName="fechaCierre"
+              [readonly]="!fechasDesbloqueadas()" [class.cg-date-locked]="!fechasDesbloqueadas()"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('fechaCierre')" />
+            @if (invalido('fechaCierre')) {
+              <p class="mt-1 text-[0.7rem] text-danger">La fecha de cierre es obligatoria.</p>
+            } @else if (!fechasDesbloqueadas()) {
+              <p class="mt-1 text-[0.7rem] text-primary-light">Requiere autorización por código.</p>
+            }
+          </div>
+
+          <div>
+            <label for="fechaApertura" class="block mb-1 text-xs font-medium text-primary-dark">
+              Fecha de Apertura <span class="text-danger">*</span>
+            </label>
+            <input id="fechaApertura" type="date" formControlName="fechaApertura"
+              [readonly]="!fechasDesbloqueadas()" [class.cg-date-locked]="!fechasDesbloqueadas()"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('fechaApertura')" />
+            @if (invalido('fechaApertura')) {
+              <p class="mt-1 text-[0.7rem] text-danger">La fecha de apertura es obligatoria.</p>
+            } @else if (!fechasDesbloqueadas()) {
+              <p class="mt-1 text-[0.7rem] text-primary-light">Requiere autorización por código.</p>
+            }
+          </div>
+
+          <div>
+            <label for="cierreMensual" class="block mb-1 text-xs font-medium text-primary-dark">
+              Cierre Mensual <span class="text-danger">*</span>
+            </label>
+            <input id="cierreMensual" type="date" formControlName="cierreMensual"
+              [readonly]="!fechasDesbloqueadas()" [class.cg-date-locked]="!fechasDesbloqueadas()"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('cierreMensual')" />
+            @if (invalido('cierreMensual')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El cierre mensual es obligatorio.</p>
+            } @else if (!fechasDesbloqueadas()) {
+              <p class="mt-1 text-[0.7rem] text-primary-light">Requiere autorización por código.</p>
+            }
+          </div>
+        </fieldset>
+
+        @if (fechasDesbloqueadas()) {
+          <p class="mt-2 text-[0.7rem] text-primary-light">
+            Autorización otorgada por <strong class="text-primary-dark">{{ nombreAutorizador() }}</strong>.
+            El código se enviará junto con la actualización.
+          </p>
+        }
+      </section>
+
+      <hr class="my-4 border-primary-light/50" />
+
+      <!-- ═══ 3. IDENTIFICACIÓN REGULATORIA Y FISCAL ═══ -->
+      <section>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="size-2 rounded-full bg-primary"></span>
+          <h2 class="text-sm font-semibold text-primary-dark">Identificación Regulatoria y Fiscal</h2>
+        </div>
+
+        <fieldset [disabled]="!puedeEditar()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
+          <div>
+            <label for="nit" class="block mb-1 text-xs font-medium text-primary-dark">
+              NIT <span class="text-danger">*</span>
+            </label>
+            <input id="nit" type="text" formControlName="nit" placeholder="Ej: 7845129-3"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('nit')" />
+            @if (invalido('nit')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El NIT es obligatorio (máx. 20).</p>
+            }
+          </div>
+
+          <div>
+            <label for="codigoSIB" class="block mb-1 text-xs font-medium text-primary-dark">
+              Código Registro SIB <span class="text-danger">*</span>
+            </label>
+            <input id="codigoSIB" type="text" formControlName="codigoSIB" placeholder="Ej: SIB-E-45892"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('codigoSIB')" />
+            @if (invalido('codigoSIB')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El código SIB es obligatorio (máx. 40).</p>
+            }
+          </div>
+
+          <div>
+            <label for="registroMercadoValores" class="block mb-1 text-xs font-medium text-primary-dark">
+              Registro Mercado de Valores <span class="text-danger">*</span>
+            </label>
+            <input id="registroMercadoValores" type="text" formControlName="registroMercadoValores"
+              placeholder="Ej: RMV-GT-8842"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('registroMercadoValores')" />
+            @if (invalido('registroMercadoValores')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El registro de mercado de valores es obligatorio (máx. 60).</p>
+            } @else {
+              <p class="mt-1 text-[0.7rem] text-primary-light">Registro Nacional de Valores y Mercancías</p>
+            }
+          </div>
+
+          <div>
+            <label for="representanteLegal" class="block mb-1 text-xs font-medium text-primary-dark">
+              Nombre Representante Legal <span class="text-danger">*</span>
+            </label>
+            <input id="representanteLegal" type="text" formControlName="representanteLegal"
+              placeholder="Ej: Lic. Fernando Morales Arévalo"
+              class="w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('representanteLegal')" />
+            @if (invalido('representanteLegal')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El nombre del representante legal es obligatorio (máx. 150).</p>
+            }
+          </div>
+
+          <div>
+            <label for="dpiRepresentante" class="block mb-1 text-xs font-medium text-primary-dark">
+              DPI Representante Legal (CUI) <span class="text-danger">*</span>
+            </label>
+            <input id="dpiRepresentante" type="text" formControlName="dpiRepresentante" inputmode="numeric"
+              maxlength="13" placeholder="13 dígitos" (input)="onDpiInput($event)"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('dpiRepresentante')" />
+            @if (invalido('dpiRepresentante')) {
+              <p class="mt-1 text-[0.7rem] text-danger">El DPI debe contener exactamente 13 dígitos.</p>
+            }
+          </div>
+
+          <div class="md:col-span-2 lg:col-span-3">
+            <label for="direccionFiscal" class="block mb-1 text-xs font-medium text-primary-dark">
+              Dirección Fiscal <span class="text-danger">*</span>
+            </label>
+            <input id="direccionFiscal" type="text" formControlName="direccionFiscal"
+              placeholder="Dirección fiscal completa registrada ante SAT y SIB"
+              class="w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('direccionFiscal')" />
+            @if (invalido('direccionFiscal')) {
+              <p class="mt-1 text-[0.7rem] text-danger">La dirección fiscal es obligatoria (máx. 250).</p>
+            }
+          </div>
+        </fieldset>
+      </section>
+
+      <hr class="my-4 border-primary-light/50" />
+
+      <!-- ═══ 4. OPERACIÓN Y MERCADO ═══ -->
+      <section>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="size-2 rounded-full bg-accent-orange"></span>
+          <h2 class="text-sm font-semibold text-primary-dark">Operación y Mercado</h2>
+        </div>
+
+        <fieldset [disabled]="!puedeEditar()" class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+          <div>
+            <label for="horaInicioOp" class="block mb-1 text-xs font-medium text-primary-dark">
+              Hora Inicio de Operaciones (HH:MM) <span class="text-danger">*</span>
+            </label>
+            <input id="horaInicioOp" type="time" formControlName="horaInicioOp"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('horaInicioOp')" />
+            @if (invalido('horaInicioOp')) {
+              <p class="mt-1 text-[0.7rem] text-danger">La hora de inicio es obligatoria.</p>
+            }
+          </div>
+
+          <div>
+            <label for="horaCierreOp" class="block mb-1 text-xs font-medium text-primary-dark">
+              Hora Cierre de Operaciones (HH:MM) <span class="text-danger">*</span>
+            </label>
+            <input id="horaCierreOp" type="time" formControlName="horaCierreOp"
+              class="font-mono w-full px-3 py-2 text-sm rounded-md border border-primary-light bg-white focus:outline-none focus:ring-2 ring-primary"
+              [class.border-danger]="invalido('horaCierreOp') || horarioInvalido()" />
+            @if (invalido('horaCierreOp')) {
+              <p class="mt-1 text-[0.7rem] text-danger">La hora de cierre es obligatoria.</p>
+            } @else if (horarioInvalido()) {
+              <p class="mt-1 text-[0.7rem] text-danger">Debe ser posterior a la hora de inicio.</p>
+            }
+          </div>
+        </fieldset>
+      </section>
+
+      <!-- Footer -->
+      <div class="mt-5 pt-3 border-t border-primary-light/50 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-[0.72rem] text-primary-light">
+          <span class="size-2 rounded-full"
+            [class.bg-accent-orange]="dirty()"
+            [class.bg-success]="!dirty()"></span>
+          <span>
+            {{ dirty() ? 'Hay cambios sin sincronizar' : 'Parámetros sincronizados con la base de datos central' }}
+          </span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" (click)="descartarCambios()"
+            [disabled]="!dirty() || saving()"
+            class="px-3 py-2 text-sm rounded border border-primary-light text-primary-dark hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed">
+            Cancelar Cambios
+          </button>
+          <button type="submit"
+            [disabled]="!puedeEditar() || !dirty() || saving()"
+            class="btn-hvc-primary inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded disabled:opacity-50 disabled:cursor-not-allowed">
+            <app-custom-icon name="check" [size]="16" color="#ffffff"></app-custom-icon>
+            {{ saving() ? 'Guardando...' : 'Guardar Configuración' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modales -->
+  <app-config-general-auth-modal
+    [visible]="authModalVisible()"
+    [isLoading]="authLoading()"
+    [errorMessage]="authError()"
+    [permisoCodigo]="'CONFIG_GENERAL_EDITAR'"
+    (confirm)="confirmarAutorizacion($event)"
+    (cancel)="cerrarAutorizacion()" />
+
+  <app-config-general-audit-modal
+    [visible]="auditModalVisible()"
+    [saving]="saving()"
+    [diffs]="cambios()"
+    [usuarioNombre]="nombreUsuario()"
+    [autorizadorNombre]="nombreAutorizador()"
+    [timestamp]="timestampEjecucion()"
+    [requiereAutorizacion]="cambiosEnFechas() && fechasDesbloqueadas()"
+    (confirm)="confirmarGuardado($event)"
+    (cancel)="cerrarConfirmacion()" />
+
+  <app-config-general-historial-modal
+    [visible]="historyModalVisible()"
+    (close)="cerrarHistorial()" />
+}
