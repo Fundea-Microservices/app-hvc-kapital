@@ -31,6 +31,8 @@ export class ConfigGeneralAuditModalComponent {
   usuarioNombre = input<string>('');
   autorizadorNombre = input<string>('');
   timestamp = input<string>('');
+  ipActual = input<string | null>(null);
+  ipLoading = input<boolean>(false);
   requiereAutorizacion = input<boolean>(false);
 
   confirm = output<string>();

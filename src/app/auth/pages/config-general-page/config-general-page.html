@@ -421,6 +421,8 @@
     [usuarioNombre]="nombreUsuario()"
     [autorizadorNombre]="nombreAutorizador()"
     [timestamp]="timestampEjecucion()"
+    [ipActual]="ipActual()"
+    [ipLoading]="ipLoading()"
     [requiereAutorizacion]="cambiosEnFechas() && fechasDesbloqueadas()"
     (confirm)="confirmarGuardado($event)"
     (cancel)="cerrarConfirmacion()" />

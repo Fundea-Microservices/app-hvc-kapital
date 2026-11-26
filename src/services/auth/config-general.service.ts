@@ -9,6 +9,8 @@ import {
   BitacoraConfigResponse,
   CampoConfigGeneral,
   ConfigGeneralDto,
+  EstacionActualData,
+  EstacionActualResponse,
   UpdateConfigGeneralRequest,
   UpdateConfigGeneralResponse,
 } from '../../interfaces/config-general';
@@ -40,6 +42,7 @@ export class ConfigGeneralService extends HttpService {
   private readonly endpoints = {
     configGeneral: '/config-general',
     bitacora: '/config-general/bitacora',
+    ipActual: '/config-general/ip-actual',
   };
 
   constructor(http: HttpClient, private toastr: ToastrService) {
@@ -91,6 +94,24 @@ export class ConfigGeneralService extends HttpService {
           : mensaje || 'Error al actualizar la configuración general',
         error?.status === 403 ? 'Acceso denegado' : 'Error'
       );
+      return null;
+    }
+  }
+
+  /**
+   * GET /config-general/ip-actual — IP que el servidor observa para la
+   * conexión actual. No muestra toastr: la confirmación nunca se bloquea por
+   * no poder resolverla.
+   */
+  async getIpActual(): Promise<EstacionActualData | null> {
+    try {
+      const resp = await firstValueFrom(
+        this.get<EstacionActualResponse>(this.endpoints.ipActual)
+      );
+      if (resp.body?.success) return resp.body.data;
+      return null;
+    } catch (error: any) {
+      console.log('🚀 ~ ConfigGeneralService ~ getIpActual ~ error:', error);
       return null;
     }
   }

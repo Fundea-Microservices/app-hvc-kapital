@@ -56,7 +56,14 @@
             </div>
             <div class="sm:col-span-2">
               <span class="block text-[11px] text-slate-400">Estación (IP):</span>
-              <span class="font-medium text-slate-700">Registrada automáticamente por el servidor</span>
+              @if (ipLoading()) {
+                <span class="inline-flex items-center gap-1.5 font-medium text-slate-500">
+                  <span class="size-3 rounded-full border-2 border-slate-300 border-t-slate-500 animate-spin"></span>
+                  Consultando…
+                </span>
+              } @else {
+                <span class="font-medium text-slate-700 tabular-nums">{{ ipActual() || 'No disponible' }}</span>
+              }
             </div>
             <div class="sm:col-span-2">
               <span class="block text-[11px] text-slate-400">Timestamp de ejecución:</span>
