@@ -102,6 +102,8 @@ export default class ConfigGeneralPageComponent implements OnInit {
   // ── Modales de guardado / historial ──────────────────────────────────
   auditModalVisible = signal(false);
   historyModalVisible = signal(false);
+  ipActual = signal<string | null>(null);
+  ipLoading = signal(false);
 
   // ── Formulario ───────────────────────────────────────────────────────
   form = this.fb.group({
@@ -299,7 +301,19 @@ export default class ConfigGeneralPageComponent implements OnInit {
       return;
     }
 
+    void this.cargarIpActual();
     this.auditModalVisible.set(true);
+  }
+
+  /** Consulta la IP observada al abrir la confirmación; nunca bloquea el flujo. */
+  private async cargarIpActual(): Promise<void> {
+    this.ipLoading.set(true);
+    this.ipActual.set(null);
+
+    const data = await this.configService.getIpActual();
+
+    this.ipActual.set(data?.ip ?? null);
+    this.ipLoading.set(false);
   }
 
   cerrarConfirmacion(): void {

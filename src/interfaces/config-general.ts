@@ -96,6 +96,23 @@ export interface UpdateConfigGeneralRequest extends Partial<Record<CampoConfigGe
   auth_code?: string;
 }
 
+/** GET /config-general/ip-actual — IP observada por el servidor. */
+export interface EstacionActualData {
+  ip: string | null;
+  /** ISO 8601 UTC. */
+  capturadaEn: string;
+}
+
+export interface EstacionActualResponse {
+  success: boolean;
+  statusCode: string;
+  path: string;
+  timestamp: string;
+  message: string;
+  data: EstacionActualData;
+  metadata: null;
+}
+
 export interface UpdateConfigGeneralResponse {
   success: boolean;
   statusCode: string;
