@@ -1,15 +1,15 @@
 /* Campos de Fechas y Cierre bloqueados: mismo tratamiento suave del prototipo
-   (docs/index.html → .field-input.date-locked). */
+   (docs/index.html → .field-input.date-locked), expresado con tokens de marca. */
 .cg-date-locked {
-  border-color: #e2e8f0;
-  background-color: #f8fafc;
-  color: #334155;
+  border-color: var(--color-table-border);
+  background-color: color-mix(in srgb, var(--color-hover) 60%, white);
+  color: var(--color-primary-light);
   cursor: not-allowed;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .cg-date-locked:hover {
-  background-color: rgba(241, 245, 249, 0.85);
+  background-color: var(--color-hover);
 }
 
 .cg-date-locked:focus {

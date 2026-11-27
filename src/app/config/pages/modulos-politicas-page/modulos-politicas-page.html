@@ -5,7 +5,7 @@
       <span class="mx-2">></span>
     </li>
     <li class="flex items-center">
-      <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
+      <a routerLink="/dashboard/config" class="text-primary hover:underline">Configuración</a>
       <span class="mx-2">></span>
     </li>
     <li class="flex items-center text-primary-light">Módulos y Políticas</li>
@@ -15,13 +15,9 @@
 <div class="shadow rounded-lg border border-primary-light">
   <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-primary-light">
     <div>
-      <h2 class="flex items-center gap-2 text-lg font-semibold text-primary-dark">
-        <app-custom-icon name="layers" [size]="20"></app-custom-icon>
+      <h2 class="text-lg font-semibold text-primary-dark">
         Módulos y Políticas
       </h2>
-      <p class="mt-0.5 text-xs text-primary-light">
-        Agrupación de los parámetros generales por módulo y política.
-      </p>
     </div>
     <div class="flex gap-2">
       <button type="button" (click)="abrirModalCrearModulo()"
@@ -57,7 +53,7 @@
         <p class="px-2 py-6 text-sm text-center text-primary-light">Cargando módulos...</p>
       } @else if (modulosFiltrados().length === 0) {
         <p class="px-2 py-6 text-sm text-center text-primary-light">
-          {{ modulos().length === 0 ? 'No hay módulos registrados.' : 'Ningún módulo coincide con la búsqueda.' }}
+          {{ modulos().length === 0 ? 'No se encontraron módulos' : 'Ningún módulo coincide con la búsqueda' }}
         </p>
       } @else {
         <ul class="space-y-2" role="list">
@@ -118,17 +114,17 @@
                 [attr.aria-label]="'Activar módulo ' + modulo.nombre" />
               <span class="w-10 h-5 rounded-full transition-colors bg-gray-light peer-checked:bg-accent-gold
                 peer-focus:outline-none peer-focus:ring-2 ring-primary"></span>
-              <span class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-md
+              <span class="absolute left-0.5 top-0.5 size-4 bg-white rounded-full shadow-md
                 transition-transform peer-checked:translate-x-5"></span>
             </label>
 
             <button type="button" (click)="abrirModalEditarModulo(modulo)"
-              class="p-2 rounded-md bg-primary text-white hover:opacity-90"
+              class="px-2 py-1 rounded text-xs transition bg-primary text-white hover:opacity-90"
               [attr.aria-label]="'Editar módulo ' + modulo.nombre" title="Editar módulo">
               <app-custom-icon name="square-pen" color="#ffffff" [size]="16"></app-custom-icon>
             </button>
             <button type="button" (click)="abrirModalEliminarModulo(modulo)"
-              class="p-2 rounded-md bg-danger text-white hover:opacity-90"
+              class="px-2 py-1 rounded text-xs transition bg-danger text-white hover:opacity-90"
               [attr.aria-label]="'Eliminar módulo ' + modulo.nombre" title="Eliminar módulo">
               <app-custom-icon name="trash-2" color="#ffffff" [size]="16"></app-custom-icon>
             </button>
@@ -167,7 +163,7 @@
               } @else if (politicasFiltradas().length === 0) {
                 <tr>
                   <td colspan="5" class="px-4 py-8 text-center text-primary-light">
-                    {{ politicasDelModulo().length === 0 ? 'Este módulo aún no tiene políticas.' : 'Ninguna política coincide con la búsqueda.' }}
+                    {{ politicasDelModulo().length === 0 ? 'Este módulo aún no tiene políticas' : 'Ninguna política coincide con la búsqueda' }}
                   </td>
                 </tr>
               } @else {
@@ -189,12 +185,7 @@
                       </div>
                     </td>
                     <td class="px-2 py-2 mp-code text-xs">{{ p.codigo }}</td>
-                    <td class="px-2 py-2">
-                      <span class="block font-medium">{{ p.nombre }}</span>
-                      @if (p.descripcion) {
-                        <span class="block text-xs text-primary-light">{{ p.descripcion }}</span>
-                      }
-                    </td>
+                    <td class="px-2 py-2 font-medium">{{ p.nombre }}</td>
                     <td class="px-2 py-2 text-center">
                       <div class="inline-flex items-center justify-center gap-2">
                         <label class="relative inline-flex items-center cursor-pointer"
@@ -204,25 +195,22 @@
                             [attr.aria-label]="'Activar política ' + p.nombre" />
                           <span class="w-9 h-5 rounded-full transition-colors bg-gray-light peer-checked:bg-accent-gold
                             peer-focus:outline-none peer-focus:ring-2 ring-primary"></span>
-                          <span class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-md
+                          <span class="absolute left-0.5 top-0.5 size-4 bg-white rounded-full shadow-md
                             transition-transform peer-checked:translate-x-4"></span>
                         </label>
-                        <span class="mp-badge" [class.mp-badge--off]="!p.activo">
-                          {{ p.activo ? 'Activa' : 'Inactiva' }}
-                        </span>
                       </div>
                     </td>
                     <td class="px-2 py-2 text-center whitespace-nowrap">
                       <div class="inline-flex items-center gap-1">
                         <button type="button" (click)="abrirModalEditarPolitica(p)"
-                          class="p-1.5 rounded-md bg-primary text-white hover:opacity-90"
+                          class="px-2 py-1 rounded text-xs transition bg-primary text-white hover:opacity-90"
                           [attr.aria-label]="'Editar política ' + p.nombre" title="Editar política">
-                          <app-custom-icon name="square-pen" color="#ffffff" [size]="14"></app-custom-icon>
+                          <app-custom-icon name="square-pen" color="#ffffff" [size]="16"></app-custom-icon>
                         </button>
                         <button type="button" (click)="abrirModalEliminarPolitica(p)"
-                          class="p-1.5 rounded-md bg-danger text-white hover:opacity-90"
+                          class="px-2 py-1 rounded text-xs transition bg-danger text-white hover:opacity-90"
                           [attr.aria-label]="'Eliminar política ' + p.nombre" title="Eliminar política">
-                          <app-custom-icon name="trash-2" color="#ffffff" [size]="14"></app-custom-icon>
+                          <app-custom-icon name="trash-2" color="#ffffff" [size]="16"></app-custom-icon>
                         </button>
                       </div>
                     </td>
@@ -238,13 +226,6 @@
         </div>
       }
     </section>
-  </div>
-
-  <div class="px-4 py-2 border-t border-primary-light bg-hover/40">
-    <p class="text-[0.7rem] text-primary-light">
-      Arrastre un módulo o una política para cambiar su orden.
-      Cada cambio se guarda con autorización por PIN y el listado se recarga.
-    </p>
   </div>
 </div>
 

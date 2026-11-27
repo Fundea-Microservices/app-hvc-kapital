@@ -5,7 +5,7 @@
       <span class="mx-2">></span>
     </li>
     <li class="flex items-center">
-      <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
+      <a routerLink="/dashboard/config" class="text-primary hover:underline">Configuración</a>
       <span class="mx-2">></span>
     </li>
     <li class="flex items-center text-primary-light">Configuración General</li>
@@ -40,13 +40,9 @@
     <!-- Header de la tarjeta -->
     <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-primary-light">
       <div>
-        <h1 class="flex items-center gap-2 text-lg font-semibold text-primary-dark">
-          <app-custom-icon name="settings-2" [size]="20"></app-custom-icon>
+        <h2 class="text-lg font-semibold text-primary-dark">
           Configuración General
-        </h1>
-        <p class="mt-0.5 text-xs text-primary-light">
-          Parámetros institucionales, regulatorios y operativos del registro único.
-        </p>
+        </h2>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
@@ -166,7 +162,7 @@
               [class.bg-success]="fechasDesbloqueadas()"
               [class.bg-accent-orange]="!fechasDesbloqueadas()"></span>
             <h2 class="text-sm font-semibold text-primary-dark">Fechas y Cierre</h2>
-            <span class="text-[0.7rem] text-primary-light">(campos protegidos)</span>
+            <span class="text-[0.7rem] text-primary-light">(requiere autorización por código)</span>
           </div>
 
           <div class="flex items-center gap-2">
@@ -178,7 +174,7 @@
             } @else if (fechasDesbloqueadas()) {
               <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success/10 border border-success/30 text-[0.7rem] font-semibold text-success">
                 <app-custom-icon name="lock-keyhole-open" [size]="13" color="#16a34a"></app-custom-icon>
-                Edición Autorizada
+                Edición autorizada
               </span>
               <button type="button" (click)="bloquearFechas()"
                 class="px-2.5 py-1 text-[0.7rem] font-medium rounded border border-primary-light text-primary-dark hover:bg-hover">
@@ -188,7 +184,7 @@
               <button type="button" (click)="abrirAutorizacion()"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-accent-orange/60 text-accent-orange hover:bg-accent-orange/10">
                 <app-custom-icon name="lock" [size]="13" color="#EA7B2E"></app-custom-icon>
-                Desbloquear Edición
+                Desbloquear edición
               </button>
             }
           </div>
@@ -205,8 +201,6 @@
               [class.border-danger]="invalido('fechaCierre')" />
             @if (invalido('fechaCierre')) {
               <p class="mt-1 text-[0.7rem] text-danger">La fecha de cierre es obligatoria.</p>
-            } @else if (!fechasDesbloqueadas()) {
-              <p class="mt-1 text-[0.7rem] text-primary-light">Requiere autorización por código.</p>
             }
           </div>
 
@@ -220,8 +214,6 @@
               [class.border-danger]="invalido('fechaApertura')" />
             @if (invalido('fechaApertura')) {
               <p class="mt-1 text-[0.7rem] text-danger">La fecha de apertura es obligatoria.</p>
-            } @else if (!fechasDesbloqueadas()) {
-              <p class="mt-1 text-[0.7rem] text-primary-light">Requiere autorización por código.</p>
             }
           </div>
 
@@ -235,8 +227,6 @@
               [class.border-danger]="invalido('cierreMensual')" />
             @if (invalido('cierreMensual')) {
               <p class="mt-1 text-[0.7rem] text-danger">El cierre mensual es obligatorio.</p>
-            } @else if (!fechasDesbloqueadas()) {
-              <p class="mt-1 text-[0.7rem] text-primary-light">Requiere autorización por código.</p>
             }
           </div>
         </fieldset>
@@ -293,8 +283,6 @@
               [class.border-danger]="invalido('registroMercadoValores')" />
             @if (invalido('registroMercadoValores')) {
               <p class="mt-1 text-[0.7rem] text-danger">El registro de mercado de valores es obligatorio (máx. 60).</p>
-            } @else {
-              <p class="mt-1 text-[0.7rem] text-primary-light">Registro Nacional de Valores y Mercancías</p>
             }
           </div>
 
@@ -380,25 +368,23 @@
       <!-- Footer -->
       <div class="mt-5 pt-3 border-t border-primary-light/50 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2 text-[0.72rem] text-primary-light">
-          <span class="size-2 rounded-full"
-            [class.bg-accent-orange]="dirty()"
-            [class.bg-success]="!dirty()"></span>
-          <span>
-            {{ dirty() ? 'Hay cambios sin sincronizar' : 'Parámetros sincronizados con la base de datos central' }}
-          </span>
+          @if (dirty()) {
+            <span class="size-2 rounded-full bg-accent-orange"></span>
+            <span>Hay cambios sin sincronizar</span>
+          }
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <button type="button" (click)="descartarCambios()"
             [disabled]="!dirty() || saving()"
             class="px-3 py-2 text-sm rounded border border-primary-light text-primary-dark hover:bg-hover disabled:opacity-40 disabled:cursor-not-allowed">
-            Cancelar Cambios
+            Cancelar cambios
           </button>
           <button type="submit"
             [disabled]="!puedeEditar() || !dirty() || saving()"
             class="btn-hvc-primary inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded disabled:opacity-50 disabled:cursor-not-allowed">
             <app-custom-icon name="check" [size]="16" color="#ffffff"></app-custom-icon>
-            {{ saving() ? 'Guardando...' : 'Guardar Configuración' }}
+            {{ saving() ? 'Guardando...' : 'Guardar configuración' }}
           </button>
         </div>
       </div>

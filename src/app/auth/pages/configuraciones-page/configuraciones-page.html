@@ -5,103 +5,93 @@
             <span class="mx-2">></span>
         </li>
         <li class="flex items-center">
-            <a routerLink="/dashboard/config" class="hover:underline" style="color: var(--hvc-primary)">Configuración</a>
+            <a routerLink="/dashboard/config" class="hover:underline text-primary">Configuración</a>
             <span class="mx-2">></span>
         </li>
-        <li class="flex items-center text-primary-light">Configuraciones</li>
+        <li class="flex items-center text-primary-light">Parámetros Generales</li>
     </ol>
 </nav>
 
 <div class="shadow rounded-lg border border-primary-light">
-    <div class="flex items-center justify-between px-4 py-3 border-b border-primary-light">
-        <h2 class="text-lg font-semibold text-primary-dark">Configuraciones</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-primary-light">
+        <h2 class="text-lg font-semibold text-primary-dark">Parámetros Generales</h2>
         <div class="flex gap-2">
-            <button (click)="openCreate()"
-                class="btn-hvc-primary px-4 py-2 text-sm rounded">Nueva configuración</button>
+            <button type="button" (click)="openCreate()"
+                class="btn-hvc-primary px-4 py-2 text-sm rounded">Nuevo parámetro</button>
         </div>
     </div>
 
-    <form class="border-b border-primary-light bg-[rgba(248,250,252,0.7)] px-4 py-4 sm:px-6"
+    <form class="flex flex-wrap items-center gap-3 px-4 py-4 border-b border-primary-light"
         (submit)="$event.preventDefault()">
-        <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-12">
-            <div class="sm:col-span-1 lg:col-span-3">
-                <label for="filtroModulo"
-                    class="mb-1 block text-xs font-medium text-primary-light">Módulo</label>
-                <select id="filtroModulo" (change)="onFiltroModulo($any($event.target).value)"
-                    class="h-10 w-full rounded-md border border-primary-light bg-white px-3 text-[13px] text-primary-dark transition focus:outline-none focus:ring-2 ring-primary">
-                    <option value="">Todos los módulos</option>
-                    @for (m of modulos(); track m.id) {
-                    <option [value]="m.id" [selected]="m.id === filtroModuloId()">{{ m.nombre }}</option>
-                    }
-                </select>
-            </div>
-
-            <div class="sm:col-span-1 lg:col-span-3">
-                <label for="filtroPolitica"
-                    class="mb-1 block text-xs font-medium text-primary-light">Política</label>
-                <select id="filtroPolitica" (change)="onFiltroPolitica($any($event.target).value)"
-                    class="h-10 w-full rounded-md border border-primary-light bg-white px-3 text-[13px] text-primary-dark transition focus:outline-none focus:ring-2 ring-primary">
-                    <option value="">Todas las políticas</option>
-                    @for (p of politicasFiltro(); track p.id) {
-                    <option [value]="p.id" [selected]="p.id === filtroPoliticaId()">{{ p.nombre }}</option>
-                    }
-                </select>
-            </div>
-
-            <div class="sm:col-span-2 lg:col-span-4">
-                <label for="searchCfg"
-                    class="mb-1 block text-xs font-medium text-primary-light">Búsqueda</label>
-                <div class="relative">
-                    <svg class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-primary-light"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input id="searchCfg" type="text"
-                        placeholder="Buscar por llave, módulo, política o descripción..." [value]="buscador()"
-                        (input)="onSearch($any($event.target).value)"
-                        class="h-10 w-full rounded-md border border-primary-light bg-white pl-9 pr-3 text-[13px] text-primary-dark transition focus:outline-none focus:ring-2 ring-primary" />
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 sm:col-span-2 lg:col-span-2">
-                <button type="button" (click)="onSearch(buscador())"
-                    class="btn-hvc-accent inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md px-4 text-sm transition">
-                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <span>Buscar</span>
-                </button>
-                @if (buscador() || filtroModuloId() || filtroPoliticaId()) {
-                <button type="button" (click)="limpiarFiltros()" title="Limpiar filtros"
-                    aria-label="Limpiar filtros"
-                    class="inline-flex size-10 shrink-0 items-center justify-center rounded-md border border-primary-light bg-white text-primary-light transition hover:bg-[var(--color-hover)] hover:text-primary-dark">
-                    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polyline points="1 4 1 10 7 10"></polyline>
-                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                    </svg>
-                </button>
+        <div>
+            <label for="filtroModulo" class="sr-only">Módulo</label>
+            <select id="filtroModulo" (change)="onFiltroModulo($any($event.target).value)"
+                class="px-3 py-2 text-sm rounded border border-primary-light bg-white">
+                <option value="">Todos los módulos</option>
+                @for (m of modulos(); track m.id) {
+                <option [value]="m.id" [selected]="m.id === filtroModuloId()">{{ m.nombre }}</option>
                 }
+            </select>
+        </div>
+
+        <div>
+            <label for="filtroPolitica" class="sr-only">Política</label>
+            <select id="filtroPolitica" (change)="onFiltroPolitica($any($event.target).value)"
+                class="px-3 py-2 text-sm rounded border border-primary-light bg-white">
+                <option value="">Todas las políticas</option>
+                @for (p of politicasFiltro(); track p.id) {
+                <option [value]="p.id" [selected]="p.id === filtroPoliticaId()">{{ p.nombre }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="flex-1 min-w-[240px]">
+            <label for="searchCfg" class="sr-only">Buscar</label>
+            <div class="relative">
+                <svg class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-primary-light"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input id="searchCfg" type="text"
+                    placeholder="Buscar por llave, módulo, política o descripción..."
+                    [value]="buscador()" (input)="onSearch($any($event.target).value)"
+                    class="w-full pl-9 pr-3 py-2 text-sm rounded border border-primary-light bg-white" />
             </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button type="button" (click)="onSearch(buscador())"
+                class="btn-hvc-primary px-4 py-2 text-sm rounded">
+                Buscar
+            </button>
+            @if (buscador() || filtroModuloId() || filtroPoliticaId()) {
+            <button type="button" (click)="limpiarFiltros()" title="Limpiar filtros"
+                aria-label="Limpiar filtros"
+                class="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-primary-light bg-white text-primary-light transition hover:bg-hover hover:text-primary-dark">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+            </button>
+            }
         </div>
     </form>
 
     <div class="p-4">
 
         <div class="overflow-x-auto">
-            <table class="gc-table min-w-full text text-left">
+            <table class="gc-table min-w-full text-left">
                 <thead>
                     <tr>
                         <th class="gc-th">#</th>
-                        <th class="gc-th">Llave</th>
-                        <th class="gc-th">Módulo</th>
-                        <th class="gc-th">Política</th>
-                        <th class="gc-th">Tipo</th>
-                        <th class="gc-th">Valor</th>
+                        <th class="gc-th gc-th--left">Llave</th>
+                        <th class="gc-th gc-th--left">Módulo</th>
+                        <th class="gc-th gc-th--left">Política</th>
+                        <th class="gc-th gc-th--left">Tipo</th>
+                        <th class="gc-th gc-th--left">Valor</th>
                         <th class="gc-th">Activo</th>
                         <th class="gc-th">Acciones</th>
                     </tr>
@@ -109,47 +99,46 @@
                 <tbody>
                     @if (isLoading()) {
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">Cargando configuraciones...</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-primary-light">Cargando configuraciones...</td>
                     </tr>
                     } @else if (pagination().totalItems === 0) {
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center" class="px-4 py-8 text-center text-primary-light">No hay configuraciones</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-primary-light">No se encontraron parámetros</td>
                     </tr>
                     } @else {
                     @for (c of getPageSlice(); track c.id; let i = $index) {
-                    <tr class="config-table-row">
-                        <td class="px-2 py-2 text-center border border-table-border">{{ (pagination().page - 1) *
+                    <tr>
+                        <td class="px-2 py-2 text-center">{{ (pagination().page - 1) *
                             pagination().pageSize + i + 1 }}</td>
-                        <td class="px-2 py-2 border border-table-border">{{ c.llave }}</td>
-                        <td class="px-2 py-2 border border-table-border">{{ nombreModulo(moduloDeConfig(c)) }}</td>
-                        <td class="px-2 py-2 border border-table-border">{{ nombrePolitica(politicaDeConfig(c)) }}</td>
-                        <td class="px-2 py-2 border border-table-border">{{ c.tipo }}</td>
-                        <td class="px-2 py-2 truncate max-w-[320px] border border-table-border" [title]="c.valor">{{
-                            displayValor(c) }}</td>
-                        <td class="px-2 py-2 text-center border border-table-border">
-                            <label [for]="'switch-c-'+c.id" class="relative inline-block w-8 h-4 cursor-pointer">
+                        <td class="px-2 py-2">{{ c.llave }}</td>
+                        <td class="px-2 py-2">{{ nombreModulo(moduloDeConfig(c)) }}</td>
+                        <td class="px-2 py-2">{{ nombrePolitica(politicaDeConfig(c)) }}</td>
+                        <td class="px-2 py-2">{{ c.tipo }}</td>
+                        <td class="px-2 py-2 truncate max-w-[320px]" [title]="c.valor">{{ displayValor(c) }}</td>
+                        <td class="px-2 py-2 text-center">
+                            <label [for]="'switch-c-'+c.id" class="relative inline-block w-9 h-5 cursor-pointer">
                                 <input type="checkbox" [id]="'switch-c-'+c.id" [checked]="c.activo"
                                     (change)="onToggleActivo(c, $any($event.target).checked)" class="peer sr-only">
-                                <span
-                                    class="absolute inset-0 rounded-full transition-colors bg-gray-200"
-                                    [style.backgroundColor]="c.activo ? 'var(--hvc-accent-gold)' : ''"></span>
-                                <span
-                                    class="absolute top-0 left-0.5 -translate-y-0 size-4 bg-white rounded-full shadow transition-transform"
-                                    [style.transform]="c.activo ? 'translateX(1.25rem)' : ''"></span>
+                                <span class="absolute inset-0 rounded-full transition-colors bg-gray-light
+                                    peer-checked:bg-accent-gold peer-focus:outline-none peer-focus:ring-2 ring-primary"></span>
+                                <span class="absolute top-0.5 left-0.5 size-4 bg-white rounded-full shadow
+                                    transition-transform peer-checked:translate-x-4"></span>
                             </label>
                         </td>
-                        <td class="px-3 py-1.5 text-center space-x-2 border border-table-border">
-                            <button (click)="openUpsertModal(false, c)"
-                                class="config-btn-edit px-2 py-1 text-white rounded text-xs transition"
-                                title="Editar">
-                                <app-custom-icon [name]="'square-pen'" [color]="'#ffffff'"
-                                    [size]="18"></app-custom-icon>
-                            </button>
-                            <button (click)="openDeleteModal(c)"
-                                class="config-btn-delete px-2 py-1 text-white rounded text-xs transition"
-                                title="Eliminar">
-                                <app-custom-icon [name]="'trash-2'" [color]="'#ffffff'" [size]="18"></app-custom-icon>
-                            </button>
+                        <td class="px-3 py-1.5 text-center whitespace-nowrap">
+                            <div class="inline-flex items-center gap-1">
+                                <button (click)="openUpsertModal(false, c)"
+                                    class="px-2 py-1 text-white rounded text-xs transition bg-primary hover:opacity-90"
+                                    title="Editar" aria-label="Editar parámetro">
+                                    <app-custom-icon [name]="'square-pen'" [color]="'#ffffff'"
+                                        [size]="16"></app-custom-icon>
+                                </button>
+                                <button (click)="openDeleteModal(c)"
+                                    class="px-2 py-1 text-white rounded text-xs transition bg-danger hover:opacity-90"
+                                    title="Eliminar" aria-label="Eliminar parámetro">
+                                    <app-custom-icon [name]="'trash-2'" [color]="'#ffffff'" [size]="16"></app-custom-icon>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     }
@@ -159,7 +148,7 @@
         </div>
 
         @if (pagination().totalItems > 0) {
-        <div class="mt-3">
+        <div class="mt-4 flex justify-center items-center">
             <app-pagination [paginationObj]="pagination()" (changePage)="onChangePage($event)" [showText]="true" />
         </div>
         }
@@ -176,7 +165,7 @@
             class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
             <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
                 <h3 id="hs-upsert-config-label" class="font-bold text-primary-dark">{{ modal().titulo }}</h3>
-                <button type="button" (click)="closeModal()"
+                <button type="button" (click)="closeModal()" aria-label="Cerrar"
                     class="size-8 inline-flex justify-center items-center rounded-full bg-hover">✕</button>
             </div>
             <div class="p-4 overflow-y-auto">
@@ -197,8 +186,8 @@
         <div
             class="max-h-full overflow-hidden flex flex-col bg-white shadow-2xs rounded-xl pointer-events-auto border border-primary-light">
             <div class="flex justify-between items-center py-3 px-4 border-b border-primary-light">
-                <h3 id="hs-delete-config-label" class="font-bold text-primary-dark">Eliminar configuración</h3>
-                <button type="button" (click)="closeModal()"
+                <h3 id="hs-delete-config-label" class="font-bold text-primary-dark">Eliminar parámetro</h3>
+                <button type="button" (click)="closeModal()" aria-label="Cerrar"
                     class="size-8 inline-flex justify-center items-center rounded-full bg-hover">✕</button>
             </div>
             <div class="p-4">
@@ -206,10 +195,10 @@
                     seguro de eliminar "{{ configEdit().llave }}"?</div>
             </div>
             <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-primary-light">
-                <button type="button" (click)="closeModal()"
-                    class="py-2 px-3 text-sm rounded-lg bg-white border border-primary-light">Cerrar</button>
-                <button type="button" (click)="deleteConfig(configEdit())"
-                    class="py-2 px-3 text-sm rounded-lg text-white bg-danger">Eliminar</button>
+                <button type="button" (click)="closeModal()" [disabled]="guardando()"
+                    class="py-2 px-3 text-sm rounded-lg bg-white border border-primary-light disabled:opacity-50">Cerrar</button>
+                <button type="button" (click)="deleteConfig(configEdit())" [disabled]="guardando()"
+                    class="py-2 px-3 text-sm rounded-lg text-white bg-danger disabled:opacity-50">Eliminar</button>
             </div>
         </div>
     </div>

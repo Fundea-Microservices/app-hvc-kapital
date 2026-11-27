@@ -125,24 +125,6 @@
   letter-spacing: 0.01em;
 }
 
-/* Badge de estado de política */
-.mp-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.1rem 0.5rem;
-  border-radius: 9999px;
-  background-color: color-mix(in srgb, var(--hvc-success) 14%, white);
-  color: color-mix(in srgb, var(--hvc-success) 75%, black);
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.mp-badge--off {
-  background-color: color-mix(in srgb, var(--hvc-gray-light) 20%, white);
-  color: var(--hvc-primary-light);
-}
-
 /* Filas de políticas: arrastre y estado */
 .mp-row {
   cursor: grab;

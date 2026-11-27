@@ -367,3 +367,20 @@ body {
 .gc-table--compact { font-size: 0.8125rem; }
 .gc-table--compact th,
 .gc-table--compact td { padding: 0.375rem 0.5rem; }
+
+/* ==========================================================================
+   Encabezados de tabla — clases usadas en las plantillas junto a .gc-table.
+   .gc-table thead th ya define fondo, color y peso; estas clases solo fijan
+   la alineación de forma explícita (la clase base es centrada).
+   ========================================================================== */
+.gc-th {
+  text-align: center;
+}
+
+.gc-th--center {
+  text-align: center;
+}
+
+.gc-th--left {
+  text-align: left;
+}
